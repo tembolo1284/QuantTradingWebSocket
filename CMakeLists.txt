@@ -42,13 +42,52 @@ if(BUILD_TESTS)
     endif()
 endif()
 
+# Source files - only include files that exist
+set(SOURCES
+    src/net/websocket.c
+    src/net/websocket_server.c
+    src/net/frame.c
+    src/net/handshake.c
+    src/net/socket.c
+    src/net/buffer.c
+    src/trading/order.c
+    src/trading/order_book.c
+    src/utils/logging.c
+)
+
+# Create main library
+add_library(quant_trading_lib STATIC ${SOURCES})
+
 # Include directories
-include_directories(${PROJECT_SOURCE_DIR}/include)
+target_include_directories(quant_trading_lib
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
 
-# Add subdirectories
-add_subdirectory(src)
+# Link dependencies
+target_link_libraries(quant_trading_lib
+    PUBLIC
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    ${CMAKE_THREAD_LIBS_INIT}
+)
 
-if(BUILD_TESTS)
+# Create server executable
+add_executable(quant_trading src/main.c)
+target_link_libraries(quant_trading
+    PRIVATE
+    quant_trading_lib
+)
+
+# Create client executable
+add_executable(market_client src/client/main.c)
+target_link_libraries(market_client
+    PRIVATE
+    quant_trading_lib
+)
+
+# Add subdirectories for tests and examples
+if(BUILD_TESTS AND UNITY_FOUND)
     enable_testing()
     add_subdirectory(tests)
 endif()

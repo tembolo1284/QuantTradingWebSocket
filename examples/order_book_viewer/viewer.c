@@ -22,6 +22,7 @@ typedef struct {
 } OrderBookViewer;
 
 static void handle_signal(int sig) {
+    (void)sig;  // Suppress unused parameter warning
     running = false;
 }
 
@@ -47,28 +48,33 @@ static void display_order_book(const OrderBookViewer* viewer) {
 }
 
 static void on_message(const uint8_t* data, size_t len, void* user_data) {
+    (void)data;  // Suppress unused parameter warning
+    (void)len;   // Suppress unused parameter warning
+
     OrderBookViewer* viewer = (OrderBookViewer*)user_data;
-    
+    if (!viewer) return;
+
     // In a real system, parse market data message to update order book
     // For this example, we'll just use sample data
-    
+
     // Sample bid levels
     for (int i = 0; i < MAX_PRICE_LEVELS; i++) {
         viewer->bids[i].price = 150.0 - i * 0.1;
         viewer->bids[i].quantity = 100 * (MAX_PRICE_LEVELS - i);
     }
-    
+
     // Sample ask levels
     for (int i = 0; i < MAX_PRICE_LEVELS; i++) {
         viewer->asks[i].price = 150.1 + i * 0.1;
         viewer->asks[i].quantity = 100 * (MAX_PRICE_LEVELS - i);
     }
-    
+
     display_order_book(viewer);
 }
 
 static void on_error(ErrorCode error, void* user_data) {
-    printf("WebSocket error: %d\n", error);
+    (void)user_data;  // Suppress unused parameter warning
+    fprintf(stderr, "WebSocket error: %d\n", error);
 }
 
 // Set terminal to raw mode to read single keystrokes
@@ -121,23 +127,23 @@ int main(int argc, char* argv[]) {
 
     fd_set fds;
     struct timeval tv;
-    
+
     while (running) {
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
-        
+
         tv.tv_sec = 0;
         tv.tv_usec = 100000;  // 100ms timeout
-        
+
         int ret = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
-        
+
         if (ret > 0 && FD_ISSET(STDIN_FILENO, &fds)) {
             char c;
             if (read(STDIN_FILENO, &c, 1) == 1 && c == 'q') {
                 break;
             }
         }
-        
+
         ws_process(ws);
     }
 

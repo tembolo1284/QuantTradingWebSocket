@@ -1,139 +1,130 @@
 #include "trading/order_book.h"
-#include "net/websocket.h"
+#include "net/websocket_server.h"
 #include "utils/logging.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <errno.h>
-#include <string.h>
 
-static volatile bool running = true;
+#define DEFAULT_PORT 8080
 
-static void handle_signal(int sig) {
-    (void)sig;
-    LOG_INFO("Received shutdown signal");
-    running = false;
-}
+static volatile sig_atomic_t running = 1;
+static OrderBook* book = NULL;
+static WebSocketServer* server = NULL;
 
-static void on_message(const uint8_t* data, size_t len, void* user_data) {
-    OrderBook* book = (OrderBook*)user_data;
+static void signal_handler(int sig) {
+    LOG_INFO("Received shutdown signal %d", sig);
+    running = 0;
     
-    LOG_DEBUG("Received WebSocket message of length %zu bytes", len);
-    if (len > 0) {
-        // For debugging, print the first few bytes of the message
-        char preview[32] = {0};
-        size_t preview_len = len < sizeof(preview) - 1 ? len : sizeof(preview) - 1;
-        memcpy(preview, data, preview_len);
-        LOG_DEBUG("Message preview: %s", preview);
-    }
-    
-    // Example: create a sample order
-    Order* order = order_create("AAPL", 150.0, 100, true);
-    if (order) {
-        if (order_book_add(book, order)) {
-            LOG_INFO("Added order: ID=%lu, Price=%.2f, Quantity=%u",
-                    order->id, order->price, order->quantity);
-                   
-            LOG_INFO("Best Bid: %.2f, Best Ask: %.2f",
-                    order_book_get_best_bid(book),
-                    order_book_get_best_ask(book));
-        } else {
-            LOG_ERROR("Failed to add order to book");
-        }
-        free(order);
-    } else {
-        LOG_ERROR("Failed to create order");
+    // Signal server to stop if it exists
+    if (server) {
+        ws_server_request_shutdown(server);
     }
 }
 
-static void on_error(ErrorCode error, void* user_data) {
-    (void)user_data;
-    LOG_ERROR("WebSocket error: %d", error);
-    
-    switch (error) {
-        case ERROR_NETWORK:
-            LOG_ERROR("Network error occurred");
-            break;
-        case ERROR_TIMEOUT:
-            LOG_ERROR("Connection timeout");
-            break;
-        case ERROR_INVALID_PARAM:
-            LOG_ERROR("Invalid parameter");
-            break;
-        case ERROR_MEMORY:
-            LOG_ERROR("Memory allocation error");
-            break;
-        default:
-            LOG_ERROR("Unknown error");
-            break;
-    }
+// Callback when a client connects
+static void on_client_connect(WebSocketClient* client) {
+    (void)client;
+    LOG_INFO("New client connected");
+    // Send current order book state
+    // TODO: Implement order book serialization and send
+}
+
+// Callback when a client disconnects
+static void on_client_disconnect(WebSocketClient* client) {
+    (void)client;
+    LOG_INFO("Client disconnected");
+}
+
+// Handle incoming messages from clients
+static void on_client_message(WebSocketClient* client, const uint8_t* data, size_t len) {
+    (void)client;
+    (void)data;
+    LOG_DEBUG("Received message from client, length: %zu", len);
+    // TODO: Parse message and handle different command types:
+    // - Add Order
+    // - Cancel Order
+    // - Query Order Book
+    // - Subscribe to Market Data
 }
 
 int main(int argc, char* argv[]) {
-    // Initialize logging
     set_log_level(LOG_DEBUG);
-    LOG_INFO("Starting Quant Trading System");
-
-    if (argc != 3) {
-        LOG_ERROR("Invalid arguments. Usage: %s <host> <port>", argv[0]);
-        fprintf(stderr, "Usage: %s <host> <port>\n", argv[0]);
+    LOG_INFO("Starting Quant Trading Server");
+    
+    // Setup more robust signal handling
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;  // Restart interrupted system calls
+    
+    if (sigaction(SIGINT, &sa, NULL) == -1 ||
+        sigaction(SIGTERM, &sa, NULL) == -1) {
+        LOG_ERROR("Failed to set up signal handlers");
         return 1;
     }
 
-    LOG_INFO("Connecting to %s:%s", argv[1], argv[2]);
-
-    // Setup signal handlers
-    signal(SIGINT, handle_signal);
-    signal(SIGTERM, handle_signal);
+    uint16_t port = DEFAULT_PORT;
+    if (argc > 1) {
+        port = (uint16_t)atoi(argv[1]);
+    }
 
     // Create order book
-    OrderBook* book = order_book_create("AAPL");
+    book = order_book_create("AAPL");
     if (!book) {
         LOG_ERROR("Failed to create order book");
         return 1;
     }
     LOG_INFO("Order book created successfully");
 
-    // Setup WebSocket callbacks
-    WebSocketCallbacks callbacks = {
-        .on_message = on_message,
-        .on_error = on_error,
-        .user_data = book
+    // Create WebSocket server
+    WebSocketServerConfig config = {
+        .port = port,
+        .on_client_connect = on_client_connect,
+        .on_client_disconnect = on_client_disconnect,
+        .on_client_message = on_client_message
     };
-
-    // Create WebSocket connection
-    LOG_DEBUG("Creating WebSocket connection...");
-    WebSocket* ws = ws_create(argv[1], (uint16_t)atoi(argv[2]), &callbacks);
-    if (!ws) {
-        LOG_ERROR("Failed to create WebSocket connection");
+    server = ws_server_create(&config);
+    if (!server) {
+        LOG_ERROR("Failed to create WebSocket server");
         order_book_destroy(book);
         return 1;
     }
+    LOG_INFO("Trading server started on port %u. Press Ctrl+C to exit.", port);
 
-    LOG_INFO("Trading system started. Press Ctrl+C to exit.");
-
-    // Main event loop
+    // Main server loop
     while (running) {
-        ws_process(ws);
-        usleep(100);  // Small sleep to prevent busy-waiting
+        ws_server_process(server);
         
-        // Optional: Add periodic status logging
+        // Periodic tasks
         static time_t last_status = 0;
         time_t now = time(NULL);
-        if (now - last_status >= 5) {  // Log status every 5 seconds
-            LOG_DEBUG("System running - Best Bid: %.2f, Best Ask: %.2f",
-                     order_book_get_best_bid(book),
-                     order_book_get_best_ask(book));
+        if (now - last_status >= 10) {
+            LOG_INFO("Server status - Best Bid: %.2f, Best Ask: %.2f",
+                    order_book_get_best_bid(book),
+                    order_book_get_best_ask(book));
             last_status = now;
         }
+        
+        // Small sleep to prevent busy-waiting
+        usleep(10000);  // 10ms sleep
     }
 
     // Cleanup
-    LOG_INFO("Shutting down...");
-    ws_close(ws);
-    order_book_destroy(book);
-    LOG_INFO("Trading system shutdown complete");
+    LOG_INFO("Shutting down server...");
     
+    // Destroy server first to close all client connections
+    if (server) {
+        ws_server_destroy(server);
+        server = NULL;
+    }
+    
+    // Destroy order book
+    if (book) {
+        order_book_destroy(book);
+        book = NULL;
+    }
+
+    LOG_INFO("Server shutdown complete");
     return 0;
 }

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
 
 struct WebSocket {
     int sock_fd;
@@ -20,12 +21,27 @@ struct WebSocket {
     uint64_t message_count;  // Statistics
     uint64_t bytes_sent;
     uint64_t bytes_received;
+    time_t last_buffer_reset_log;  // Track log frequency for buffer resets
 };
 
-static void ws_handle_error(WebSocket* ws, WebSocketError error) {
+static void ws_handle_error(WebSocket* ws, ErrorCode error) {
     LOG_ERROR("WebSocket error occurred: %s", ws_error_string(error));
     if (ws->callbacks.on_error) {
         ws->callbacks.on_error(error, ws->callbacks.user_data);
+    }
+}
+
+const char* ws_error_string(ErrorCode error) {
+    switch (error) {
+        case ERROR_NONE:                  return "No error";
+        case ERROR_WS_CONNECTION_FAILED:  return "Connection failed";
+        case ERROR_WS_HANDSHAKE_FAILED:   return "Handshake failed";
+        case ERROR_WS_INVALID_FRAME:      return "Invalid frame";
+        case ERROR_WS_SEND_FAILED:        return "Send failed";
+        case ERROR_MEMORY:                return "Memory allocation failed";
+        case ERROR_TIMEOUT:               return "Operation timed out";
+        case ERROR_NETWORK:               return "Network error";
+        default:                          return "Unknown error";
     }
 }
 
@@ -38,6 +54,9 @@ WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* 
         return NULL;
     }
 
+    // Initialize last buffer reset log timestamp
+    ws->last_buffer_reset_log = time(NULL);
+
     // Store connection info for logging and potential reconnection
     ws->host = strdup(host);
     ws->port = port;
@@ -45,7 +64,7 @@ WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* 
     // Initialize socket
     SocketOptions sock_opts;
     socket_init_options(&sock_opts);
-    
+
     LOG_DEBUG("Creating socket connection");
     SocketResult sock_result = socket_create_and_connect(host, port, &sock_opts);
     if (sock_result.fd < 0) {
@@ -93,7 +112,7 @@ WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* 
     }
 
     handshake_cleanup_result(&handshake);
-    
+
     ws->connected = true;
     LOG_INFO("WebSocket connection established successfully");
     return ws;
@@ -123,7 +142,7 @@ bool ws_send(WebSocket* ws, const uint8_t* data, size_t len) {
 
     LOG_DEBUG("Sending frame of size %zu", frame_size);
     ssize_t sent = write(ws->sock_fd, encoded, frame_size);
-    
+
     if (sent < 0) {
         LOG_ERROR("Failed to send frame: %s", strerror(errno));
         free(encoded);
@@ -140,13 +159,13 @@ bool ws_send(WebSocket* ws, const uint8_t* data, size_t len) {
     ws->bytes_sent += sent;
     ws->message_count++;
 
-    LOG_DEBUG("Frame sent successfully (total: messages=%lu, bytes=%lu)", 
+    LOG_DEBUG("Frame sent successfully (total: messages=%lu, bytes=%lu)",
              (unsigned long)ws->message_count, (unsigned long)ws->bytes_sent);
     return true;
 }
 
 static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
-    LOG_DEBUG("Handling frame type=%s, length=%lu", 
+    LOG_DEBUG("Handling frame type=%s, length=%lu",
              frame_type_string(frame->header.opcode),
              (unsigned long)frame->header.payload_len);
 
@@ -183,7 +202,7 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
             break;
 
         default:
-            LOG_WARN("Unhandled frame type: %s", 
+            LOG_WARN("Unhandled frame type: %s",
                     frame_type_string(frame->header.opcode));
             break;
     }
@@ -198,19 +217,19 @@ void ws_process(WebSocket* ws) {
 
     while ((bytes = read(ws->sock_fd, temp_buffer, sizeof(temp_buffer))) > 0) {
         LOG_DEBUG("Read %zd bytes from socket", bytes);
-        
+
         if (!buffer_write(ws->recv_buffer, temp_buffer, bytes)) {
             LOG_ERROR("Failed to write to receive buffer");
-            ws_handle_error(ws, WS_ERROR_MEMORY);
+            ws_handle_error(ws, ERROR_MEMORY);
             return;
         }
-        
+
         ws->bytes_received += bytes;
     }
 
     if (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         LOG_ERROR("Socket read error: %s", strerror(errno));
-        ws_handle_error(ws, WS_ERROR_CONNECTION_FAILED);
+        ws_handle_error(ws, ERROR_WS_CONNECTION_FAILED);
         return;
     }
 
@@ -227,7 +246,7 @@ void ws_process(WebSocket* ws) {
             if (result.error) {
                 LOG_ERROR("Frame parsing failed: %s", result.error);
                 free(result.error);
-                ws_handle_error(ws, WS_ERROR_INVALID_FRAME);
+                ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
             }
             break;
         }
@@ -239,7 +258,7 @@ void ws_process(WebSocket* ws) {
                 ws_handle_frame(ws, frame);
             } else {
                 LOG_ERROR("Invalid frame received");
-                ws_handle_error(ws, WS_ERROR_INVALID_FRAME);
+                ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
             }
             frame_destroy(frame);
         }
@@ -247,7 +266,13 @@ void ws_process(WebSocket* ws) {
 
     // Buffer maintenance
     if (ws->recv_buffer->read_pos == ws->recv_buffer->size) {
-        LOG_DEBUG("Resetting receive buffer positions");
+        // Only log buffer reset every 30 seconds to reduce log spam
+        time_t now = time(NULL);
+        if (now - ws->last_buffer_reset_log >= 30) {
+            LOG_DEBUG("Resetting receive buffer positions");
+            ws->last_buffer_reset_log = now;
+        }
+        
         ws->recv_buffer->read_pos = 0;
         ws->recv_buffer->size = 0;
     }
@@ -280,19 +305,6 @@ void ws_close(WebSocket* ws) {
     buffer_destroy(ws->send_buffer);
     free(ws->host);
     free(ws);
-}
-
-const char* ws_error_string(WebSocketError error) {
-    switch (error) {
-        case WS_ERROR_NONE: return "No error";
-        case WS_ERROR_CONNECTION_FAILED: return "Connection failed";
-        case WS_ERROR_HANDSHAKE_FAILED: return "Handshake failed";
-        case WS_ERROR_INVALID_FRAME: return "Invalid frame";
-        case WS_ERROR_SEND_FAILED: return "Send failed";
-        case WS_ERROR_MEMORY: return "Memory allocation failed";
-        case WS_ERROR_TIMEOUT: return "Operation timed out";
-        default: return "Unknown error";
-    }
 }
 
 bool ws_is_connected(const WebSocket* ws) {

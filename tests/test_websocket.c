@@ -1,8 +1,8 @@
 #include "unity.h"
 #include "net/websocket.h"
 #include "net/frame.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 static WebSocket* ws;
 static bool message_received;
@@ -10,14 +10,14 @@ static uint8_t received_data[1024];
 static size_t received_len;
 
 static void test_on_message(const uint8_t* data, size_t len, void* user_data) {
-    (void)user_data;  // Mark as intentionally unused
+    (void)user_data;  // Unused parameter
     message_received = true;
     received_len = len < sizeof(received_data) ? len : sizeof(received_data);
     memcpy(received_data, data, received_len);
 }
 
 static void test_on_error(ErrorCode error, void* user_data) {
-    (void)user_data;  // Mark as intentionally unused
+    (void)user_data;  // Unused parameter
     printf("WebSocket error: %d\n", error);
 }
 
@@ -49,14 +49,14 @@ void test_websocket_send_receive(void) {
 
 void test_frame_creation(void) {
     const uint8_t payload[] = "Test payload";
-    WebSocketFrame frame = {0};
+    WebSocketFrame* frame = frame_create(payload, sizeof(payload), FRAME_TEXT);
     
-    TEST_ASSERT_EQUAL_INT(0, frame_create(&frame, payload, sizeof(payload), FRAME_TEXT));
-    TEST_ASSERT_EQUAL_INT(FRAME_TEXT, frame.type);
-    TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame.payload_length);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(payload, frame.payload, sizeof(payload));
+    TEST_ASSERT_NOT_NULL(frame);
+    TEST_ASSERT_EQUAL_INT(FRAME_TEXT, frame->header.opcode);
+    TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame->header.payload_len);
+    TEST_ASSERT_EQUAL_MEMORY(payload, frame->payload, sizeof(payload));
     
-    free(frame.payload);
+    frame_destroy(frame);
 }
 
 void test_frame_types(void) {
@@ -69,12 +69,12 @@ void test_frame_types(void) {
     const uint8_t payload[] = "Test";
     
     for (size_t i = 0; i < sizeof(types)/sizeof(types[0]); i++) {
-        WebSocketFrame frame = {0};
-        TEST_ASSERT_EQUAL_INT(0, frame_create(&frame, payload, sizeof(payload), types[i]));
-        TEST_ASSERT_EQUAL_INT(types[i], frame.type);
-        TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame.payload_length);
-        TEST_ASSERT_EQUAL_UINT8_ARRAY(payload, frame.payload, sizeof(payload));
-        free(frame.payload);
+        WebSocketFrame* frame = frame_create(payload, sizeof(payload), types[i]);
+        TEST_ASSERT_NOT_NULL(frame);
+        TEST_ASSERT_EQUAL_INT(types[i], frame->header.opcode);
+        TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame->header.payload_len);
+        TEST_ASSERT_EQUAL_MEMORY(payload, frame->payload, sizeof(payload));
+        frame_destroy(frame);
     }
 }
 
@@ -84,15 +84,17 @@ void test_frame_parsing(void) {
         0x74, 0x65, 0x73, 0x74 // "test" payload
     };
     
-    WebSocketFrame frame = {0};
-    int result = frame_parse(raw_frame, sizeof(raw_frame), &frame);
+    WebSocketFrame* frame = NULL;
+    FrameParseResult result = frame_parse(raw_frame, sizeof(raw_frame), &frame);
     
-    TEST_ASSERT_GREATER_THAN(0, result);
-    TEST_ASSERT_EQUAL_INT(FRAME_BINARY, frame.type);
-    TEST_ASSERT_EQUAL_size_t(4, frame.payload_length);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY((uint8_t*)"test", frame.payload, 4);
+    TEST_ASSERT_TRUE(result.complete);
+    TEST_ASSERT_NULL(result.error);
+    TEST_ASSERT_NOT_NULL(frame);
+    TEST_ASSERT_EQUAL_INT(FRAME_BINARY, frame->header.opcode);
+    TEST_ASSERT_EQUAL_size_t(4, frame->header.payload_len);
+    TEST_ASSERT_EQUAL_MEMORY("test", frame->payload, 4);
     
-    free(frame.payload);
+    frame_destroy(frame);
 }
 
 int main(void) {

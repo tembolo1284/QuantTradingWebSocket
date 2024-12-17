@@ -16,6 +16,7 @@ typedef struct {
 } MarketMaker;
 
 static void handle_signal(int sig) {
+    (void)sig;  // Suppress unused parameter warning
     running = false;
 }
 
@@ -23,42 +24,56 @@ static void update_quotes(MarketMaker* mm, double mid_price) {
     // Cancel existing orders
     if (mm->buy_order_id) {
         order_book_cancel(mm->book, mm->buy_order_id);
+        mm->buy_order_id = 0;
     }
     if (mm->sell_order_id) {
         order_book_cancel(mm->book, mm->sell_order_id);
+        mm->sell_order_id = 0;
     }
 
     // Create new orders at spread around mid price
     Order* buy_order = order_create("AAPL", mid_price - SPREAD/2, ORDER_QUANTITY, true);
     Order* sell_order = order_create("AAPL", mid_price + SPREAD/2, ORDER_QUANTITY, false);
-
+    
     if (buy_order && sell_order) {
         if (order_book_add(mm->book, buy_order)) {
             mm->buy_order_id = buy_order->id;
             printf("Added buy order at %.2f\n", buy_order->price);
+        } else {
+            fprintf(stderr, "Failed to add buy order\n");
         }
+
         if (order_book_add(mm->book, sell_order)) {
             mm->sell_order_id = sell_order->id;
             printf("Added sell order at %.2f\n", sell_order->price);
+        } else {
+            fprintf(stderr, "Failed to add sell order\n");
         }
+    } else {
+        fprintf(stderr, "Failed to create orders\n");
     }
 
+    // Free orders as order_book_add creates internal copies
     free(buy_order);
     free(sell_order);
 }
 
 static void on_message(const uint8_t* data, size_t len, void* user_data) {
+    (void)data;  // Suppress unused parameter warning
+    (void)len;   // Suppress unused parameter warning
+
     MarketMaker* mm = (MarketMaker*)user_data;
-    
+    if (!mm || !mm->book) return;
+
     // In a real system, parse market data message to get mid price
     // For this example, we'll just use a simple price update
     double mid_price = 150.0;  // Example mid price
-    
     update_quotes(mm, mid_price);
 }
 
 static void on_error(ErrorCode error, void* user_data) {
-    printf("WebSocket error: %d\n", error);
+    (void)user_data;  // Suppress unused parameter warning
+    fprintf(stderr, "WebSocket error: %d\n", error);
 }
 
 int main(int argc, char* argv[]) {

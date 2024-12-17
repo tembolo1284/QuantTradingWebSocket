@@ -1,4 +1,3 @@
-// include/common.h
 #ifndef QUANT_TRADING_COMMON_H
 #define QUANT_TRADING_COMMON_H
 
@@ -6,13 +5,22 @@
 #include <stdbool.h>
 #include <time.h>
 
-// Error codes
-typedef enum {
+// Common error codes for all components
+typedef enum ErrorCode {
     ERROR_NONE = 0,
-    ERROR_INVALID_PARAM = -1,
-    ERROR_MEMORY = -2,
-    ERROR_NETWORK = -3,
-    ERROR_TIMEOUT = -4
+    ERROR_INVALID_PARAM,
+    ERROR_MEMORY,
+    ERROR_NETWORK,
+    ERROR_TIMEOUT,
+    // WebSocket specific errors
+    ERROR_WS_CONNECTION_FAILED,
+    ERROR_WS_HANDSHAKE_FAILED,
+    ERROR_WS_INVALID_FRAME,
+    ERROR_WS_SEND_FAILED,
+    // Trading specific errors
+    ERROR_TRADING_INVALID_ORDER,
+    ERROR_TRADING_BOOK_FULL,
+    ERROR_TRADING_ORDER_NOT_FOUND
 } ErrorCode;
 
 // Timestamp in nanoseconds
