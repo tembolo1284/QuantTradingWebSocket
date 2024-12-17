@@ -24,8 +24,13 @@ option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 
+# Make Criterion optional
 if(BUILD_TESTS)
-    find_package(Criterion REQUIRED)
+    find_package(Criterion QUIET)
+    if(NOT Criterion_FOUND)
+        message(WARNING "Criterion not found - tests will be disabled")
+        set(BUILD_TESTS OFF)
+    endif()
 endif()
 
 # Include directories
@@ -34,7 +39,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Add subdirectories
 add_subdirectory(src)
 
-if(BUILD_TESTS)
+if(BUILD_TESTS AND Criterion_FOUND)
     enable_testing()
     add_subdirectory(tests)
 endif()
