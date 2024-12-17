@@ -85,6 +85,7 @@ static PriceNode* balance_node(PriceNode* node) {
     return node;
 }
 
+__attribute__((unused))
 static PriceNode* find_price_node(PriceNode* root, double price) {
     while (root) {
         if (price == root->price) {

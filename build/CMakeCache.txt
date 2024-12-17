@@ -14,6 +14,9 @@
 # EXTERNAL cache entries
 ########################
 
+//Build examples
+BUILD_EXAMPLES:BOOL=ON
+
 //Build tests
 BUILD_TESTS:BOOL=ON
 
@@ -183,9 +186,6 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-//The directory containing a CMake configuration file for Criterion.
-Criterion_DIR:PATH=Criterion_DIR-NOTFOUND
-
 //Enable Address Sanitizer
 ENABLE_ASAN:BOOL=OFF
 
@@ -218,6 +218,9 @@ quant_trading_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 quant_trading_SOURCE_DIR:STATIC=/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket
+
+//Dependencies for the target
+quant_trading_lib_LIB_DEPENDS:STATIC=general;OpenSSL::SSL;general;OpenSSL::Crypto;
 
 
 ########################
@@ -310,7 +313,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

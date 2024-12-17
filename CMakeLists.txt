@@ -13,22 +13,31 @@ endif()
 
 # Compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -fsanitize=address")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
 
 # Options
 option(BUILD_TESTS "Build tests" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 
 # Find required packages
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 
-# Make Criterion optional
+# Unity setup
 if(BUILD_TESTS)
-    find_package(Criterion QUIET)
-    if(NOT Criterion_FOUND)
-        message(WARNING "Criterion not found - tests will be disabled")
+    if(EXISTS ${CMAKE_SOURCE_DIR}/third_party/Unity/src/unity.c)
+        set(UNITY_ROOT ${CMAKE_SOURCE_DIR}/third_party/Unity)
+        add_library(unity STATIC
+            ${UNITY_ROOT}/src/unity.c
+        )
+        target_include_directories(unity PUBLIC
+            ${UNITY_ROOT}/src
+        )
+        set(UNITY_FOUND TRUE)
+    else()
+        message(WARNING "Unity not found in third_party/Unity - tests will be disabled")
         set(BUILD_TESTS OFF)
     endif()
 endif()
@@ -39,7 +48,11 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Add subdirectories
 add_subdirectory(src)
 
-if(BUILD_TESTS AND Criterion_FOUND)
+if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()

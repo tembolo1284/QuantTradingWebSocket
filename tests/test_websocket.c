@@ -1,7 +1,8 @@
-#include <criterion/criterion.h>
-#include <criterion/parameterized.h>
+#include "unity.h"
 #include "net/websocket.h"
 #include "net/frame.h"
+#include <string.h>
+#include <stdlib.h>
 
 static WebSocket* ws;
 static bool message_received;
@@ -9,16 +10,18 @@ static uint8_t received_data[1024];
 static size_t received_len;
 
 static void test_on_message(const uint8_t* data, size_t len, void* user_data) {
+    (void)user_data;  // Mark as intentionally unused
     message_received = true;
     received_len = len < sizeof(received_data) ? len : sizeof(received_data);
     memcpy(received_data, data, received_len);
 }
 
 static void test_on_error(ErrorCode error, void* user_data) {
-    fprintf(stderr, "WebSocket error: %d\n", error);
+    (void)user_data;  // Mark as intentionally unused
+    printf("WebSocket error: %d\n", error);
 }
 
-void websocket_setup(void) {
+void setUp(void) {
     WebSocketCallbacks callbacks = {
         .on_message = test_on_message,
         .on_error = test_on_error,
@@ -31,67 +34,73 @@ void websocket_setup(void) {
     received_len = 0;
 }
 
-void websocket_teardown(void) {
+void tearDown(void) {
     ws_close(ws);
 }
 
-Test(websocket, creation, .init = websocket_setup, .fini = websocket_teardown) {
-    cr_assert(ws != NULL, "WebSocket should be created successfully");
+void test_websocket_creation(void) {
+    TEST_ASSERT_NOT_NULL(ws);
 }
 
-Test(websocket, send_receive, .init = websocket_setup, .fini = websocket_teardown) {
+void test_websocket_send_receive(void) {
     const uint8_t test_data[] = "Hello, WebSocket!";
-    cr_assert(ws_send(ws, test_data, sizeof(test_data)), 
-              "Should send data successfully");
-    
-    // In a real test, we'd need a mock server to echo the data back
-    // For now, we just verify the send operation succeeded
+    TEST_ASSERT_TRUE(ws_send(ws, test_data, sizeof(test_data)));
 }
 
-Test(websocket, frame_parsing) {
-    // Test frame creation
+void test_frame_creation(void) {
     const uint8_t payload[] = "Test payload";
     WebSocketFrame frame = {0};
     
-    cr_assert_eq(frame_create(&frame, payload, sizeof(payload), FRAME_TEXT), 0,
-                 "Should create frame successfully");
-    
-    cr_assert_eq(frame.type, FRAME_TEXT, "Frame type should be TEXT");
-    cr_assert_eq(frame.payload_length, sizeof(payload),
-                 "Payload length should match input");
-    cr_assert_arr_eq(frame.payload, payload, sizeof(payload),
-                    "Payload should match input");
+    TEST_ASSERT_EQUAL_INT(0, frame_create(&frame, payload, sizeof(payload), FRAME_TEXT));
+    TEST_ASSERT_EQUAL_INT(FRAME_TEXT, frame.type);
+    TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame.payload_length);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(payload, frame.payload, sizeof(payload));
     
     free(frame.payload);
 }
 
-// Parameterized test for different frame types
-ParameterizedTestParameters(websocket, frame_types) {
-    static struct {
-        FrameType type;
-        const char* desc;
-    } params[] = {
-        { FRAME_TEXT, "text frame" },
-        { FRAME_BINARY, "binary frame" },
-        { FRAME_PING, "ping frame" },
-        { FRAME_PONG, "pong frame" }
+void test_frame_types(void) {
+    const FrameType types[] = {
+        FRAME_TEXT,
+        FRAME_BINARY,
+        FRAME_PING,
+        FRAME_PONG
     };
-    
-    return cr_make_param_array(
-        struct { FrameType type; const char* desc; },
-        params, sizeof(params) / sizeof(params[0])
-    );
-}
-
-ParameterizedTest(struct { FrameType type; const char* desc; }* param,
-                 websocket, frame_types) {
-    WebSocketFrame frame = {0};
     const uint8_t payload[] = "Test";
     
-    cr_assert_eq(frame_create(&frame, payload, sizeof(payload), param->type), 0,
-                 "Should create %s successfully", param->desc);
-    cr_assert_eq(frame.type, param->type,
-                 "Frame type should match for %s", param->desc);
-                 
+    for (size_t i = 0; i < sizeof(types)/sizeof(types[0]); i++) {
+        WebSocketFrame frame = {0};
+        TEST_ASSERT_EQUAL_INT(0, frame_create(&frame, payload, sizeof(payload), types[i]));
+        TEST_ASSERT_EQUAL_INT(types[i], frame.type);
+        TEST_ASSERT_EQUAL_size_t(sizeof(payload), frame.payload_length);
+        TEST_ASSERT_EQUAL_UINT8_ARRAY(payload, frame.payload, sizeof(payload));
+        free(frame.payload);
+    }
+}
+
+void test_frame_parsing(void) {
+    const uint8_t raw_frame[] = {
+        0x82, 0x04,           // Binary frame, 4 bytes payload
+        0x74, 0x65, 0x73, 0x74 // "test" payload
+    };
+    
+    WebSocketFrame frame = {0};
+    int result = frame_parse(raw_frame, sizeof(raw_frame), &frame);
+    
+    TEST_ASSERT_GREATER_THAN(0, result);
+    TEST_ASSERT_EQUAL_INT(FRAME_BINARY, frame.type);
+    TEST_ASSERT_EQUAL_size_t(4, frame.payload_length);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY((uint8_t*)"test", frame.payload, 4);
+    
     free(frame.payload);
+}
+
+int main(void) {
+    UNITY_BEGIN();
+    RUN_TEST(test_websocket_creation);
+    RUN_TEST(test_websocket_send_receive);
+    RUN_TEST(test_frame_creation);
+    RUN_TEST(test_frame_types);
+    RUN_TEST(test_frame_parsing);
+    return UNITY_END();
 }
