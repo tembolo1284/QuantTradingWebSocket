@@ -1,6 +1,6 @@
 /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/unity.dir
 /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/quant_trading_lib.dir
-/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/market_server.dir
+/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/quant_trading.dir
 /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/market_client.dir
 /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/test.dir
 /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/edit_cache.dir

@@ -3,6 +3,7 @@
 #include "net/socket.h"
 #include "net/handshake.h"
 #include "net/buffer.h"
+#include "net/websocket_frame.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
@@ -39,12 +40,6 @@ struct WebSocketClient {
     Buffer* write_buffer;
 };
 
-void ws_server_request_shutdown(WebSocketServer* server) {
-    if (server) {
-        server->shutdown_requested = true; 
-    }
-}
-
 // Portable memmem implementation
 static void* portable_memmem(const void* haystack, size_t haystacklen, 
                               const void* needle, size_t needlelen) {
@@ -59,7 +54,7 @@ static void* portable_memmem(const void* haystack, size_t haystacklen,
     return NULL;
 }
 
-// Base64 encoding function (similar to client-side implementation)
+// Base64 encoding function
 static char* base64_encode(const unsigned char* input, size_t length) {
     BIO *bmem, *b64;
     BUF_MEM *bptr;
@@ -234,6 +229,13 @@ WebSocketServer* ws_server_create(const WebSocketServerConfig* config) {
     return server;
 }
 
+// Request server shutdown
+void ws_server_request_shutdown(WebSocketServer* server) {
+    if (server) {
+        server->shutdown_requested = true; 
+    }
+}
+
 // Process incoming connections and messages
 void ws_server_process(WebSocketServer* server) {
     if (!server || server->shutdown_requested) {
@@ -332,26 +334,42 @@ void ws_server_process(WebSocketServer* server) {
                 destroy_websocket_client(client);
                 server->clients[i] = NULL;
                 server->client_count--;
-            } else {
-                buffer[bytes_read] = '\0';  // Null-terminate for string operations
+                continue;
+            }
 
-                // Check if this is a WebSocket handshake
-                if (!client->handshake_complete &&
-                    portable_memmem(buffer, bytes_read, "GET", 3) &&
-                    portable_memmem(buffer, bytes_read, "Upgrade: websocket", 18)) {
-                    if (!perform_websocket_handshake(client, buffer, bytes_read)) {
-                        LOG_ERROR("WebSocket handshake failed");
-                        destroy_websocket_client(client);
-                        server->clients[i] = NULL;
-                        server->client_count--;
-                        continue;
-                    }
-                    continue;
+            buffer[bytes_read] = '\0';  // Null-terminate for string operations
+
+            // Check for WebSocket handshake
+            if (!client->handshake_complete &&
+                portable_memmem(buffer, bytes_read, "GET", 3) &&
+                portable_memmem(buffer, bytes_read, "Upgrade: websocket", 18)) {
+                if (!perform_websocket_handshake(client, buffer, bytes_read)) {
+                    LOG_ERROR("WebSocket handshake failed");
+                    destroy_websocket_client(client);
+                    server->clients[i] = NULL;
+                    server->client_count--;
                 }
+                continue;
+            }
 
-                // Process received message
-                if (server->config.on_client_message && client->handshake_complete) {
-                    server->config.on_client_message(client, buffer, bytes_read);
+            // Decode WebSocket frame if handshake is complete
+            if (client->handshake_complete) {
+                uint8_t* payload = NULL;
+                size_t payload_len = 0;
+                WebSocketFrameType frame_type;
+
+                if (ws_frame_decode(buffer, bytes_read, 
+                                    &payload, &payload_len, 
+                                    &frame_type)) {
+                    // Process the decoded payload
+                    if (server->config.on_client_message) {
+                        server->config.on_client_message(client, payload, payload_len);
+                    }
+                    
+                    // Free the decoded payload
+                    free(payload);
+                } else {
+                    LOG_ERROR("Failed to decode WebSocket frame");
                 }
             }
         }
@@ -398,9 +416,23 @@ void ws_server_destroy(WebSocketServer* server) {
 void ws_client_send(WebSocketClient* client, const uint8_t* data, size_t len) {
     if (!client || !data || client->socket <= 0 || !client->handshake_complete) return;
 
-    ssize_t sent = send(client->socket, data, len, 0);
-    if (sent < 0) {
-        LOG_ERROR("Failed to send data to client: %s", strerror(errno));
+    uint8_t* encoded_frame = NULL;
+    size_t encoded_len = 0;
+
+    // Encode the frame before sending
+    if (ws_frame_encode(data, len, WS_FRAME_BINARY, &encoded_frame, &encoded_len)) {
+        ssize_t sent = send(client->socket, encoded_frame, encoded_len, 0);
+        
+        // Free the encoded frame
+        free(encoded_frame);
+
+        if (sent < 0) {
+            LOG_ERROR("Failed to send data to client: %s", strerror(errno));
+        } else if ((size_t)sent != encoded_len) {
+            LOG_WARN("Incomplete send: %zd of %zu bytes", sent, encoded_len);
+        }
+    } else {
+        LOG_ERROR("Failed to encode WebSocket frame");
     }
 }
 
@@ -409,6 +441,16 @@ void ws_client_close(WebSocketClient* client) {
     if (!client) return;
 
     if (client->socket > 0) {
+        // Attempt to send a close frame
+        uint8_t* close_frame = NULL;
+        size_t close_frame_len = 0;
+
+        if (ws_frame_encode(NULL, 0, WS_FRAME_CLOSE, &close_frame, &close_frame_len)) {
+            send(client->socket, close_frame, close_frame_len, 0);
+            free(close_frame);
+        }
+
+        // Shutdown and close socket
         shutdown(client->socket, SHUT_RDWR);
         close(client->socket);
         client->socket = -1;

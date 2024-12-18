@@ -52,7 +52,7 @@ rule C_STATIC_LIBRARY_LINKER__quant_trading_lib_Release
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__market_server_Release
+rule C_COMPILER__quant_trading_Release
   depfile = $DEP_FILE
   deps = gcc
   command = /usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -62,7 +62,7 @@ rule C_COMPILER__market_server_Release
 #############################################
 # Rule for linking C executable.
 
-rule C_EXECUTABLE_LINKER__market_server_Release
+rule C_EXECUTABLE_LINKER__quant_trading_Release
   command = $PRE_LINK && /usr/bin/cc $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking C executable $TARGET_FILE
   restat = $RESTAT

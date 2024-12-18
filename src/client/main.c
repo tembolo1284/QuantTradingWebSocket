@@ -68,8 +68,8 @@ static void on_error(ErrorCode error, void* user_data) {
 
 static void print_usage(void) {
     printf("\nAvailable commands:\n");
-    printf("  order buy <price> <quantity>   - Place buy order\n");
-    printf("  order sell <price> <quantity>  - Place sell order\n");
+    printf("  order buy <price> <quantity> <symbol>   - Place buy order\n");
+    printf("  order sell <price> <quantity> <symbol>  - Place sell order\n");
     printf("  cancel <order_id>              - Cancel order\n");
     printf("  book                           - Show order book\n");
     printf("  help                           - Show this help\n");

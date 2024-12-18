@@ -55,8 +55,6 @@ build CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o: C_COMPILER__unity_Re
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = CMakeFiles/unity.dir
   OBJECT_FILE_DIR = CMakeFiles/unity.dir/third_party/Unity/src
-  TARGET_COMPILE_PDB = CMakeFiles/unity.dir/unity.pdb
-  TARGET_PDB = libunity.pdb
 
 
 # =============================================================================
@@ -71,9 +69,8 @@ build libunity.a: C_STATIC_LIBRARY_LINKER__unity_Release CMakeFiles/unity.dir/th
   OBJECT_DIR = CMakeFiles/unity.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/unity.dir/unity.pdb
   TARGET_FILE = libunity.a
-  TARGET_PDB = libunity.pdb
+  TARGET_PDB = unity.a.dbg
 
 # =============================================================================
 # Object build statements for STATIC_LIBRARY target quant_trading_lib
@@ -90,8 +87,6 @@ build CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o: C_COMPILER__quant_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o.d
@@ -99,8 +94,13 @@ build CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o: C_COMPILER_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
+
+build CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c || cmake_object_order_depends_target_quant_trading_lib
+  DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o.d
+  FLAGS = -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
+  OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
+  OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
 
 build CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/frame.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o.d
@@ -108,8 +108,6 @@ build CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o: C_COMPILER__quant_trad
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/handshake.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o.d
@@ -117,8 +115,6 @@ build CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o: C_COMPILER__quant_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/socket.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o.d
@@ -126,8 +122,6 @@ build CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o: C_COMPILER__quant_tra
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/buffer.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o.d
@@ -135,8 +129,6 @@ build CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o: C_COMPILER__quant_tra
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o.d
@@ -144,8 +136,6 @@ build CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o: C_COMPILER__quant_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_book.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o.d
@@ -153,8 +143,13 @@ build CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o: C_COMPILER__q
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
+
+build CMakeFiles/quant_trading_lib.dir/src/trading/order_handler.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_handler.c || cmake_object_order_depends_target_quant_trading_lib
+  DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/order_handler.c.o.d
+  FLAGS = -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
+  OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
+  OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading
 
 build CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/logging.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o.d
@@ -162,8 +157,6 @@ build CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o: C_COMPILER__quant_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/utils
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 build CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c || cmake_object_order_depends_target_quant_trading_lib
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o.d
@@ -171,8 +164,6 @@ build CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o: C_COMPILER__qua
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/utils
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
-  TARGET_PDB = libquant_trading_lib.pdb
 
 
 # =============================================================================
@@ -182,50 +173,46 @@ build CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o: C_COMPILER__qua
 #############################################
 # Link the static library libquant_trading_lib.a
 
-build libquant_trading_lib.a: C_STATIC_LIBRARY_LINKER__quant_trading_lib_Release CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o || third_party/cJSON/libcjson.a
+build libquant_trading_lib.a: C_STATIC_LIBRARY_LINKER__quant_trading_lib_Release CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o CMakeFiles/quant_trading_lib.dir/src/trading/order_handler.c.o CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o || third_party/cJSON/libcjson.a
   LANGUAGE_COMPILE_FLAGS = -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_FILE = libquant_trading_lib.a
-  TARGET_PDB = libquant_trading_lib.pdb
+  TARGET_PDB = quant_trading_lib.a.dbg
 
 # =============================================================================
-# Object build statements for EXECUTABLE target market_server
+# Object build statements for EXECUTABLE target quant_trading
 
 
 #############################################
-# Order-only phony target for market_server
+# Order-only phony target for quant_trading
 
-build cmake_object_order_depends_target_market_server: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib
+build cmake_object_order_depends_target_quant_trading: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib
 
-build CMakeFiles/market_server.dir/src/main.c.o: C_COMPILER__market_server_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/main.c || cmake_object_order_depends_target_market_server
-  DEP_FILE = CMakeFiles/market_server.dir/src/main.c.o.d
+build CMakeFiles/quant_trading.dir/src/main.c.o: C_COMPILER__quant_trading_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/main.c || cmake_object_order_depends_target_quant_trading
+  DEP_FILE = CMakeFiles/quant_trading.dir/src/main.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
-  OBJECT_DIR = CMakeFiles/market_server.dir
-  OBJECT_FILE_DIR = CMakeFiles/market_server.dir/src
-  TARGET_COMPILE_PDB = CMakeFiles/market_server.dir/
-  TARGET_PDB = market_server.pdb
+  OBJECT_DIR = CMakeFiles/quant_trading.dir
+  OBJECT_FILE_DIR = CMakeFiles/quant_trading.dir/src
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target market_server
+# Link build statements for EXECUTABLE target quant_trading
 
 
 #############################################
-# Link the executable market_server
+# Link the executable quant_trading
 
-build market_server: C_EXECUTABLE_LINKER__market_server_Release CMakeFiles/market_server.dir/src/main.c.o | libquant_trading_lib.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a third_party/cJSON/libcjson.a
+build quant_trading: C_EXECUTABLE_LINKER__quant_trading_Release CMakeFiles/quant_trading.dir/src/main.c.o | libquant_trading_lib.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a third_party/cJSON/libcjson.a
   FLAGS = -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native
   LINK_LIBRARIES = libquant_trading_lib.a  /usr/lib/x86_64-linux-gnu/libssl.so  /usr/lib/x86_64-linux-gnu/libcrypto.so  third_party/cJSON/libcjson.a  -lm
-  OBJECT_DIR = CMakeFiles/market_server.dir
+  OBJECT_DIR = CMakeFiles/quant_trading.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/market_server.dir/
-  TARGET_FILE = market_server
-  TARGET_PDB = market_server.pdb
+  TARGET_FILE = quant_trading
+  TARGET_PDB = quant_trading.dbg
 
 # =============================================================================
 # Object build statements for EXECUTABLE target market_client
@@ -242,8 +229,6 @@ build CMakeFiles/market_client.dir/src/client/main.c.o: C_COMPILER__market_clien
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/market_client.dir
   OBJECT_FILE_DIR = CMakeFiles/market_client.dir/src/client
-  TARGET_COMPILE_PDB = CMakeFiles/market_client.dir/
-  TARGET_PDB = market_client.pdb
 
 
 # =============================================================================
@@ -259,9 +244,8 @@ build market_client: C_EXECUTABLE_LINKER__market_client_Release CMakeFiles/marke
   OBJECT_DIR = CMakeFiles/market_client.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/market_client.dir/
   TARGET_FILE = market_client
-  TARGET_PDB = market_client.pdb
+  TARGET_PDB = market_client.dbg
 
 
 #############################################
@@ -360,8 +344,6 @@ build third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o: C_COMPILER__cjson_Releas
   FLAGS = -Wall -Wextra -Wpedantic -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden  -O3 -DNDEBUG -O3 -march=native -std=gnu11
   OBJECT_DIR = third_party/cJSON/CMakeFiles/cjson.dir
   OBJECT_FILE_DIR = third_party/cJSON/CMakeFiles/cjson.dir
-  TARGET_COMPILE_PDB = third_party/cJSON/CMakeFiles/cjson.dir/cjson.pdb
-  TARGET_PDB = third_party/cJSON/libcjson.pdb
 
 
 # =============================================================================
@@ -376,9 +358,8 @@ build third_party/cJSON/libcjson.a: C_STATIC_LIBRARY_LINKER__cjson_Release third
   OBJECT_DIR = third_party/cJSON/CMakeFiles/cjson.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = third_party/cJSON/CMakeFiles/cjson.dir/cjson.pdb
   TARGET_FILE = third_party/cJSON/libcjson.a
-  TARGET_PDB = third_party/cJSON/libcjson.pdb
+  TARGET_PDB = cjson.a.dbg
 
 
 #############################################
@@ -654,8 +635,6 @@ build tests/CMakeFiles/test_frame.dir/net/test_frame.c.o: C_COMPILER__test_frame
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = tests/CMakeFiles/test_frame.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/test_frame.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_frame.dir/
-  TARGET_PDB = tests/test_frame.pdb
 
 
 # =============================================================================
@@ -671,9 +650,8 @@ build tests/test_frame: C_EXECUTABLE_LINKER__test_frame_Release tests/CMakeFiles
   OBJECT_DIR = tests/CMakeFiles/test_frame.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_frame.dir/
   TARGET_FILE = tests/test_frame
-  TARGET_PDB = tests/test_frame.pdb
+  TARGET_PDB = test_frame.dbg
 
 # =============================================================================
 # Object build statements for EXECUTABLE target test_handshake
@@ -690,8 +668,6 @@ build tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o: C_COMPILER__te
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = tests/CMakeFiles/test_handshake.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/test_handshake.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_handshake.dir/
-  TARGET_PDB = tests/test_handshake.pdb
 
 
 # =============================================================================
@@ -707,9 +683,8 @@ build tests/test_handshake: C_EXECUTABLE_LINKER__test_handshake_Release tests/CM
   OBJECT_DIR = tests/CMakeFiles/test_handshake.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_handshake.dir/
   TARGET_FILE = tests/test_handshake
-  TARGET_PDB = tests/test_handshake.pdb
+  TARGET_PDB = test_handshake.dbg
 
 # =============================================================================
 # Object build statements for EXECUTABLE target test_socket
@@ -726,8 +701,6 @@ build tests/CMakeFiles/test_socket.dir/net/test_socket.c.o: C_COMPILER__test_soc
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = tests/CMakeFiles/test_socket.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/test_socket.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_socket.dir/
-  TARGET_PDB = tests/test_socket.pdb
 
 
 # =============================================================================
@@ -743,9 +716,8 @@ build tests/test_socket: C_EXECUTABLE_LINKER__test_socket_Release tests/CMakeFil
   OBJECT_DIR = tests/CMakeFiles/test_socket.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_socket.dir/
   TARGET_FILE = tests/test_socket
-  TARGET_PDB = tests/test_socket.pdb
+  TARGET_PDB = test_socket.dbg
 
 
 #############################################
@@ -857,8 +829,6 @@ build examples/CMakeFiles/market_maker.dir/simple_market_maker/market_maker.c.o:
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = examples/CMakeFiles/market_maker.dir
   OBJECT_FILE_DIR = examples/CMakeFiles/market_maker.dir/simple_market_maker
-  TARGET_COMPILE_PDB = examples/CMakeFiles/market_maker.dir/
-  TARGET_PDB = examples/market_maker.pdb
 
 
 # =============================================================================
@@ -874,9 +844,8 @@ build examples/market_maker: C_EXECUTABLE_LINKER__market_maker_Release examples/
   OBJECT_DIR = examples/CMakeFiles/market_maker.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = examples/CMakeFiles/market_maker.dir/
   TARGET_FILE = examples/market_maker
-  TARGET_PDB = examples/market_maker.pdb
+  TARGET_PDB = market_maker.dbg
 
 # =============================================================================
 # Object build statements for EXECUTABLE target order_book_viewer
@@ -893,8 +862,6 @@ build examples/CMakeFiles/order_book_viewer.dir/order_book_viewer/viewer.c.o: C_
   INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = examples/CMakeFiles/order_book_viewer.dir
   OBJECT_FILE_DIR = examples/CMakeFiles/order_book_viewer.dir/order_book_viewer
-  TARGET_COMPILE_PDB = examples/CMakeFiles/order_book_viewer.dir/
-  TARGET_PDB = examples/order_book_viewer.pdb
 
 
 # =============================================================================
@@ -910,9 +877,8 @@ build examples/order_book_viewer: C_EXECUTABLE_LINKER__order_book_viewer_Release
   OBJECT_DIR = examples/CMakeFiles/order_book_viewer.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = examples/CMakeFiles/order_book_viewer.dir/
   TARGET_FILE = examples/order_book_viewer
-  TARGET_PDB = examples/order_book_viewer.pdb
+  TARGET_PDB = order_book_viewer.dbg
 
 
 #############################################
@@ -1024,7 +990,7 @@ build unity: phony libunity.a
 #############################################
 # Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
 
-build all: phony libunity.a libquant_trading_lib.a market_server market_client third_party/cJSON/all tests/all examples/all
+build all: phony libunity.a libquant_trading_lib.a quant_trading market_client third_party/cJSON/all tests/all examples/all
 
 # =============================================================================
 
@@ -1068,14 +1034,14 @@ build third_party/cJSON/tests/all: phony
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | ../CMakeLists.txt ../examples/CMakeLists.txt ../tests/CMakeLists.txt ../third_party/cJSON/CMakeLists.txt ../third_party/cJSON/fuzzing/CMakeLists.txt ../third_party/cJSON/library_config/cJSONConfig.cmake.in ../third_party/cJSON/library_config/cJSONConfigVersion.cmake.in ../third_party/cJSON/library_config/libcjson.pc.in ../third_party/cJSON/tests/CMakeLists.txt /usr/share/cmake-3.22/Modules/CMakeCCompiler.cmake.in /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c /usr/share/cmake-3.22/Modules/CMakeCInformation.cmake /usr/share/cmake-3.22/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.22/Modules/CMakeCompilerIdDetection.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompileFeatures.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompilerABI.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompilerId.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake /usr/share/cmake-3.22/Modules/CMakeFindBinUtils.cmake /usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.22/Modules/CMakeNinjaFindMake.cmake /usr/share/cmake-3.22/Modules/CMakeParseImplicitIncludeInfo.cmake /usr/share/cmake-3.22/Modules/CMakeParseImplicitLinkInfo.cmake /usr/share/cmake-3.22/Modules/CMakeParseLibraryArchitecture.cmake /usr/share/cmake-3.22/Modules/CMakeSystem.cmake.in /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.22/Modules/CMakeTestCCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeTestCompilerCommon.cmake /usr/share/cmake-3.22/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.22/Modules/CheckIncludeFile.c.in /usr/share/cmake-3.22/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.22/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.22/Modules/Compiler/ADSP-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/ARMCC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/ARMClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/AppleClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Borland-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /usr/share/cmake-3.22/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Cray-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GHS-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-FindBinUtils.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU.cmake /usr/share/cmake-3.22/Modules/Compiler/HP-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IAR-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /usr/share/cmake-3.22/Modules/Compiler/Intel-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/MSVC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/NVHPC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/PGI-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/PathScale-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SCO-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/TI-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Watcom-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/XL-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/zOS-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/FindOpenSSL.cmake /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.22/Modules/FindPackageMessage.cmake /usr/share/cmake-3.22/Modules/FindPkgConfig.cmake /usr/share/cmake-3.22/Modules/FindThreads.cmake /usr/share/cmake-3.22/Modules/GNUInstallDirs.cmake /usr/share/cmake-3.22/Modules/Internal/CheckCompilerFlag.cmake /usr/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.22/Modules/Internal/FeatureTesting.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.22/Modules/Platform/Linux.cmake /usr/share/cmake-3.22/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.22.1/CMakeCCompiler.cmake CMakeFiles/3.22.1/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | ../CMakeLists.txt ../examples/CMakeLists.txt ../tests/CMakeLists.txt ../third_party/cJSON/CMakeLists.txt ../third_party/cJSON/fuzzing/CMakeLists.txt ../third_party/cJSON/library_config/cJSONConfig.cmake.in ../third_party/cJSON/library_config/cJSONConfigVersion.cmake.in ../third_party/cJSON/library_config/libcjson.pc.in ../third_party/cJSON/tests/CMakeLists.txt /usr/share/cmake-3.22/Modules/CMakeCInformation.cmake /usr/share/cmake-3.22/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.22/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.22/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.22/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU.cmake /usr/share/cmake-3.22/Modules/FindOpenSSL.cmake /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.22/Modules/FindPackageMessage.cmake /usr/share/cmake-3.22/Modules/FindPkgConfig.cmake /usr/share/cmake-3.22/Modules/FindThreads.cmake /usr/share/cmake-3.22/Modules/GNUInstallDirs.cmake /usr/share/cmake-3.22/Modules/Internal/CheckCompilerFlag.cmake /usr/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.22/Modules/Platform/Linux.cmake /usr/share/cmake-3.22/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.22.1/CMakeCCompiler.cmake CMakeFiles/3.22.1/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build ../CMakeLists.txt ../examples/CMakeLists.txt ../tests/CMakeLists.txt ../third_party/cJSON/CMakeLists.txt ../third_party/cJSON/fuzzing/CMakeLists.txt ../third_party/cJSON/library_config/cJSONConfig.cmake.in ../third_party/cJSON/library_config/cJSONConfigVersion.cmake.in ../third_party/cJSON/library_config/libcjson.pc.in ../third_party/cJSON/tests/CMakeLists.txt /usr/share/cmake-3.22/Modules/CMakeCCompiler.cmake.in /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c /usr/share/cmake-3.22/Modules/CMakeCInformation.cmake /usr/share/cmake-3.22/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.22/Modules/CMakeCompilerIdDetection.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompileFeatures.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompilerABI.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineCompilerId.cmake /usr/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake /usr/share/cmake-3.22/Modules/CMakeFindBinUtils.cmake /usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.22/Modules/CMakeNinjaFindMake.cmake /usr/share/cmake-3.22/Modules/CMakeParseImplicitIncludeInfo.cmake /usr/share/cmake-3.22/Modules/CMakeParseImplicitLinkInfo.cmake /usr/share/cmake-3.22/Modules/CMakeParseLibraryArchitecture.cmake /usr/share/cmake-3.22/Modules/CMakeSystem.cmake.in /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.22/Modules/CMakeTestCCompiler.cmake /usr/share/cmake-3.22/Modules/CMakeTestCompilerCommon.cmake /usr/share/cmake-3.22/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.22/Modules/CheckIncludeFile.c.in /usr/share/cmake-3.22/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.22/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.22/Modules/Compiler/ADSP-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/ARMCC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/ARMClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/AppleClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Borland-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /usr/share/cmake-3.22/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Cray-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GHS-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-FindBinUtils.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU.cmake /usr/share/cmake-3.22/Modules/Compiler/HP-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IAR-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /usr/share/cmake-3.22/Modules/Compiler/Intel-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/MSVC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/NVHPC-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/PGI-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/PathScale-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SCO-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/TI-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/Watcom-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/XL-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/Compiler/zOS-C-DetermineCompiler.cmake /usr/share/cmake-3.22/Modules/FindOpenSSL.cmake /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.22/Modules/FindPackageMessage.cmake /usr/share/cmake-3.22/Modules/FindPkgConfig.cmake /usr/share/cmake-3.22/Modules/FindThreads.cmake /usr/share/cmake-3.22/Modules/GNUInstallDirs.cmake /usr/share/cmake-3.22/Modules/Internal/CheckCompilerFlag.cmake /usr/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.22/Modules/Internal/FeatureTesting.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.22/Modules/Platform/Linux.cmake /usr/share/cmake-3.22/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.22.1/CMakeCCompiler.cmake CMakeFiles/3.22.1/CMakeSystem.cmake: phony
+build ../CMakeLists.txt ../examples/CMakeLists.txt ../tests/CMakeLists.txt ../third_party/cJSON/CMakeLists.txt ../third_party/cJSON/fuzzing/CMakeLists.txt ../third_party/cJSON/library_config/cJSONConfig.cmake.in ../third_party/cJSON/library_config/cJSONConfigVersion.cmake.in ../third_party/cJSON/library_config/libcjson.pc.in ../third_party/cJSON/tests/CMakeLists.txt /usr/share/cmake-3.22/Modules/CMakeCInformation.cmake /usr/share/cmake-3.22/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.22/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.22/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.22/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.22/Modules/Compiler/GNU.cmake /usr/share/cmake-3.22/Modules/FindOpenSSL.cmake /usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.22/Modules/FindPackageMessage.cmake /usr/share/cmake-3.22/Modules/FindPkgConfig.cmake /usr/share/cmake-3.22/Modules/FindThreads.cmake /usr/share/cmake-3.22/Modules/GNUInstallDirs.cmake /usr/share/cmake-3.22/Modules/Internal/CheckCompilerFlag.cmake /usr/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.22/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.22/Modules/Platform/Linux.cmake /usr/share/cmake-3.22/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.22.1/CMakeCCompiler.cmake CMakeFiles/3.22.1/CMakeSystem.cmake: phony
 
 
 #############################################

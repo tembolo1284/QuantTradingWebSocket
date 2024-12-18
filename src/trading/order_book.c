@@ -1,4 +1,5 @@
 #include "trading/order_book.h"
+#include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -140,22 +141,69 @@ OrderBook* order_book_create(const char* symbol) {
 }
 
 bool order_book_add(OrderBook* book, const Order* order) {
-    if (!book || !order || !order_validate(order)) {
+    // Extensive logging for debugging
+    LOG_DEBUG("Attempting to add order: "
+              "id=%lu, price=%.2f, quantity=%u, is_buy=%d, symbol=%s", 
+              order->id, order->price, order->quantity, 
+              order->is_buy, order->symbol);
+
+    // Validate input parameters
+    if (!book) {
+        LOG_ERROR("Null order book");
+        return false;
+    }
+
+    if (!order) {
+        LOG_ERROR("Null order");
+        return false;
+    }
+
+    // Validate order
+    if (!order_validate(order)) {
+        LOG_ERROR("Order failed validation: "
+                  "price=%.2f, quantity=%u, symbol=%s, is_buy=%d", 
+                  order->price, order->quantity, order->symbol, order->is_buy);
+        return false;
+    }
+
+    // Validate symbol match
+    if (strcmp(book->symbol, order->symbol) != 0) {
+        LOG_ERROR("Symbol mismatch: book symbol '%s', order symbol '%s'", 
+                  book->symbol, order->symbol);
         return false;
     }
 
     // Create new order node
     OrderNode* order_node = malloc(sizeof(OrderNode));
-    if (!order_node) return false;
+    if (!order_node) {
+        LOG_ERROR("Failed to allocate memory for order node");
+        return false;
+    }
 
+    // Deep copy the order
     memcpy(&order_node->order, order, sizeof(Order));
     order_node->next = NULL;
 
     // Insert into appropriate tree
     PriceNode** tree = order->is_buy ? &book->buy_tree : &book->sell_tree;
+    
+    // Log tree state before insertion
+    LOG_DEBUG("Inserting %s order at price %.2f", 
+              order->is_buy ? "BUY" : "SELL", order->price);
+
+    // Attempt to insert
     *tree = insert_price_node(*tree, order->price, order_node);
 
+    // Check if insertion was successful
+    if (!*tree) {
+        LOG_ERROR("Failed to insert price node");
+        free(order_node);
+        return false;
+    }
+
     book->total_orders++;
+    
+    LOG_DEBUG("Order added successfully. Total orders: %lu", book->total_orders);
     return true;
 }
 
