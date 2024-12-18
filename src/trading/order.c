@@ -34,8 +34,7 @@ bool order_validate(const Order* order) {
     // Basic validation checks
     if (order->price <= 0 || 
         order->quantity == 0 || 
-        order->symbol[0] == '\0' || 
-        strlen(order->symbol) >= sizeof(order->symbol)) {
+        order->symbol[0] == '\0') {
         return false;
     }
 

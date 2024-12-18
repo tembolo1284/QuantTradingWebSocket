@@ -1,107 +1,107 @@
 [
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o -c /root/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/websocket.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/websocket.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/frame.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/frame.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/frame.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/frame.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/handshake.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/handshake.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/handshake.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/handshake.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/socket.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/socket.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/socket.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/socket.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/buffer.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/buffer.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o -c /root/c-workspace/QuantTradingWebSocket/src/net/buffer.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/net/buffer.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order.c.o -c /root/c-workspace/QuantTradingWebSocket/src/trading/order.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/trading/order.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_book.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_book.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order_book.c.o -c /root/c-workspace/QuantTradingWebSocket/src/trading/order_book.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/trading/order_book.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order_handler.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_handler.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/order_handler.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/order_handler.c.o -c /root/c-workspace/QuantTradingWebSocket/src/trading/order_handler.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/trading/order_handler.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/logging.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/logging.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o -c /root/c-workspace/QuantTradingWebSocket/src/utils/logging.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/utils/logging.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o -c /root/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading.dir/src/main.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/main.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/main.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading.dir/src/main.c.o -c /root/c-workspace/QuantTradingWebSocket/src/main.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/main.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/market_client.dir/src/client/main.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/client/main.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/client/main.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/market_client.dir/src/client/main.c.o -c /root/c-workspace/QuantTradingWebSocket/src/client/main.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/client/main.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -DCJSON_API_VISIBILITY -DCJSON_EXPORT_SYMBOLS -DENABLE_LOCALES  -Wall -Wextra -Wpedantic -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden  -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -DCJSON_API_VISIBILITY -DCJSON_EXPORT_SYMBOLS -DENABLE_LOCALES  -Wall -Wextra -Wpedantic -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o -c /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_frame.dir/net/test_frame.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_frame.dir/net/test_frame.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_socket.dir/net/test_socket.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_socket.dir/net/test_socket.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o examples/CMakeFiles/market_maker.dir/simple_market_maker/market_maker.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/examples/simple_market_maker/market_maker.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/examples/simple_market_maker/market_maker.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o examples/CMakeFiles/market_maker.dir/simple_market_maker/market_maker.c.o -c /root/c-workspace/QuantTradingWebSocket/examples/simple_market_maker/market_maker.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/examples/simple_market_maker/market_maker.c"
 },
 {
-  "directory": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o examples/CMakeFiles/order_book_viewer.dir/order_book_viewer/viewer.c.o -c /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/examples/order_book_viewer/viewer.c",
-  "file": "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/examples/order_book_viewer/viewer.c"
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o examples/CMakeFiles/order_book_viewer.dir/order_book_viewer/viewer.c.o -c /root/c-workspace/QuantTradingWebSocket/examples/order_book_viewer/viewer.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/examples/order_book_viewer/viewer.c"
 }
 ]

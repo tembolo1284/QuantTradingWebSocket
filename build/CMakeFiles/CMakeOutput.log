@@ -1,4 +1,4 @@
-The system is: Linux - 6.9.3-76060903-generic - x86_64
+The system is: Linux - 5.10.16.3-microsoft-standard-WSL2 - x86_64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
 Compiler: /usr/bin/cc 
 Build flags: 
@@ -10,12 +10,12 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
 
-The C compiler identification is GNU, found in "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/3.22.1/CompilerIdC/a.out"
+The C compiler identification is GNU, found in "/root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/3.22.1/CompilerIdC/a.out"
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_593ae && [1/2] Building C object CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o
+Run Build Command(s):/usr/bin/ninja cmTC_fd3a1 && [1/2] Building C object CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o
 Using built-in specs.
 COLLECT_GCC=/usr/bin/cc
 OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
@@ -25,8 +25,8 @@ Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~2
 Thread model: posix
 Supported LTO compression algorithms: zlib zstd
 gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
-COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/'
- /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -quiet -v -imultiarch x86_64-linux-gnu /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_593ae.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccsDOMiS.s
+COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/'
+ /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -quiet -v -imultiarch x86_64-linux-gnu /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_fd3a1.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccqjES0Q.s
 GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (x86_64-linux-gnu)
 	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
 
@@ -46,13 +46,13 @@ GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (x86_64-linux-gnu)
 
 GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
 Compiler executable checksum: 50eaa2331df977b8016186198deb2d18
-COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/'
- as -v --64 -o CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o /tmp/ccsDOMiS.s
+COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/'
+ as -v --64 -o CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o /tmp/ccqjES0Q.s
 GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
 COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/
 LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/
-COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.'
-[2/2] Linking C executable cmTC_593ae
+COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.'
+[2/2] Linking C executable cmTC_fd3a1
 Using built-in specs.
 COLLECT_GCC=/usr/bin/cc
 COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper
@@ -65,9 +65,9 @@ Supported LTO compression algorithms: zlib zstd
 gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
 COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/
 LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/
-COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_593ae' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_593ae.'
- /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccqsx7td.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_593ae /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
-COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_593ae' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_593ae.'
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_fd3a1' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_fd3a1.'
+ /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccOfdXlF.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_fd3a1 /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_fd3a1' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_fd3a1.'
 
 
 
@@ -88,9 +88,9 @@ Parsed C implicit include dir info from above output: rv=done
 
 Parsed C implicit link information from above output:
   link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp]
+  ignore line: [Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command(s):/usr/bin/ninja cmTC_593ae && [1/2] Building C object CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o]
+  ignore line: [Run Build Command(s):/usr/bin/ninja cmTC_fd3a1 && [1/2] Building C object CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o]
   ignore line: [Using built-in specs.]
   ignore line: [COLLECT_GCC=/usr/bin/cc]
   ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
@@ -100,8 +100,8 @@ Parsed C implicit link information from above output:
   ignore line: [Thread model: posix]
   ignore line: [Supported LTO compression algorithms: zlib zstd]
   ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
-  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/']
-  ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -quiet -v -imultiarch x86_64-linux-gnu /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_593ae.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccsDOMiS.s]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/']
+  ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -quiet -v -imultiarch x86_64-linux-gnu /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_fd3a1.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccqjES0Q.s]
   ignore line: [GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (x86_64-linux-gnu)]
   ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
   ignore line: []
@@ -121,13 +121,13 @@ Parsed C implicit link information from above output:
   ignore line: []
   ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
   ignore line: [Compiler executable checksum: 50eaa2331df977b8016186198deb2d18]
-  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/']
-  ignore line: [ as -v --64 -o CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o /tmp/ccsDOMiS.s]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/']
+  ignore line: [ as -v --64 -o CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o /tmp/ccqjES0Q.s]
   ignore line: [GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
   ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/]
   ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/]
-  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.']
-  ignore line: [[2/2] Linking C executable cmTC_593ae]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.']
+  ignore line: [[2/2] Linking C executable cmTC_fd3a1]
   ignore line: [Using built-in specs.]
   ignore line: [COLLECT_GCC=/usr/bin/cc]
   ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper]
@@ -140,13 +140,13 @@ Parsed C implicit link information from above output:
   ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
   ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/]
   ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/]
-  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_593ae' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_593ae.']
-  link line: [ /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccqsx7td.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_593ae /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_fd3a1' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_fd3a1.']
+  link line: [ /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccOfdXlF.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_fd3a1 /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o]
     arg [/usr/lib/gcc/x86_64-linux-gnu/11/collect2] ==> ignore
     arg [-plugin] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so] ==> ignore
     arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper] ==> ignore
-    arg [-plugin-opt=-fresolution=/tmp/ccqsx7td.res] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccOfdXlF.res] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
     arg [-plugin-opt=-pass-through=-lc] ==> ignore
@@ -164,7 +164,7 @@ Parsed C implicit link information from above output:
     arg [-znow] ==> ignore
     arg [-zrelro] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_593ae] ==> ignore
+    arg [cmTC_fd3a1] ==> ignore
     arg [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o]
     arg [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o]
     arg [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o]
@@ -176,7 +176,7 @@ Parsed C implicit link information from above output:
     arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
     arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
     arg [-L/usr/lib/gcc/x86_64-linux-gnu/11/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../..]
-    arg [CMakeFiles/cmTC_593ae.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [CMakeFiles/cmTC_fd3a1.dir/CMakeCCompilerABI.c.o] ==> ignore
     arg [-lgcc] ==> lib [gcc]
     arg [--push-state] ==> ignore
     arg [--as-needed] ==> ignore
@@ -208,243 +208,243 @@ Parsed C implicit link information from above output:
 
 
 Performing C SOURCE FILE Test FLAG_SUPPORTED_stdc89 succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_2c972 && [1/2] Building C object CMakeFiles/cmTC_2c972.dir/src.c.o
-[2/2] Linking C executable cmTC_2c972
+Run Build Command(s):/usr/bin/ninja cmTC_3bcc2 && [1/2] Building C object CMakeFiles/cmTC_3bcc2.dir/src.c.o
+[2/2] Linking C executable cmTC_3bcc2
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_pedantic succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_f58e8 && [1/2] Building C object CMakeFiles/cmTC_f58e8.dir/src.c.o
-[2/2] Linking C executable cmTC_f58e8
+Run Build Command(s):/usr/bin/ninja cmTC_b83e5 && [1/2] Building C object CMakeFiles/cmTC_b83e5.dir/src.c.o
+[2/2] Linking C executable cmTC_b83e5
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wall succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_0bf13 && [1/2] Building C object CMakeFiles/cmTC_0bf13.dir/src.c.o
-[2/2] Linking C executable cmTC_0bf13
+Run Build Command(s):/usr/bin/ninja cmTC_01643 && [1/2] Building C object CMakeFiles/cmTC_01643.dir/src.c.o
+[2/2] Linking C executable cmTC_01643
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wextra succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_c1601 && [1/2] Building C object CMakeFiles/cmTC_c1601.dir/src.c.o
-[2/2] Linking C executable cmTC_c1601
+Run Build Command(s):/usr/bin/ninja cmTC_ffad3 && [1/2] Building C object CMakeFiles/cmTC_ffad3.dir/src.c.o
+[2/2] Linking C executable cmTC_ffad3
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Werror succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_43997 && [1/2] Building C object CMakeFiles/cmTC_43997.dir/src.c.o
-[2/2] Linking C executable cmTC_43997
+Run Build Command(s):/usr/bin/ninja cmTC_063bf && [1/2] Building C object CMakeFiles/cmTC_063bf.dir/src.c.o
+[2/2] Linking C executable cmTC_063bf
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wstrictprototypes succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_a9367 && [1/2] Building C object CMakeFiles/cmTC_a9367.dir/src.c.o
-[2/2] Linking C executable cmTC_a9367
+Run Build Command(s):/usr/bin/ninja cmTC_f32f7 && [1/2] Building C object CMakeFiles/cmTC_f32f7.dir/src.c.o
+[2/2] Linking C executable cmTC_f32f7
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wwritestrings succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_61d03 && [1/2] Building C object CMakeFiles/cmTC_61d03.dir/src.c.o
-[2/2] Linking C executable cmTC_61d03
+Run Build Command(s):/usr/bin/ninja cmTC_07367 && [1/2] Building C object CMakeFiles/cmTC_07367.dir/src.c.o
+[2/2] Linking C executable cmTC_07367
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wshadow succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_e7600 && [1/2] Building C object CMakeFiles/cmTC_e7600.dir/src.c.o
-[2/2] Linking C executable cmTC_e7600
+Run Build Command(s):/usr/bin/ninja cmTC_9ba6a && [1/2] Building C object CMakeFiles/cmTC_9ba6a.dir/src.c.o
+[2/2] Linking C executable cmTC_9ba6a
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Winitself succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_c9dc9 && [1/2] Building C object CMakeFiles/cmTC_c9dc9.dir/src.c.o
-[2/2] Linking C executable cmTC_c9dc9
+Run Build Command(s):/usr/bin/ninja cmTC_4286f && [1/2] Building C object CMakeFiles/cmTC_4286f.dir/src.c.o
+[2/2] Linking C executable cmTC_4286f
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wcastalign succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_52ff1 && [1/2] Building C object CMakeFiles/cmTC_52ff1.dir/src.c.o
-[2/2] Linking C executable cmTC_52ff1
+Run Build Command(s):/usr/bin/ninja cmTC_f0930 && [1/2] Building C object CMakeFiles/cmTC_f0930.dir/src.c.o
+[2/2] Linking C executable cmTC_f0930
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wformat2 succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_9ee87 && [1/2] Building C object CMakeFiles/cmTC_9ee87.dir/src.c.o
-[2/2] Linking C executable cmTC_9ee87
+Run Build Command(s):/usr/bin/ninja cmTC_3ba59 && [1/2] Building C object CMakeFiles/cmTC_3ba59.dir/src.c.o
+[2/2] Linking C executable cmTC_3ba59
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wmissingprototypes succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_4e075 && [1/2] Building C object CMakeFiles/cmTC_4e075.dir/src.c.o
-[2/2] Linking C executable cmTC_4e075
+Run Build Command(s):/usr/bin/ninja cmTC_81266 && [1/2] Building C object CMakeFiles/cmTC_81266.dir/src.c.o
+[2/2] Linking C executable cmTC_81266
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wstrictoverflow2 succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_e9a1a && [1/2] Building C object CMakeFiles/cmTC_e9a1a.dir/src.c.o
-[2/2] Linking C executable cmTC_e9a1a
+Run Build Command(s):/usr/bin/ninja cmTC_609df && [1/2] Building C object CMakeFiles/cmTC_609df.dir/src.c.o
+[2/2] Linking C executable cmTC_609df
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wcastqual succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_316bf && [1/2] Building C object CMakeFiles/cmTC_316bf.dir/src.c.o
-[2/2] Linking C executable cmTC_316bf
+Run Build Command(s):/usr/bin/ninja cmTC_f99e1 && [1/2] Building C object CMakeFiles/cmTC_f99e1.dir/src.c.o
+[2/2] Linking C executable cmTC_f99e1
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wundef succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_7f2d3 && [1/2] Building C object CMakeFiles/cmTC_7f2d3.dir/src.c.o
-[2/2] Linking C executable cmTC_7f2d3
+Run Build Command(s):/usr/bin/ninja cmTC_1df0f && [1/2] Building C object CMakeFiles/cmTC_1df0f.dir/src.c.o
+[2/2] Linking C executable cmTC_1df0f
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wswitchdefault succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_01882 && [1/2] Building C object CMakeFiles/cmTC_01882.dir/src.c.o
-[2/2] Linking C executable cmTC_01882
+Run Build Command(s):/usr/bin/ninja cmTC_a3db3 && [1/2] Building C object CMakeFiles/cmTC_a3db3.dir/src.c.o
+[2/2] Linking C executable cmTC_a3db3
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wconversion succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_bd718 && [1/2] Building C object CMakeFiles/cmTC_bd718.dir/src.c.o
-[2/2] Linking C executable cmTC_bd718
+Run Build Command(s):/usr/bin/ninja cmTC_a1879 && [1/2] Building C object CMakeFiles/cmTC_a1879.dir/src.c.o
+[2/2] Linking C executable cmTC_a1879
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wccompat succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_9fd12 && [1/2] Building C object CMakeFiles/cmTC_9fd12.dir/src.c.o
-[2/2] Linking C executable cmTC_9fd12
+Run Build Command(s):/usr/bin/ninja cmTC_b0964 && [1/2] Building C object CMakeFiles/cmTC_b0964.dir/src.c.o
+[2/2] Linking C executable cmTC_b0964
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_fstackprotectorstrong succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_f8ca2 && [1/2] Building C object CMakeFiles/cmTC_f8ca2.dir/src.c.o
-[2/2] Linking C executable cmTC_f8ca2
+Run Build Command(s):/usr/bin/ninja cmTC_b15f8 && [1/2] Building C object CMakeFiles/cmTC_b15f8.dir/src.c.o
+[2/2] Linking C executable cmTC_b15f8
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wdoublepromotion succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_0817a && [1/2] Building C object CMakeFiles/cmTC_0817a.dir/src.c.o
-[2/2] Linking C executable cmTC_0817a
+Run Build Command(s):/usr/bin/ninja cmTC_0e0da && [1/2] Building C object CMakeFiles/cmTC_0e0da.dir/src.c.o
+[2/2] Linking C executable cmTC_0e0da
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wparentheses succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_02035 && [1/2] Building C object CMakeFiles/cmTC_02035.dir/src.c.o
-[2/2] Linking C executable cmTC_02035
+Run Build Command(s):/usr/bin/ninja cmTC_5106f && [1/2] Building C object CMakeFiles/cmTC_5106f.dir/src.c.o
+[2/2] Linking C executable cmTC_5106f
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wformatoverflow succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_49f10 && [1/2] Building C object CMakeFiles/cmTC_49f10.dir/src.c.o
-[2/2] Linking C executable cmTC_49f10
+Run Build Command(s):/usr/bin/ninja cmTC_4225a && [1/2] Building C object CMakeFiles/cmTC_4225a.dir/src.c.o
+[2/2] Linking C executable cmTC_4225a
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wunusedmacros succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_f173f && [1/2] Building C object CMakeFiles/cmTC_f173f.dir/src.c.o
-[2/2] Linking C executable cmTC_f173f
+Run Build Command(s):/usr/bin/ninja cmTC_38aae && [1/2] Building C object CMakeFiles/cmTC_38aae.dir/src.c.o
+[2/2] Linking C executable cmTC_38aae
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wswitchenum succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_6bb82 && [1/2] Building C object CMakeFiles/cmTC_6bb82.dir/src.c.o
-[2/2] Linking C executable cmTC_6bb82
+Run Build Command(s):/usr/bin/ninja cmTC_57010 && [1/2] Building C object CMakeFiles/cmTC_57010.dir/src.c.o
+[2/2] Linking C executable cmTC_57010
 
 
 Source file was:
 int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_fvisibilityhidden succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_7e654 && [1/2] Building C object CMakeFiles/cmTC_7e654.dir/src.c.o
-[2/2] Linking C executable cmTC_7e654
+Run Build Command(s):/usr/bin/ninja cmTC_a6399 && [1/2] Building C object CMakeFiles/cmTC_a6399.dir/src.c.o
+[2/2] Linking C executable cmTC_a6399
 
 
 Source file was:
 int main(void) { return 0; }
 Determining if the include file pthread.h exists passed with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_7ed8a && [1/2] Building C object CMakeFiles/cmTC_7ed8a.dir/CheckIncludeFile.c.o
-[2/2] Linking C executable cmTC_7ed8a
+Run Build Command(s):/usr/bin/ninja cmTC_d910e && [1/2] Building C object CMakeFiles/cmTC_d910e.dir/CheckIncludeFile.c.o
+[2/2] Linking C executable cmTC_d910e
 
 
 
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD succeeded with the following output:
-Change Dir: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
+Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_593c4 && [1/2] Building C object CMakeFiles/cmTC_593c4.dir/src.c.o
-[2/2] Linking C executable cmTC_593c4
+Run Build Command(s):/usr/bin/ninja cmTC_f3a41 && [1/2] Building C object CMakeFiles/cmTC_f3a41.dir/src.c.o
+[2/2] Linking C executable cmTC_f3a41
 
 
 Source file was:

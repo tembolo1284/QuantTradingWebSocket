@@ -13,10 +13,13 @@ typedef enum {
 } OrderHandlingResult;
 
 // Initialize order handling system
-bool order_handler_init(const char* symbol);
+bool order_handler_init(void);
 
 // Shutdown order handling system
 void order_handler_shutdown(void);
+
+// Require symbol when creating an order book
+bool order_handler_create_book(const char* symbol);
 
 // Add an order to the order book
 OrderHandlingResult order_handler_add_order(const Order* order);

@@ -1,4 +1,4 @@
-# Install script for directory: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/fuzzing
+# Install script for directory: /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/fuzzing
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -6,29 +6,11 @@
 
 // Static order book to manage orders
 static OrderBook* global_order_book = NULL;
-static char global_symbol[16] = "AAPL";  // Default symbol
+static char global_symbol[20] = {0};
 
-bool order_handler_init(const char* symbol) {
-    // Cleanup existing book if any
-    if (global_order_book) {
-        order_book_destroy(global_order_book);
-    }
-
-    // const char* book_symbol = symbol ? symbol : "AAPL";
-
-    // Create new order book
-    global_order_book = order_book_create(symbol ? symbol : global_symbol);
-    
-    if (!global_order_book) {
-        LOG_ERROR("Failed to create order book");
-        return false;
-    }
-
-    // Copy symbol
-    strncpy(global_symbol, symbol ? symbol : "AAPL", sizeof(global_symbol) - 1);
-    global_symbol[sizeof(global_symbol) - 1] = '\0';
-
-    LOG_DEBUG("Order handler initialized with symbol: %s", global_symbol);
+bool order_handler_init(void) {
+    global_order_book = NULL;
+    memset(global_symbol, 0, sizeof(global_symbol));
     return true;
 }
 
@@ -37,6 +19,34 @@ void order_handler_shutdown(void) {
         order_book_destroy(global_order_book);
         global_order_book = NULL;
     }
+}
+
+bool order_handler_create_book(const char* symbol) {
+    // Require symbol to be provided
+    if (!symbol || symbol[0] == '\0') {
+        LOG_ERROR("Symbol must be provided when creating order book");
+        return false;
+    }
+
+    // Cleanup existing book if any
+    if (global_order_book) {
+        order_book_destroy(global_order_book);
+    }
+
+    // Create new order book
+    global_order_book = order_book_create(symbol);
+    
+    if (!global_order_book) {
+        LOG_ERROR("Failed to create order book for symbol: %s", symbol);
+        return false;
+    }
+
+    // Copy symbol
+    strncpy(global_symbol, symbol, sizeof(global_symbol) - 1);
+    global_symbol[sizeof(global_symbol) - 1] = '\0';
+
+    LOG_INFO("Order book created for symbol: %s", global_symbol);
+    return true;
 }
 
 OrderHandlingResult order_handler_add_order(const Order* order) {

@@ -1,4 +1,5 @@
 #include "utils/json_utils.h"
+#include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -39,19 +40,20 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             cJSON* symbol_item = cJSON_GetObjectItemCaseSensitive(root, "symbol");
             cJSON* order_item = cJSON_GetObjectItemCaseSensitive(root, "order");
 
-            // Default symbol to "AAPL" if missing or blank
-            const char* symbol_str = (cJSON_IsString(symbol_item) && strlen(symbol_item->valuestring) > 0) ? 
-                                      symbol_item->valuestring : "AAPL";
-
-            if (!cJSON_IsObject(order_item)) {
+            // Validate symbol and order
+            if (!cJSON_IsString(symbol_item) || 
+                strlen(symbol_item->valuestring) == 0 || 
+                !cJSON_IsObject(order_item)) {
+                LOG_ERROR("Invalid order: symbol is required and must be non-empty");
                 cJSON_Delete(root);
                 return false;
             }
 
             parsed_msg->type = JSON_MSG_ORDER_ADD;
             strncpy(parsed_msg->data.order_add.symbol, 
-                    symbol_str, 
+                    symbol_item->valuestring, 
                     sizeof(parsed_msg->data.order_add.symbol) - 1);
+            parsed_msg->data.order_add.symbol[sizeof(parsed_msg->data.order_add.symbol) - 1] = '\0';
 
             // Parse order details
             cJSON* id_item = cJSON_GetObjectItemCaseSensitive(order_item, "id");
@@ -59,16 +61,27 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             cJSON* quantity_item = cJSON_GetObjectItemCaseSensitive(order_item, "quantity");
             cJSON* is_buy_item = cJSON_GetObjectItemCaseSensitive(order_item, "is_buy");
 
-            if (!cJSON_IsNumber(id_item) || !cJSON_IsNumber(price_item) || 
-                !cJSON_IsNumber(quantity_item) || !cJSON_IsBool(is_buy_item)) {
+            // Validate order details
+            if (!cJSON_IsNumber(id_item) || 
+                !cJSON_IsNumber(price_item) || 
+                !cJSON_IsNumber(quantity_item) || 
+                !cJSON_IsBool(is_buy_item)) {
+                LOG_ERROR("Invalid order details");
                 cJSON_Delete(root);
                 return false;
             }
 
+            // Populate order details
             parsed_msg->data.order_add.order.id = (uint64_t)id_item->valuedouble;
             parsed_msg->data.order_add.order.price = price_item->valuedouble;
             parsed_msg->data.order_add.order.quantity = (uint32_t)quantity_item->valuedouble;
             parsed_msg->data.order_add.order.is_buy = is_buy_item->valueint;
+            
+            // Copy symbol to order
+            strncpy(parsed_msg->data.order_add.order.symbol, 
+                    parsed_msg->data.order_add.symbol, 
+                    sizeof(parsed_msg->data.order_add.order.symbol) - 1);
+            parsed_msg->data.order_add.order.symbol[sizeof(parsed_msg->data.order_add.order.symbol) - 1] = '\0';
         }
         else if (strcmp(action_str, "cancel") == 0) {
             // Parse order cancel message
@@ -88,13 +101,16 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             // Parse book query message
             cJSON* symbol_item = cJSON_GetObjectItemCaseSensitive(root, "symbol");
 
-            // Default symbol to "AAPL" if missing or blank
-            const char* symbol_str = (cJSON_IsString(symbol_item) && strlen(symbol_item->valuestring) > 0) ? 
-                                      symbol_item->valuestring : "AAPL";
+            if (!cJSON_IsString(symbol_item) || 
+                strlen(symbol_item->valuestring) == 0) {
+                LOG_ERROR("Invalid book query: symbol is required and must be non-empty");
+                cJSON_Delete(root);
+                return false;
+            }
 
             parsed_msg->type = JSON_MSG_BOOK_QUERY;
             strncpy(parsed_msg->data.book_query.symbol, 
-                    symbol_str, 
+                    symbol_item->valuestring, 
                     sizeof(parsed_msg->data.book_query.symbol) - 1);
         }
     }

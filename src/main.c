@@ -88,8 +88,14 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Starting Quant Trading Server");
     
     // Initialize order handler
-    if (!order_handler_init("AAPL")) {
+    if (!order_handler_init()) {
         LOG_ERROR("Failed to initialize order handler");
+        return 1;
+    }
+
+    // Modify to require symbol specification
+    if (!order_handler_create_book("AAPL")) {
+        LOG_ERROR("Failed to create initial order book");
         return 1;
     }
 
