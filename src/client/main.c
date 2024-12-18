@@ -1,5 +1,6 @@
 #include "trading/order_book.h"
 #include "net/websocket.h"
+#include "utils/json_utils.h"
 #include "utils/logging.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@
 
 static volatile bool running = true;
 static OrderBook* local_book = NULL;  // Local copy of order book
+static uint64_t next_order_id = 1;
 
 static void handle_signal(int sig) {
     (void)sig;
@@ -21,22 +23,41 @@ static void handle_signal(int sig) {
 
 // Handle market data updates from server
 static void on_message(const uint8_t* data, size_t len, void* user_data) {
-    LOG_DEBUG("Received message from server, length: %zu bytes", len);
-    (void)user_data;    
-    // TODO: Parse server message and update local order book
-    if (len > 0) {
-        char preview[64] = {0};
-        size_t preview_len = len < sizeof(preview) - 1 ? len : sizeof(preview) - 1;
-        memcpy(preview, data, preview_len);
-        LOG_INFO("Server message: %s", preview);
+    (void)user_data;
+    
+    // Convert to null-terminated string
+    char* json_str = malloc(len + 1);
+    if (!json_str) {
+        LOG_ERROR("Failed to allocate memory for message");
+        return;
+    }
+    memcpy(json_str, data, len);
+    json_str[len] = '\0';
+
+    LOG_DEBUG("Received raw message (len=%zu): %s", len, json_str);
+
+    // Parse JSON message
+    ParsedMessage parsed_msg;
+    if (json_parse_message(json_str, &parsed_msg)) {
+        switch (parsed_msg.type) {
+            case JSON_MSG_BOOK_RESPONSE: {
+                printf("\nOrder Book:\n");
+                printf("Symbol: %s\n", parsed_msg.data.book_response.symbol);
+                printf("Best Bid: %.2f\n", parsed_msg.data.book_response.best_bid);
+                printf("Best Ask: %.2f\n", parsed_msg.data.book_response.best_ask);
+                break;
+            }
+            default:
+                printf("Received unhandled message type\n");
+                break;
+        }
+
+        json_free_parsed_message(&parsed_msg);
+    } else {
+        LOG_ERROR("Failed to parse JSON message: %s", json_str);
     }
 
-    // Display current order book state
-    if (local_book) {
-        double best_bid = order_book_get_best_bid(local_book);
-        double best_ask = order_book_get_best_ask(local_book);
-        LOG_INFO("Order Book - Best Bid: %.2f, Best Ask: %.2f", best_bid, best_ask);
-    }
+    free(json_str);
 }
 
 static void on_error(ErrorCode error, void* user_data) {
@@ -55,6 +76,50 @@ static void print_usage(void) {
     printf("  quit                           - Exit client\n\n");
 }
 
+static void send_book_query(WebSocket* ws) {
+    ParsedMessage msg = {0};
+    msg.type = JSON_MSG_BOOK_QUERY;
+    strcpy(msg.data.book_query.symbol, "AAPL");
+
+    char* json_str = json_serialize_message(&msg);
+    if (json_str) {
+        LOG_INFO("Requesting order book snapshot");
+        ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
+        free(json_str);
+    }
+}
+
+static void send_order(WebSocket* ws, bool is_buy, double price, uint32_t quantity) {
+    ParsedMessage msg = {0};
+    msg.type = JSON_MSG_ORDER_ADD;
+    
+    strcpy(msg.data.order_add.symbol, "AAPL");
+    msg.data.order_add.order.id = next_order_id++;
+    msg.data.order_add.order.price = price;
+    msg.data.order_add.order.quantity = quantity;
+    msg.data.order_add.order.is_buy = is_buy;
+
+    char* json_str = json_serialize_message(&msg);
+    if (json_str) {
+        LOG_INFO("Sending order: %s", json_str);
+        ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
+        free(json_str);
+    }
+}
+
+static void send_order_cancel(WebSocket* ws, uint64_t order_id) {
+    ParsedMessage msg = {0};
+    msg.type = JSON_MSG_ORDER_CANCEL;
+    msg.data.order_cancel.order_id = order_id;
+
+    char* json_str = json_serialize_message(&msg);
+    if (json_str) {
+        LOG_INFO("Sending cancel request for order %lu", order_id);
+        ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
+        free(json_str);
+    }
+}
+
 static void process_user_input(WebSocket* ws) {
     char buffer[256];
     char command[32];
@@ -66,6 +131,9 @@ static void process_user_input(WebSocket* ws) {
         return;
     }
     
+    // Remove trailing newline
+    buffer[strcspn(buffer, "\n")] = 0;
+    
     if (sscanf(buffer, "%31s", command) != 1) {
         return;
     }
@@ -76,22 +144,17 @@ static void process_user_input(WebSocket* ws) {
     else if (strcmp(command, "quit") == 0) {
         running = false;
     }
+    else if (strcmp(command, "book") == 0) {
+        send_book_query(ws);
+    }
     else if (strcmp(command, "order") == 0) {
         char side[5];
         double price;
-        int quantity;
+        uint32_t quantity;
         
-        if (sscanf(buffer, "%*s %4s %lf %d", side, &price, &quantity) == 3) {
+        if (sscanf(buffer, "%*s %4s %lf %u", side, &price, &quantity) == 3) {
             bool is_buy = (strcmp(side, "buy") == 0);
-            
-            // Format and send order to server
-            char order_msg[128];
-            snprintf(order_msg, sizeof(order_msg), 
-                    "{\"type\":\"order\",\"side\":\"%s\",\"price\":%.2f,\"quantity\":%d}",
-                    is_buy ? "buy" : "sell", price, quantity);
-                    
-            LOG_INFO("Sending order: %s", order_msg);
-            ws_send(ws, (const uint8_t*)order_msg, strlen(order_msg));
+            send_order(ws, is_buy, price, quantity);
         }
         else {
             LOG_ERROR("Invalid order format. Use: order <buy|sell> <price> <quantity>");
@@ -100,21 +163,11 @@ static void process_user_input(WebSocket* ws) {
     else if (strcmp(command, "cancel") == 0) {
         uint64_t order_id;
         if (sscanf(buffer, "%*s %lu", &order_id) == 1) {
-            char cancel_msg[64];
-            snprintf(cancel_msg, sizeof(cancel_msg),
-                    "{\"type\":\"cancel\",\"order_id\":%lu}", order_id);
-                    
-            LOG_INFO("Sending cancel request: %s", cancel_msg);
-            ws_send(ws, (const uint8_t*)cancel_msg, strlen(cancel_msg));
+            send_order_cancel(ws, order_id);
         }
         else {
             LOG_ERROR("Invalid cancel format. Use: cancel <order_id>");
         }
-    }
-    else if (strcmp(command, "book") == 0) {
-        char book_msg[] = "{\"type\":\"book_request\"}";
-        LOG_INFO("Requesting order book snapshot");
-        ws_send(ws, (const uint8_t*)book_msg, strlen(book_msg));
     }
     else {
         LOG_ERROR("Unknown command. Type 'help' for usage.");

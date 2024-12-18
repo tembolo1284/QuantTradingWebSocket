@@ -52,7 +52,7 @@ rule C_STATIC_LIBRARY_LINKER__quant_trading_lib_Release
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__quant_trading_Release
+rule C_COMPILER__market_server_Release
   depfile = $DEP_FILE
   deps = gcc
   command = /usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -62,7 +62,7 @@ rule C_COMPILER__quant_trading_Release
 #############################################
 # Rule for linking C executable.
 
-rule C_EXECUTABLE_LINKER__quant_trading_Release
+rule C_EXECUTABLE_LINKER__market_server_Release
   command = $PRE_LINK && /usr/bin/cc $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking C executable $TARGET_FILE
   restat = $RESTAT
@@ -93,6 +93,25 @@ rule C_EXECUTABLE_LINKER__market_client_Release
 rule CUSTOM_COMMAND
   command = $COMMAND
   description = $DESC
+
+
+#############################################
+# Rule for compiling C files.
+
+rule C_COMPILER__cjson_Release
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building C object $out
+
+
+#############################################
+# Rule for linking C static library.
+
+rule C_STATIC_LIBRARY_LINKER__cjson_Release
+  command = $PRE_LINK && /usr/bin/cmake -E rm -f $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking C static library $TARGET_FILE
+  restat = $RESTAT
 
 
 #############################################
@@ -194,7 +213,7 @@ rule C_EXECUTABLE_LINKER__order_book_viewer_Release
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  command = /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   description = Re-running CMake...
   generator = 1
 

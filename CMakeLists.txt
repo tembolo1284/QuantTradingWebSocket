@@ -21,6 +21,14 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_EXAMPLES "Build examples" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 
+# cJSON options (add these before adding the cJSON subdirectory)
+option(ENABLE_CJSON_TEST "Enable cJSON tests" OFF)
+option(ENABLE_CJSON_UTILS "Enable cJSON utils" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
+# Add cJSON as a subdirectory
+add_subdirectory(third_party/cJSON)
+
 # Find required packages
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
@@ -53,6 +61,7 @@ set(SOURCES
     src/trading/order.c
     src/trading/order_book.c
     src/utils/logging.c
+    src/utils/json_utils.c
 )
 
 # Create main library
@@ -62,6 +71,7 @@ add_library(quant_trading_lib STATIC ${SOURCES})
 target_include_directories(quant_trading_lib
     PUBLIC
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/third_party
 )
 
 # Link dependencies
@@ -70,11 +80,12 @@ target_link_libraries(quant_trading_lib
     OpenSSL::SSL
     OpenSSL::Crypto
     ${CMAKE_THREAD_LIBS_INIT}
+    cjson
 )
 
 # Create server executable
-add_executable(quant_trading src/main.c)
-target_link_libraries(quant_trading
+add_executable(market_server src/main.c)
+target_link_libraries(market_server
     PRIVATE
     quant_trading_lib
 )
