@@ -39,14 +39,18 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             cJSON* symbol_item = cJSON_GetObjectItemCaseSensitive(root, "symbol");
             cJSON* order_item = cJSON_GetObjectItemCaseSensitive(root, "order");
 
-            if (!cJSON_IsString(symbol_item) || !cJSON_IsObject(order_item)) {
+            // Default symbol to "AAPL" if missing or blank
+            const char* symbol_str = (cJSON_IsString(symbol_item) && strlen(symbol_item->valuestring) > 0) ? 
+                                      symbol_item->valuestring : "AAPL";
+
+            if (!cJSON_IsObject(order_item)) {
                 cJSON_Delete(root);
                 return false;
             }
 
             parsed_msg->type = JSON_MSG_ORDER_ADD;
             strncpy(parsed_msg->data.order_add.symbol, 
-                    symbol_item->valuestring, 
+                    symbol_str, 
                     sizeof(parsed_msg->data.order_add.symbol) - 1);
 
             // Parse order details
@@ -84,14 +88,13 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             // Parse book query message
             cJSON* symbol_item = cJSON_GetObjectItemCaseSensitive(root, "symbol");
 
-            if (!cJSON_IsString(symbol_item)) {
-                cJSON_Delete(root);
-                return false;
-            }
+            // Default symbol to "AAPL" if missing or blank
+            const char* symbol_str = (cJSON_IsString(symbol_item) && strlen(symbol_item->valuestring) > 0) ? 
+                                      symbol_item->valuestring : "AAPL";
 
             parsed_msg->type = JSON_MSG_BOOK_QUERY;
             strncpy(parsed_msg->data.book_query.symbol, 
-                    symbol_item->valuestring, 
+                    symbol_str, 
                     sizeof(parsed_msg->data.book_query.symbol) - 1);
         }
     }
@@ -153,18 +156,14 @@ char* json_serialize_order_book(const OrderBook* book) {
     cJSON_AddNumberToObject(root, "best_bid", order_book_get_best_bid(book));
     cJSON_AddNumberToObject(root, "best_ask", order_book_get_best_ask(book));
 
-    // Note: This is a simplified implementation. Full serialization would require 
-    // traversing the AVL tree and creating detailed bid/ask arrays.
-    // Could be expanded to include full order book details if needed.
-
     char* json_str = cJSON_Print(root);
     cJSON_Delete(root);
     return json_str;
 }
 
 void json_free_parsed_message(ParsedMessage* parsed_msg) {
-    // Currently no dynamic memory to free, but included for future-proofing
     if (parsed_msg) {
         memset(parsed_msg, 0, sizeof(ParsedMessage));
     }
 }
+

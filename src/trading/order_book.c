@@ -126,7 +126,9 @@ static PriceNode* insert_price_node(PriceNode* node, double price, OrderNode* or
 }
 
 OrderBook* order_book_create(const char* symbol) {
-    if (!symbol) return NULL;
+    if (!symbol || *symbol == '\0'){
+        symbol = "AAPL";
+    }
 
     OrderBook* book = malloc(sizeof(OrderBook));
     if (!book) return NULL;
