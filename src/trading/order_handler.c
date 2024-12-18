@@ -45,7 +45,7 @@ bool order_handler_create_book(const char* symbol) {
     strncpy(global_symbol, symbol, sizeof(global_symbol) - 1);
     global_symbol[sizeof(global_symbol) - 1] = '\0';
 
-    LOG_INFO("Order book created for symbol: %s", global_symbol);
+    LOG_INFO("Order book created/switched to symbol: %s", global_symbol);
     return true;
 }
 

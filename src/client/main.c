@@ -76,28 +76,42 @@ static void print_usage(void) {
     printf("  quit                           - Exit client\n\n");
 }
 
-static void send_book_query(WebSocket* ws) {
+static void send_book_query(WebSocket* ws, const char* symbol) {
     ParsedMessage msg = {0};
     msg.type = JSON_MSG_BOOK_QUERY;
-    strcpy(msg.data.book_query.symbol, "AAPL");
+    
+    // Use the provided symbol or default
+    strncpy(msg.data.book_query.symbol, 
+            symbol ? symbol : "AAPL", 
+            sizeof(msg.data.book_query.symbol) - 1);
+    msg.data.book_query.symbol[sizeof(msg.data.book_query.symbol) - 1] = '\0';
 
     char* json_str = json_serialize_message(&msg);
     if (json_str) {
-        LOG_INFO("Requesting order book snapshot");
+        LOG_INFO("Requesting order book snapshot for %s", msg.data.book_query.symbol);
         ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
         free(json_str);
     }
 }
 
-static void send_order(WebSocket* ws, bool is_buy, double price, uint32_t quantity) {
+static void send_order(WebSocket* ws, bool is_buy, double price, uint32_t quantity, const char* symbol) {
     ParsedMessage msg = {0};
     msg.type = JSON_MSG_ORDER_ADD;
     
-    strcpy(msg.data.order_add.symbol, "AAPL");
+    // Safely copy symbol with explicit null-termination
+    size_t symbol_len = strnlen(symbol, sizeof(msg.data.order_add.symbol) - 1);
+    memcpy(msg.data.order_add.symbol, symbol, symbol_len);
+    msg.data.order_add.symbol[symbol_len] = '\0';
+
     msg.data.order_add.order.id = next_order_id++;
     msg.data.order_add.order.price = price;
     msg.data.order_add.order.quantity = quantity;
     msg.data.order_add.order.is_buy = is_buy;
+    
+    // Safely copy symbol to order
+    symbol_len = strnlen(symbol, sizeof(msg.data.order_add.order.symbol) - 1);
+    memcpy(msg.data.order_add.order.symbol, symbol, symbol_len);
+    msg.data.order_add.order.symbol[symbol_len] = '\0';
 
     char* json_str = json_serialize_message(&msg);
     if (json_str) {
@@ -145,19 +159,26 @@ static void process_user_input(WebSocket* ws) {
         running = false;
     }
     else if (strcmp(command, "book") == 0) {
-        send_book_query(ws);
+        char symbol[16] = "AAPL";
+
+        if (sscanf(buffer, "%*s %15s", symbol) == 1) {
+            send_book_query(ws, symbol);
+        } else {
+            send_book_query(ws, NULL);
+        }
     }
     else if (strcmp(command, "order") == 0) {
         char side[5];
         double price;
         uint32_t quantity;
+        char symbol[16];
         
-        if (sscanf(buffer, "%*s %4s %lf %u", side, &price, &quantity) == 3) {
+        if (sscanf(buffer, "%*s %4s %lf %u %15s", side, &price, &quantity, symbol) == 4) {
             bool is_buy = (strcmp(side, "buy") == 0);
-            send_order(ws, is_buy, price, quantity);
+            send_order(ws, is_buy, price, quantity, symbol);
         }
         else {
-            LOG_ERROR("Invalid order format. Use: order <buy|sell> <price> <quantity>");
+            LOG_ERROR("Invalid order format. Use: order <buy|sell> <price> <quantity> <symbol>");
         }
     }
     else if (strcmp(command, "cancel") == 0) {

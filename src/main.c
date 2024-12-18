@@ -49,6 +49,13 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
     if (json_parse_message(json_str, &parsed_msg)) {
         switch (parsed_msg.type) {
             case JSON_MSG_ORDER_ADD: {
+
+                if (!order_handler_create_book(parsed_msg.data.order_add.symbol)) {
+                    LOG_ERROR("Failed to create/switch order book to symbol %s",
+                                parsed_msg.data.order_add.symbol);
+                    break;
+                }
+
                 // Add order to order book
                 OrderHandlingResult result = order_handler_add_order(&parsed_msg.data.order_add.order);
                 if (result != ORDER_SUCCESS) {
@@ -58,6 +65,13 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
             }
 
             case JSON_MSG_BOOK_QUERY: {
+
+                // Dynamically create or switch to the queried symbol
+                if (!order_handler_create_book(parsed_msg.data.book_query.symbol)) {
+                    LOG_ERROR("Failed to create/switch order book to symbol %s", 
+                              parsed_msg.data.book_query.symbol);
+                    break;
+                }
                 // Serialize and send order book
                 char* book_json = order_handler_serialize_book();
                 if (book_json) {
