@@ -1,24 +1,21 @@
 #include "trading/order_handler.h"
-#include "utils/json_utils.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
 
 // Static order book to manage orders
 static OrderBook* global_order_book = NULL;
-static char global_symbol[20] = {0};
+static char global_symbol[16] = {0};  // Remove default symbol
 
 bool order_handler_init(void) {
+    // Cleanup existing book if any
+    if (global_order_book) {
+        order_book_destroy(global_order_book);
+    }
+
     global_order_book = NULL;
     memset(global_symbol, 0, sizeof(global_symbol));
     return true;
-}
-
-void order_handler_shutdown(void) {
-    if (global_order_book) {
-        order_book_destroy(global_order_book);
-        global_order_book = NULL;
-    }
 }
 
 bool order_handler_create_book(const char* symbol) {
@@ -49,21 +46,24 @@ bool order_handler_create_book(const char* symbol) {
     return true;
 }
 
+void order_handler_shutdown(void) {
+    if (global_order_book) {
+        order_book_destroy(global_order_book);
+        global_order_book = NULL;
+    }
+    memset(global_symbol, 0, sizeof(global_symbol));
+}
+
 OrderHandlingResult order_handler_add_order(const Order* order) {
     if (!global_order_book || !order) {
         LOG_ERROR("Invalid order book or order");
         return ORDER_INVALID;
     }
 
-    // Basic order validation
-    if (order->quantity == 0) {
-        LOG_ERROR("Order quantity cannot be zero");
-        return ORDER_INVALID;
-    }
-
-    // Validate price
-    if (order->price <= 0) {
-        LOG_ERROR("Order price must be positive");
+    // Validate symbol match
+    if (strcmp(global_symbol, order->symbol) != 0) {
+        LOG_ERROR("Symbol mismatch. Current book symbol: %s, Order symbol: %s", 
+                  global_symbol, order->symbol);
         return ORDER_INVALID;
     }
 
@@ -74,38 +74,11 @@ OrderHandlingResult order_handler_add_order(const Order* order) {
         return ORDER_SUCCESS;
     } else {
         LOG_ERROR("Failed to add order to order book");
-        // Let's print out current book state for debugging
-        LOG_INFO("Current book state - Best Bid: %.2f, Best Ask: %.2f", 
-                 order_book_get_best_bid(global_order_book),
-                 order_book_get_best_ask(global_order_book));
         return ORDER_REJECTED;
     }
 }
 
-OrderHandlingResult order_handler_cancel_order(uint64_t order_id) {
-    if (!global_order_book || !order_id) {
-        LOG_ERROR("Invalid order book or order ID");
-        return ORDER_INVALID;
-    }
-
-    if (order_book_cancel(global_order_book, order_id)) {
-        LOG_INFO("Order %lu cancelled successfully", order_id);
-        return ORDER_SUCCESS;
-    } else {
-        LOG_ERROR("Failed to cancel order %lu", order_id);
-        return ORDER_REJECTED;
-    }
-}
-
+// Get current order book
 OrderBook* order_handler_get_book(void) {
     return global_order_book;
-}
-
-char* order_handler_serialize_book(void) {
-    if (!global_order_book) {
-        LOG_ERROR("No order book available");
-        return NULL;
-    }
-
-    return json_serialize_order_book(global_order_book);
 }

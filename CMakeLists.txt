@@ -53,6 +53,7 @@ set(SOURCES
     src/trading/order.c
     src/trading/order_book.c
     src/trading/order_handler.c
+    src/trading/book_query_handler.c
     src/utils/logging.c
     src/utils/json_utils.c
 )

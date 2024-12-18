@@ -81,10 +81,10 @@ static void send_book_query(WebSocket* ws, const char* symbol) {
     msg.type = JSON_MSG_BOOK_QUERY;
     
     // Use the provided symbol or default
-    strncpy(msg.data.book_query.symbol, 
-            symbol ? symbol : "AAPL", 
-            sizeof(msg.data.book_query.symbol) - 1);
-    msg.data.book_query.symbol[sizeof(msg.data.book_query.symbol) - 1] = '\0';
+    const char* src_symbol = symbol ? symbol : "AAPL";
+    size_t symbol_len = strnlen(src_symbol, sizeof(msg.data.book_query.symbol) - 1);
+    memcpy(msg.data.book_query.symbol, src_symbol, symbol_len);
+    msg.data.book_query.symbol[symbol_len] = '\0';
 
     char* json_str = json_serialize_message(&msg);
     if (json_str) {

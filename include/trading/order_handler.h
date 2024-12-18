@@ -33,4 +33,6 @@ OrderBook* order_handler_get_book(void);
 // Serialize order book to JSON
 char* order_handler_serialize_book(void);
 
+OrderBook* order_handler_get_book(void);
+
 #endif // QUANT_TRADING_ORDER_HANDLER_H

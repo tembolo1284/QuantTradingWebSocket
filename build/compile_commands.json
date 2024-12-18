@@ -56,6 +56,11 @@
 },
 {
   "directory": "/root/c-workspace/QuantTradingWebSocket/build",
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/trading/book_query_handler.c.o -c /root/c-workspace/QuantTradingWebSocket/src/trading/book_query_handler.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/src/trading/book_query_handler.c"
+},
+{
+  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
   "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party  -Wall -Wextra -Wpedantic -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o -c /root/c-workspace/QuantTradingWebSocket/src/utils/logging.c",
   "file": "/root/c-workspace/QuantTradingWebSocket/src/utils/logging.c"
 },
