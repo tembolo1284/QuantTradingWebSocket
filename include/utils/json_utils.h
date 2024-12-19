@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "trading/order.h"
-#include "trading/order_book.h"
-#include "common.h"
+#include "trading/engine/order.h"
+#include "trading/engine/order_book.h"
+#include "common/types.h"
 #include <cJSON/cJSON.h>
 
 // Maximum number of orders per price level

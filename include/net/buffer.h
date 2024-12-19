@@ -2,7 +2,7 @@
 #ifndef QUANT_TRADING_BUFFER_H
 #define QUANT_TRADING_BUFFER_H
 
-#include "../common.h"
+#include "common/types.h"
 
 typedef struct {
     uint8_t* data;

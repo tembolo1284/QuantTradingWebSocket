@@ -10,18 +10,21 @@
 #include <errno.h>
 #include <time.h>
 
+#define MAX_FRAME_SIZE (16 * 1024 * 1024)  // 16MB max frame size
+#define READ_BUFFER_SIZE 8192               // 8KB read buffer
+
 struct WebSocket {
     int sock_fd;
     Buffer* recv_buffer;
     Buffer* send_buffer;
     WebSocketCallbacks callbacks;
     bool connected;
-    char* host;  // For logging and reconnection
+    char* host;     // For logging and reconnection
     uint16_t port;
-    uint64_t message_count;  // Statistics
+    uint64_t message_count;   // Statistics
     uint64_t bytes_sent;
     uint64_t bytes_received;
-    time_t last_buffer_reset_log;  // Track log frequency for buffer resets
+    time_t last_message_time; // For timeout detection
 };
 
 static void ws_handle_error(WebSocket* ws, ErrorCode error) {
@@ -54,8 +57,8 @@ WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* 
         return NULL;
     }
 
-    // Initialize last buffer reset log timestamp
-    ws->last_buffer_reset_log = time(NULL);
+    // Initialize timestamp
+    ws->last_message_time = time(NULL);
 
     // Store connection info for logging and potential reconnection
     ws->host = strdup(host);
@@ -75,9 +78,9 @@ WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* 
     }
     ws->sock_fd = sock_result.fd;
 
-    // Create buffers
-    ws->recv_buffer = buffer_create(65536);  // 64KB initial size
-    ws->send_buffer = buffer_create(65536);
+    // Create buffers with larger initial size
+    ws->recv_buffer = buffer_create(READ_BUFFER_SIZE);
+    ws->send_buffer = buffer_create(READ_BUFFER_SIZE);
     if (!ws->recv_buffer || !ws->send_buffer) {
         LOG_ERROR("Failed to create message buffers");
         if (ws->recv_buffer) buffer_destroy(ws->recv_buffer);
@@ -158,6 +161,7 @@ bool ws_send(WebSocket* ws, const uint8_t* data, size_t len) {
     free(encoded);
     ws->bytes_sent += sent;
     ws->message_count++;
+    ws->last_message_time = time(NULL);
 
     LOG_DEBUG("Frame sent successfully (total: messages=%lu, bytes=%lu)",
              (unsigned long)ws->message_count, (unsigned long)ws->bytes_sent);
@@ -168,6 +172,8 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
     LOG_DEBUG("Handling frame type=%s, length=%lu",
              frame_type_string(frame->header.opcode),
              (unsigned long)frame->header.payload_len);
+
+    ws->last_message_time = time(NULL);
 
     switch (frame->header.opcode) {
         case FRAME_TEXT:
@@ -211,14 +217,26 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
 void ws_process(WebSocket* ws) {
     if (!ws || !ws->connected) return;
 
-    // Read available data
-    uint8_t temp_buffer[4096];
+    // Read data in chunks
+    uint8_t read_buffer[READ_BUFFER_SIZE];
     ssize_t bytes;
 
-    while ((bytes = read(ws->sock_fd, temp_buffer, sizeof(temp_buffer))) > 0) {
+    // Read available data
+    while ((bytes = read(ws->sock_fd, read_buffer, sizeof(read_buffer))) > 0) {
         LOG_DEBUG("Read %zd bytes from socket", bytes);
 
-        if (!buffer_write(ws->recv_buffer, temp_buffer, bytes)) {
+        // Ensure buffer has enough space
+        if (ws->recv_buffer->size + bytes > ws->recv_buffer->capacity) {
+            size_t new_capacity = ws->recv_buffer->capacity * 2;
+            if (!buffer_resize(ws->recv_buffer, new_capacity)) {
+                LOG_ERROR("Failed to resize receive buffer");
+                ws_handle_error(ws, ERROR_MEMORY);
+                return;
+            }
+        }
+
+        // Append to buffer
+        if (!buffer_write(ws->recv_buffer, read_buffer, bytes)) {
             LOG_ERROR("Failed to write to receive buffer");
             ws_handle_error(ws, ERROR_MEMORY);
             return;
@@ -229,12 +247,12 @@ void ws_process(WebSocket* ws) {
 
     if (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         LOG_ERROR("Socket read error: %s", strerror(errno));
-        ws_handle_error(ws, ERROR_WS_CONNECTION_FAILED);
+        ws_handle_error(ws, ERROR_NETWORK);
         return;
     }
 
     // Process complete frames
-    while (ws->connected && ws->recv_buffer->size > 0) {
+    while (ws->connected && ws->recv_buffer->size > ws->recv_buffer->read_pos) {
         WebSocketFrame* frame = NULL;
         FrameParseResult result = frame_parse(
             ws->recv_buffer->data + ws->recv_buffer->read_pos,
@@ -265,16 +283,19 @@ void ws_process(WebSocket* ws) {
     }
 
     // Buffer maintenance
-    if (ws->recv_buffer->read_pos == ws->recv_buffer->size) {
-        // Only log buffer reset every 30 seconds to reduce log spam
-        time_t now = time(NULL);
-        if (now - ws->last_buffer_reset_log >= 30) {
-            LOG_DEBUG("Resetting receive buffer positions");
-            ws->last_buffer_reset_log = now;
+    if (ws->recv_buffer->read_pos > 0) {
+        if (ws->recv_buffer->read_pos == ws->recv_buffer->size) {
+            // Reset buffer if all data has been processed
+            ws->recv_buffer->read_pos = 0;
+            ws->recv_buffer->size = 0;
+        } else {
+            // Move remaining data to beginning of buffer
+            memmove(ws->recv_buffer->data,
+                   ws->recv_buffer->data + ws->recv_buffer->read_pos,
+                   ws->recv_buffer->size - ws->recv_buffer->read_pos);
+            ws->recv_buffer->size -= ws->recv_buffer->read_pos;
+            ws->recv_buffer->read_pos = 0;
         }
-        
-        ws->recv_buffer->read_pos = 0;
-        ws->recv_buffer->size = 0;
     }
 }
 
@@ -295,8 +316,8 @@ void ws_close(WebSocket* ws) {
         }
     }
 
+    LOG_DEBUG("Closing socket");
     if (ws->sock_fd >= 0) {
-        LOG_DEBUG("Closing socket");
         close(ws->sock_fd);
     }
 

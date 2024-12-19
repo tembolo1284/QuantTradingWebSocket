@@ -1,7 +1,7 @@
 #ifndef QUANT_TRADING_WEBSOCKET_H
 #define QUANT_TRADING_WEBSOCKET_H
 
-#include "../common.h"
+#include "common/types.h"
 #include <stdint.h>
 #include <stddef.h>
 
