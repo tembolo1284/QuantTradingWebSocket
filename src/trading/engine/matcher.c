@@ -3,29 +3,61 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Static order book to manage orders
-static OrderBook* global_order_book = NULL;
-static char global_symbol[16] = {0};  // Remove default symbol
+#define MAX_SYMBOLS 100
+
+// Structure to hold multiple order books
+typedef struct {
+    OrderBook* book;
+    char symbol[16];
+    bool active;
+} BookEntry;
+
+// Array of order books
+static BookEntry order_books[MAX_SYMBOLS] = {0};
+static size_t active_books = 0;
 
 bool order_handler_init(void) {
-    // Cleanup existing book if any
-    if (global_order_book) {
-        order_book_destroy(global_order_book);
+    // Initialize all book entries
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        order_books[i].book = NULL;
+        order_books[i].symbol[0] = '\0';
+        order_books[i].active = false;
     }
-
-    global_order_book = NULL;
-    memset(global_symbol, 0, sizeof(global_symbol));
+    active_books = 0;
     return true;
 }
 
 void order_handler_shutdown(void) {
-    if (global_order_book) {
-        LOG_DEBUG("Destroying order book for symbol: %s", global_symbol);
-        order_book_destroy(global_order_book);
-        global_order_book = NULL;
+    // Cleanup all active books
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active) {
+            LOG_DEBUG("Destroying order book for symbol: %s", order_books[i].symbol);
+            order_book_destroy(order_books[i].book);
+            order_books[i].book = NULL;
+            order_books[i].symbol[0] = '\0';
+            order_books[i].active = false;
+        }
     }
-    memset(global_symbol, 0, sizeof(global_symbol));
+    active_books = 0;
     LOG_INFO("Order handler shutdown complete");
+}
+
+static BookEntry* find_book_entry(const char* symbol) {
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active && strcmp(order_books[i].symbol, symbol) == 0) {
+            return &order_books[i];
+        }
+    }
+    return NULL;
+}
+
+static BookEntry* get_free_book_entry(void) {
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (!order_books[i].active) {
+            return &order_books[i];
+        }
+    }
+    return NULL;
 }
 
 bool order_handler_create_book(const char* symbol) {
@@ -35,69 +67,73 @@ bool order_handler_create_book(const char* symbol) {
         return false;
     }
 
-    // If we already have a book for this symbol, just return success
-    if (global_order_book && strcmp(global_symbol, symbol) == 0) {
+    // Check if book already exists
+    BookEntry* entry = find_book_entry(symbol);
+    if (entry) {
         LOG_DEBUG("Using existing order book for symbol: %s", symbol);
         return true;
     }
 
-    // Only create a new book if it's a different symbol
-    if (!global_order_book || strcmp(global_symbol, symbol) != 0) {
-        // Cleanup existing book if any
-        if (global_order_book) {
-            order_book_destroy(global_order_book);
-        }
-
-        // Create new order book
-        global_order_book = order_book_create(symbol);
-        
-        if (!global_order_book) {
-            LOG_ERROR("Failed to create order book for symbol: %s", symbol);
-            return false;
-        }
-
-        // Copy symbol
-        strncpy(global_symbol, symbol, sizeof(global_symbol) - 1);
-        global_symbol[sizeof(global_symbol) - 1] = '\0';
-        LOG_INFO("Order book created for symbol: %s", global_symbol);
+    // Find space for new book
+    if (active_books >= MAX_SYMBOLS) {
+        LOG_ERROR("Maximum number of order books reached (%d)", MAX_SYMBOLS);
+        return false;
     }
 
+    entry = get_free_book_entry();
+    if (!entry) {
+        LOG_ERROR("No free slots available for new order book");
+        return false;
+    }
+
+    // Create new order book
+    entry->book = order_book_create(symbol);
+    if (!entry->book) {
+        LOG_ERROR("Failed to create order book for symbol: %s", symbol);
+        return false;
+    }
+
+    // Initialize entry
+    strncpy(entry->symbol, symbol, sizeof(entry->symbol) - 1);
+    entry->symbol[sizeof(entry->symbol) - 1] = '\0';
+    entry->active = true;
+    active_books++;
+
+    LOG_INFO("Order book created for symbol: %s (Total active books: %zu)", 
+             symbol, active_books);
     return true;
 }
 
 OrderHandlingResult order_handler_add_order(const Order* order) {
-    LOG_DEBUG("Attempting to add order: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
-             order ? order->symbol : "NULL",
-             order ? order->price : 0.0,
-             order ? order->quantity : 0,
-             order ? order->is_buy : -1);
-
-    if (!global_order_book || !order) {
-        LOG_ERROR("Invalid order book (%p) or order (%p)", 
-                  (void*)global_order_book, (void*)order);
+    if (!order) {
+        LOG_ERROR("Invalid order (NULL)");
         return ORDER_INVALID;
     }
 
-    // Log current book state
-    LOG_DEBUG("Current order book symbol: %s", global_symbol);
+    LOG_DEBUG("Attempting to add order: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
+             order->symbol, order->price, order->quantity, order->is_buy);
 
-    // Validate symbol match
-    if (strcmp(global_symbol, order->symbol) != 0) {
-        LOG_ERROR("Symbol mismatch. Current book symbol: '%s', Order symbol: '%s'", 
-                  global_symbol, order->symbol);
+    // Find or create book for symbol
+    if (!order_handler_create_book(order->symbol)) {
+        return ORDER_INVALID;
+    }
+
+    BookEntry* entry = find_book_entry(order->symbol);
+    if (!entry || !entry->book) {
+        LOG_ERROR("Failed to get order book for symbol: %s", order->symbol);
         return ORDER_INVALID;
     }
 
     // Validate price and quantity
     if (order->price <= 0.0 || order->quantity == 0) {
-        LOG_ERROR("Invalid price (%.2f) or quantity (%u)", 
+        LOG_ERROR("Invalid price (%.2f) or quantity (%u)",
                   order->price, order->quantity);
         return ORDER_INVALID;
     }
 
-    // Attempt to add order
-    if (order_book_add(global_order_book, order)) {
-        LOG_INFO("Order added successfully: id=%lu, price=%.2f, quantity=%u, is_buy=%d", 
+    // Add order to book
+    if (order_book_add(entry->book, order)) {
+        LOG_INFO("Order added successfully: id=%lu, price=%.2f, quantity=%u, is_buy=%d",
                  order->id, order->price, order->quantity, order->is_buy);
         return ORDER_SUCCESS;
     } else {
@@ -106,7 +142,35 @@ OrderHandlingResult order_handler_add_order(const Order* order) {
     }
 }
 
-// Get current order book
+// Get order book for a specific symbol
+OrderBook* order_handler_get_book_by_symbol(const char* symbol) {
+    BookEntry* entry = find_book_entry(symbol);
+    return entry ? entry->book : NULL;
+}
+
+// Get array of all active order books
+size_t order_handler_get_all_books(OrderBook** books, size_t max_books) {
+    size_t count = 0;
+    for (size_t i = 0; i < MAX_SYMBOLS && count < max_books; i++) {
+        if (order_books[i].active) {
+            books[count++] = order_books[i].book;
+        }
+    }
+    return count;
+}
+
+// Get current active book count
+size_t order_handler_get_active_book_count(void) {
+    return active_books;
+}
+
+// Legacy function for backward compatibility
 OrderBook* order_handler_get_book(void) {
-    return global_order_book;
+    // Return first active book or NULL
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active) {
+            return order_books[i].book;
+        }
+    }
+    return NULL;
 }

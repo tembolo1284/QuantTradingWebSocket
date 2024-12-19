@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
         // Periodic tasks
         static time_t last_status = 0;
         time_t now = time(NULL);
-        if (now - last_status >= 10) {
+        if (now - last_status >= 30) {
             OrderBook* book = order_handler_get_book();
             if (book) {
                 LOG_INFO("Server status - Best Bid: %.2f, Best Ask: %.2f",

@@ -1,23 +1,39 @@
 #include "net/buffer.h"
 #include <stdlib.h>
 #include <string.h>
+#include "utils/logging.h"
 
 Buffer* buffer_create(size_t initial_capacity) {
     Buffer* buffer = malloc(sizeof(Buffer));
     if (!buffer) return NULL;
-
+    
     buffer->data = malloc(initial_capacity);
     if (!buffer->data) {
         free(buffer);
         return NULL;
     }
-
+    
     buffer->capacity = initial_capacity;
     buffer->size = 0;
     buffer->read_pos = 0;
     buffer->write_pos = 0;
-
     return buffer;
+}
+
+bool buffer_resize(Buffer* buffer, size_t new_capacity) {
+    if (!buffer || new_capacity < buffer->size) {
+        return false;
+    }
+
+    uint8_t* new_data = realloc(buffer->data, new_capacity);
+    if (!new_data) {
+        LOG_ERROR("Failed to resize buffer to %zu bytes", new_capacity);
+        return false;
+    }
+
+    buffer->data = new_data;
+    buffer->capacity = new_capacity;
+    return true;
 }
 
 bool buffer_write(Buffer* buffer, const uint8_t* data, size_t len) {
@@ -30,17 +46,14 @@ bool buffer_write(Buffer* buffer, const uint8_t* data, size_t len) {
             new_capacity *= 2;
         }
         
-        uint8_t* new_data = realloc(buffer->data, new_capacity);
-        if (!new_data) return false;
-        
-        buffer->data = new_data;
-        buffer->capacity = new_capacity;
+        if (!buffer_resize(buffer, new_capacity)) {
+            return false;
+        }
     }
     
     memcpy(buffer->data + buffer->write_pos, data, len);
     buffer->write_pos += len;
     buffer->size += len;
-    
     return true;
 }
 
@@ -49,7 +62,6 @@ size_t buffer_read(Buffer* buffer, uint8_t* dst, size_t len) {
     
     size_t available = buffer->size - buffer->read_pos;
     size_t to_read = len < available ? len : available;
-    
     memcpy(dst, buffer->data + buffer->read_pos, to_read);
     buffer->read_pos += to_read;
     
@@ -57,7 +69,6 @@ size_t buffer_read(Buffer* buffer, uint8_t* dst, size_t len) {
     if (buffer->read_pos == buffer->write_pos) {
         buffer->read_pos = buffer->write_pos = 0;
     }
-    
     return to_read;
 }
 

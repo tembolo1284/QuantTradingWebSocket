@@ -37,14 +37,14 @@ static void add_order_details_to_json(cJSON* symbol_orders, struct PriceNode* no
 
     // Create orders array for this price level
     cJSON* orders_array = cJSON_CreateArray();
-    
+
     struct OrderNode* current_order = node->orders;
     while (current_order) {
         cJSON* order_obj = cJSON_CreateObject();
         cJSON_AddNumberToObject(order_obj, "id", current_order->order.id);
         cJSON_AddNumberToObject(order_obj, "quantity", current_order->order.quantity);
         cJSON_AddBoolToObject(order_obj, "is_buy", is_buy);
-        
+
         cJSON_AddItemToArray(orders_array, order_obj);
         current_order = current_order->next;
     }
@@ -54,6 +54,23 @@ static void add_order_details_to_json(cJSON* symbol_orders, struct PriceNode* no
 
     // Recursive traversal for right subtree
     add_order_details_to_json(symbol_orders, node->right, is_buy);
+}
+
+static void add_book_to_array(OrderBook* book, cJSON* symbols_array) {
+    if (!book) return;
+
+    cJSON* symbol_obj = cJSON_CreateObject();
+    cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
+
+    cJSON* buy_orders = cJSON_CreateArray();
+    cJSON* sell_orders = cJSON_CreateArray();
+
+    add_order_details_to_json(buy_orders, book->buy_tree, true);
+    add_order_details_to_json(sell_orders, book->sell_tree, false);
+
+    cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
+    cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
+    cJSON_AddItemToArray(symbols_array, symbol_obj);
 }
 
 char* book_query_serialize(const BookQueryConfig* config) {
@@ -68,11 +85,11 @@ char* book_query_serialize(const BookQueryConfig* config) {
 
     // Symbols container
     cJSON* symbols_array = cJSON_CreateArray();
-    OrderBook* book = order_handler_get_book();
-    
+
     if (config->type == BOOK_QUERY_SYMBOL) {
         // Specific symbol query
-        if (!book || (book && strcmp(book->symbol, config->symbol) != 0)) {
+        OrderBook* book = order_handler_get_book_by_symbol(config->symbol);
+        if (!book) {
             // Create empty book response for requested symbol
             cJSON* symbol_obj = cJSON_CreateObject();
             cJSON_AddStringToObject(symbol_obj, "symbol", config->symbol);
@@ -80,35 +97,21 @@ char* book_query_serialize(const BookQueryConfig* config) {
             cJSON_AddItemToObject(symbol_obj, "sell_orders", cJSON_CreateArray());
             cJSON_AddItemToArray(symbols_array, symbol_obj);
         } else {
-            // Add existing book
-            cJSON* symbol_obj = cJSON_CreateObject();
-            cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
-            
-            cJSON* buy_orders = cJSON_CreateArray();
-            cJSON* sell_orders = cJSON_CreateArray();
-
-            add_order_details_to_json(buy_orders, book->buy_tree, true);
-            add_order_details_to_json(sell_orders, book->sell_tree, false);
-
-            cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
-            cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-            cJSON_AddItemToArray(symbols_array, symbol_obj);
+            add_book_to_array(book, symbols_array);
         }
     } else {  // All symbols query
-        if (book) {
-            // Add existing book
-            cJSON* symbol_obj = cJSON_CreateObject();
-            cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
-            
-            cJSON* buy_orders = cJSON_CreateArray();
-            cJSON* sell_orders = cJSON_CreateArray();
+        size_t max_books = order_handler_get_active_book_count();
+        if (max_books > 0) {
+            OrderBook** books = malloc(sizeof(OrderBook*) * max_books);
+            if (books) {
+                size_t actual_books = order_handler_get_all_books(books, max_books);
+                LOG_DEBUG("Processing %zu active order books", actual_books);
 
-            add_order_details_to_json(buy_orders, book->buy_tree, true);
-            add_order_details_to_json(sell_orders, book->sell_tree, false);
-
-            cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
-            cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-            cJSON_AddItemToArray(symbols_array, symbol_obj);
+                for (size_t i = 0; i < actual_books; i++) {
+                    add_book_to_array(books[i], symbols_array);
+                }
+                free(books);
+            }
         }
         // For all-symbol query, empty array is fine if no books exist
     }

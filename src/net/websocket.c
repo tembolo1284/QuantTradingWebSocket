@@ -217,42 +217,49 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
 void ws_process(WebSocket* ws) {
     if (!ws || !ws->connected) return;
 
-    // Read data in chunks
-    uint8_t read_buffer[READ_BUFFER_SIZE];
-    ssize_t bytes;
+    // Check if data is available to read
+    fd_set read_fds;
+    struct timeval tv = {0, 10000};  // 10ms timeout
+    
+    FD_ZERO(&read_fds);
+    FD_SET(ws->sock_fd, &read_fds);
+    
+    int ready = select(ws->sock_fd + 1, &read_fds, NULL, NULL, &tv);
+    if (ready < 0) {
+        if (errno != EINTR) {
+            LOG_ERROR("Select error: %s", strerror(errno));
+            ws_handle_error(ws, ERROR_NETWORK);
+        }
+        return;
+    }
+    
+    // No data available, just return
+    if (ready == 0) {
+        return;
+    }
 
     // Read available data
-    while ((bytes = read(ws->sock_fd, read_buffer, sizeof(read_buffer))) > 0) {
+    uint8_t temp_buffer[4096];
+    ssize_t bytes = read(ws->sock_fd, temp_buffer, sizeof(temp_buffer));
+    
+    if (bytes > 0) {
         LOG_DEBUG("Read %zd bytes from socket", bytes);
-
-        // Ensure buffer has enough space
-        if (ws->recv_buffer->size + bytes > ws->recv_buffer->capacity) {
-            size_t new_capacity = ws->recv_buffer->capacity * 2;
-            if (!buffer_resize(ws->recv_buffer, new_capacity)) {
-                LOG_ERROR("Failed to resize receive buffer");
-                ws_handle_error(ws, ERROR_MEMORY);
-                return;
-            }
-        }
-
-        // Append to buffer
-        if (!buffer_write(ws->recv_buffer, read_buffer, bytes)) {
+        
+        if (!buffer_write(ws->recv_buffer, temp_buffer, bytes)) {
             LOG_ERROR("Failed to write to receive buffer");
             ws_handle_error(ws, ERROR_MEMORY);
             return;
         }
-
+        
         ws->bytes_received += bytes;
-    }
-
-    if (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
+    } else if (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         LOG_ERROR("Socket read error: %s", strerror(errno));
         ws_handle_error(ws, ERROR_NETWORK);
         return;
     }
 
-    // Process complete frames
-    while (ws->connected && ws->recv_buffer->size > ws->recv_buffer->read_pos) {
+    // Process any complete frames in buffer
+    while (ws->recv_buffer->size > ws->recv_buffer->read_pos) {
         WebSocketFrame* frame = NULL;
         FrameParseResult result = frame_parse(
             ws->recv_buffer->data + ws->recv_buffer->read_pos,
@@ -261,41 +268,35 @@ void ws_process(WebSocket* ws) {
         );
 
         if (!result.complete) {
-            if (result.error) {
-                LOG_ERROR("Frame parsing failed: %s", result.error);
-                free(result.error);
-                ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
+            // Not enough data for a complete frame
+            if (ws->recv_buffer->read_pos > 0) {
+                // Move any remaining data to start of buffer
+                size_t remaining = ws->recv_buffer->size - ws->recv_buffer->read_pos;
+                if (remaining > 0) {
+                    memmove(ws->recv_buffer->data,
+                           ws->recv_buffer->data + ws->recv_buffer->read_pos,
+                           remaining);
+                }
+                ws->recv_buffer->size = remaining;
+                ws->recv_buffer->read_pos = 0;
             }
             break;
         }
 
-        ws->recv_buffer->read_pos += result.bytes_consumed;
-
         if (frame) {
             if (frame_validate(frame)) {
                 ws_handle_frame(ws, frame);
-            } else {
-                LOG_ERROR("Invalid frame received");
-                ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
             }
             frame_destroy(frame);
         }
+
+        ws->recv_buffer->read_pos += result.bytes_consumed;
     }
 
-    // Buffer maintenance
-    if (ws->recv_buffer->read_pos > 0) {
-        if (ws->recv_buffer->read_pos == ws->recv_buffer->size) {
-            // Reset buffer if all data has been processed
-            ws->recv_buffer->read_pos = 0;
-            ws->recv_buffer->size = 0;
-        } else {
-            // Move remaining data to beginning of buffer
-            memmove(ws->recv_buffer->data,
-                   ws->recv_buffer->data + ws->recv_buffer->read_pos,
-                   ws->recv_buffer->size - ws->recv_buffer->read_pos);
-            ws->recv_buffer->size -= ws->recv_buffer->read_pos;
-            ws->recv_buffer->read_pos = 0;
-        }
+    // Reset buffer if all data consumed
+    if (ws->recv_buffer->read_pos >= ws->recv_buffer->size) {
+        ws->recv_buffer->read_pos = 0;
+        ws->recv_buffer->size = 0;
     }
 }
 
