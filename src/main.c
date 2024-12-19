@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
 
 #define DEFAULT_PORT 8080
 
@@ -46,30 +47,58 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
     memcpy(json_str, data, len);
     json_str[len] = '\0';
 
-    LOG_DEBUG("Received message: %s", json_str);
+    LOG_DEBUG("Received raw message from client (len=%zu): %s", len, json_str);
 
     // Parse the JSON message
     ParsedMessage parsed_msg;
     if (json_parse_message(json_str, &parsed_msg)) {
+        LOG_DEBUG("Successfully parsed message, type=%d", parsed_msg.type);
+        
         switch (parsed_msg.type) {
             case JSON_MSG_ORDER_ADD: {
+                LOG_DEBUG("Processing order add: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
+                         parsed_msg.data.order_add.symbol,
+                         parsed_msg.data.order_add.order.price,
+                         parsed_msg.data.order_add.order.quantity,
+                         parsed_msg.data.order_add.order.is_buy);
+
                 // Dynamically create or switch to the order's symbol
                 if (!order_handler_create_book(parsed_msg.data.order_add.symbol)) {
                     LOG_ERROR("Failed to create/switch order book to symbol %s", 
                               parsed_msg.data.order_add.symbol);
                     break;
                 }
+                LOG_DEBUG("Successfully created/switched to order book for symbol %s",
+                         parsed_msg.data.order_add.symbol);
 
                 // Add order to the newly created/switched book
                 OrderHandlingResult result = order_handler_add_order(&parsed_msg.data.order_add.order);
                 
                 if (result != ORDER_SUCCESS) {
-                    LOG_ERROR("Failed to add order");
+                    LOG_ERROR("Failed to add order, result=%d", result);
+                } else {
+                    LOG_INFO("Successfully added order: id=%lu, symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
+                            parsed_msg.data.order_add.order.id,
+                            parsed_msg.data.order_add.order.symbol,
+                            parsed_msg.data.order_add.order.price,
+                            parsed_msg.data.order_add.order.quantity,
+                            parsed_msg.data.order_add.order.is_buy);
+                    
+                    // Get updated book state
+                    OrderBook* book = order_handler_get_book();
+                    if (book) {
+                        LOG_DEBUG("Updated book state - Best Bid: %.2f, Best Ask: %.2f",
+                                order_book_get_best_bid(book),
+                                order_book_get_best_ask(book));
+                    }
                 }
                 break;
             }
 
             case JSON_MSG_BOOK_QUERY: {
+                LOG_DEBUG("Processing book query: symbol=%s", 
+                         parsed_msg.data.book_query.symbol);
+                         
                 BookQueryConfig query_config;
                 query_config.type = strlen(parsed_msg.data.book_query.symbol) > 0 
                     ? BOOK_QUERY_SYMBOL 
@@ -83,12 +112,15 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
                            parsed_msg.data.book_query.symbol, 
                            symbol_len);
                     query_config.symbol[symbol_len] = '\0';
+                    LOG_DEBUG("Querying specific symbol: %s", query_config.symbol);
+                } else {
+                    LOG_DEBUG("Querying all symbols");
                 }
 
                 // Serialize book query result
                 char* book_json = book_query_serialize(&query_config);
                 if (book_json) {
-                    LOG_INFO("Sending order book snapshot");
+                    LOG_INFO("Sending order book snapshot: %s", book_json);
                     ws_client_send(client, (const uint8_t*)book_json, strlen(book_json));
                     free(book_json);
                 } else {
@@ -98,13 +130,13 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
             }
 
             default:
-                LOG_WARN("Unhandled message type");
+                LOG_WARN("Unhandled message type: %d", parsed_msg.type);
                 break;
         }
 
         json_free_parsed_message(&parsed_msg);
     } else {
-        LOG_ERROR("Failed to parse JSON message");
+        LOG_ERROR("Failed to parse JSON message: %s", json_str);
     }
 
     free(json_str);

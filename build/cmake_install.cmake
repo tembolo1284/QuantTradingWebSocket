@@ -1,4 +1,4 @@
-# Install script for directory: /root/c-workspace/QuantTradingWebSocket
+# Install script for directory: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,9 +44,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cmake_install.cmake")
-  include("/root/c-workspace/QuantTradingWebSocket/build/tests/cmake_install.cmake")
-  include("/root/c-workspace/QuantTradingWebSocket/build/examples/cmake_install.cmake")
+  include("/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cmake_install.cmake")
+  include("/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests/cmake_install.cmake")
+  include("/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/examples/cmake_install.cmake")
 
 endif()
 
@@ -58,5 +58,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/root/c-workspace/QuantTradingWebSocket/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

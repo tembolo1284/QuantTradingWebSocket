@@ -1,4 +1,4 @@
-# Install script for directory: /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/tests
+# Install script for directory: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

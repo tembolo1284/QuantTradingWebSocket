@@ -68,40 +68,19 @@ char* book_query_serialize(const BookQueryConfig* config) {
 
     // Symbols container
     cJSON* symbols_array = cJSON_CreateArray();
+    OrderBook* book = order_handler_get_book();
     
-    // If specific symbol query, or all book query
     if (config->type == BOOK_QUERY_SYMBOL) {
-        // Find order book for specific symbol
-        OrderBook* book = order_handler_get_book();
-        
-        if (!book || strcmp(book->symbol, config->symbol) != 0) {
-            LOG_ERROR("No order book found for symbol %s", config->symbol);
-            cJSON_Delete(root);
-            return NULL;
-        }
-
-        cJSON* symbol_obj = cJSON_CreateObject();
-        cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
-        
-        // Create buy and sell order arrays
-        cJSON* buy_orders = cJSON_CreateArray();
-        cJSON* sell_orders = cJSON_CreateArray();
-
-        // Add buy and sell orders
-        add_order_details_to_json(buy_orders, book->buy_tree, true);
-        add_order_details_to_json(sell_orders, book->sell_tree, false);
-
-        cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
-        cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-
-        cJSON_AddItemToArray(symbols_array, symbol_obj);
-    } 
-    else {  // All symbols query
-        // Get all existing order books (you'll need to implement this)
-        // For now, we'll just return the current book
-        OrderBook* book = order_handler_get_book();
-        
-        if (book) {
+        // Specific symbol query
+        if (!book || (book && strcmp(book->symbol, config->symbol) != 0)) {
+            // Create empty book response for requested symbol
+            cJSON* symbol_obj = cJSON_CreateObject();
+            cJSON_AddStringToObject(symbol_obj, "symbol", config->symbol);
+            cJSON_AddItemToObject(symbol_obj, "buy_orders", cJSON_CreateArray());
+            cJSON_AddItemToObject(symbol_obj, "sell_orders", cJSON_CreateArray());
+            cJSON_AddItemToArray(symbols_array, symbol_obj);
+        } else {
+            // Add existing book
             cJSON* symbol_obj = cJSON_CreateObject();
             cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
             
@@ -113,9 +92,25 @@ char* book_query_serialize(const BookQueryConfig* config) {
 
             cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
             cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-
             cJSON_AddItemToArray(symbols_array, symbol_obj);
         }
+    } else {  // All symbols query
+        if (book) {
+            // Add existing book
+            cJSON* symbol_obj = cJSON_CreateObject();
+            cJSON_AddStringToObject(symbol_obj, "symbol", book->symbol);
+            
+            cJSON* buy_orders = cJSON_CreateArray();
+            cJSON* sell_orders = cJSON_CreateArray();
+
+            add_order_details_to_json(buy_orders, book->buy_tree, true);
+            add_order_details_to_json(sell_orders, book->sell_tree, false);
+
+            cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
+            cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
+            cJSON_AddItemToArray(symbols_array, symbol_obj);
+        }
+        // For all-symbol query, empty array is fine if no books exist
     }
 
     cJSON_AddItemToObject(root, "symbols", symbols_array);

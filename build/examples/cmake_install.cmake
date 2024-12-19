@@ -1,4 +1,4 @@
-# Install script for directory: /root/c-workspace/QuantTradingWebSocket/examples
+# Install script for directory: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/examples
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

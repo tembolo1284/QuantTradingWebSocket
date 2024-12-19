@@ -5,7 +5,13 @@
 #include <stdint.h>
 #include "trading/order.h"
 #include "trading/order_book.h"
+#include "common.h"
 #include <cJSON/cJSON.h>
+
+// Maximum number of orders per price level
+#define MAX_ORDERS_PER_PRICE 1000
+// Maximum number of symbols in a response
+#define MAX_SYMBOLS 10
 
 // JSON message types
 typedef enum {
@@ -15,6 +21,24 @@ typedef enum {
     JSON_MSG_BOOK_RESPONSE,
     JSON_MSG_UNKNOWN
 } JsonMessageType;
+
+// Structure for order in book response
+typedef struct {
+    uint64_t id;
+    double price;
+    uint32_t quantity;
+} BookOrder;
+
+// Structure for symbol-specific order book data
+typedef struct {
+    char symbol[16];
+    BookOrder buy_orders[MAX_ORDERS_PER_PRICE];
+    size_t buy_orders_count;
+    BookOrder sell_orders[MAX_ORDERS_PER_PRICE];
+    size_t sell_orders_count;
+    double best_bid;
+    double best_ask;
+} BookSymbol;
 
 // Structure to represent a parsed message
 typedef struct {
@@ -30,14 +54,13 @@ typedef struct {
         } order_cancel;
         
         struct {
+            BookQueryType type;
             char symbol[16];
         } book_query;
         
         struct {
-            char symbol[16];
-            double best_bid;
-            double best_ask;
-            // Additional fields could be added for full order book details
+            BookSymbol symbols[MAX_SYMBOLS];
+            size_t symbols_count;
         } book_response;
     } data;
 } ParsedMessage;

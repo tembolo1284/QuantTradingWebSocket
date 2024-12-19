@@ -23,6 +23,12 @@ typedef enum ErrorCode {
     ERROR_TRADING_ORDER_NOT_FOUND
 } ErrorCode;
 
+// Book query types
+typedef enum BookQueryType {
+    BOOK_QUERY_ALL,     // Get all symbols
+    BOOK_QUERY_SYMBOL   // Get specific symbol
+} BookQueryType;
+
 // Timestamp in nanoseconds
 typedef uint64_t timestamp_t;
 

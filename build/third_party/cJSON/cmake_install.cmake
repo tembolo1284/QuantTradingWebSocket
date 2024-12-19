@@ -1,4 +1,4 @@
-# Install script for directory: /root/c-workspace/QuantTradingWebSocket/third_party/cJSON
+# Install script for directory: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -51,7 +51,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/usr/local/include/cjson" TYPE FILE FILES "/root/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.h")
+  file(INSTALL DESTINATION "/usr/local/include/cjson" TYPE FILE FILES "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.h")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -63,7 +63,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/usr/local/lib/pkgconfig" TYPE FILE FILES "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/libcjson.pc")
+  file(INSTALL DESTINATION "/usr/local/lib/pkgconfig" TYPE FILE FILES "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/libcjson.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -75,14 +75,14 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/usr/local/lib" TYPE STATIC_LIBRARY FILES "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/libcjson.a")
+  file(INSTALL DESTINATION "/usr/local/lib" TYPE STATIC_LIBRARY FILES "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/libcjson.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}/usr/local/lib/cmake/cJSON/cjson.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}/usr/local/lib/cmake/cJSON/cjson.cmake"
-         "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson.cmake")
+         "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}/usr/local/lib/cmake/cJSON/cjson-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -99,7 +99,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/usr/local/lib/cmake/cJSON" TYPE FILE FILES "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson.cmake")
+  file(INSTALL DESTINATION "/usr/local/lib/cmake/cJSON" TYPE FILE FILES "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
      "/usr/local/lib/cmake/cJSON/cjson-release.cmake")
@@ -109,7 +109,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
-    file(INSTALL DESTINATION "/usr/local/lib/cmake/cJSON" TYPE FILE FILES "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson-release.cmake")
+    file(INSTALL DESTINATION "/usr/local/lib/cmake/cJSON" TYPE FILE FILES "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/CMakeFiles/Export/_usr/local/lib/cmake/cJSON/cjson-release.cmake")
   endif()
 endif()
 
@@ -123,15 +123,15 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   file(INSTALL DESTINATION "/usr/local/lib/cmake/cJSON" TYPE FILE FILES
-    "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cJSONConfig.cmake"
-    "/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cJSONConfigVersion.cmake"
+    "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cJSONConfig.cmake"
+    "/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/cJSONConfigVersion.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests/cmake_install.cmake")
-  include("/root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing/cmake_install.cmake")
+  include("/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests/cmake_install.cmake")
+  include("/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing/cmake_install.cmake")
 
 endif()
 
