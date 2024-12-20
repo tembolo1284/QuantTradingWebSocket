@@ -217,86 +217,143 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
 void ws_process(WebSocket* ws) {
     if (!ws || !ws->connected) return;
 
-    // Check if data is available to read
-    fd_set read_fds;
-    struct timeval tv = {0, 10000};  // 10ms timeout
-    
-    FD_ZERO(&read_fds);
-    FD_SET(ws->sock_fd, &read_fds);
-    
-    int ready = select(ws->sock_fd + 1, &read_fds, NULL, NULL, &tv);
-    if (ready < 0) {
-        if (errno != EINTR) {
-            LOG_ERROR("Select error: %s", strerror(errno));
-            ws_handle_error(ws, ERROR_NETWORK);
+    // Function to fully read required bytes
+    ssize_t read_fully(uint8_t* buffer, size_t needed) {
+        size_t total_read = 0;
+        size_t attempts = 0;
+        const size_t MAX_ATTEMPTS = 10;
+
+        while (total_read < needed && attempts < MAX_ATTEMPTS) {
+            ssize_t bytes = read(ws->sock_fd, buffer + total_read, needed - total_read);
+            
+            if (bytes > 0) {
+                total_read += bytes;
+                attempts = 0;  // Reset attempts on successful read
+                ws->bytes_received += bytes;
+            } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
+                LOG_ERROR("Socket read error or connection closed: %s", strerror(errno));
+                return -1;
+            } else {
+                attempts++;
+                usleep(1000);  // Short delay before retry
+            }
         }
-        return;
-    }
-    
-    // No data available, just return
-    if (ready == 0) {
-        return;
+        
+        return total_read;
     }
 
-    // Read available data
-    uint8_t temp_buffer[4096];
-    ssize_t bytes = read(ws->sock_fd, temp_buffer, sizeof(temp_buffer));
-    
-    if (bytes > 0) {
-        LOG_DEBUG("Read %zd bytes from socket", bytes);
-        
-        if (!buffer_write(ws->recv_buffer, temp_buffer, bytes)) {
-            LOG_ERROR("Failed to write to receive buffer");
-            ws_handle_error(ws, ERROR_MEMORY);
+    while (ws->connected) {
+        // Read initial frame header (2 bytes)
+        uint8_t header[2];
+        ssize_t header_read = read_fully(header, 2);
+        if (header_read != 2) {
+            if (header_read < 0) {
+                ws_handle_error(ws, ERROR_NETWORK);
+                return;
+            }
+            break;  // No more data available
+        }
+
+        // Parse basic header
+        bool fin = (header[0] & 0x80) != 0;
+        uint8_t opcode = header[0] & 0x0F;
+        bool masked = (header[1] & 0x80) != 0;
+        size_t payload_len = header[1] & 0x7F;
+        size_t header_extra = 0;
+        uint8_t header_ext[8];
+
+        // Handle extended payload length
+        if (payload_len == 126) {
+            header_extra = 2;
+        } else if (payload_len == 127) {
+            header_extra = 8;
+        }
+
+        // Read extended header if needed
+        if (header_extra > 0) {
+            if (read_fully(header_ext, header_extra) != header_extra) {
+                ws_handle_error(ws, ERROR_NETWORK);
+                return;
+            }
+
+            if (payload_len == 126) {
+                payload_len = (header_ext[0] << 8) | header_ext[1];
+            } else {
+                payload_len = 0;  // Initialize to 0 for 64-bit length
+                for (int i = 0; i < 8; i++) {
+                    payload_len = (payload_len << 8) | header_ext[i];
+                }
+            }
+        }
+
+        // Read masking key if present
+        uint8_t mask_key[4];
+        if (masked) {
+            if (read_fully(mask_key, 4) != 4) {
+                ws_handle_error(ws, ERROR_NETWORK);
+                return;
+            }
+        }
+
+        // Validate payload length
+        if (payload_len > MAX_FRAME_SIZE) {
+            LOG_ERROR("Frame too large: %zu bytes", payload_len);
+            ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
             return;
         }
-        
-        ws->bytes_received += bytes;
-    } else if (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-        LOG_ERROR("Socket read error: %s", strerror(errno));
-        ws_handle_error(ws, ERROR_NETWORK);
-        return;
-    }
 
-    // Process any complete frames in buffer
-    while (ws->recv_buffer->size > ws->recv_buffer->read_pos) {
-        WebSocketFrame* frame = NULL;
-        FrameParseResult result = frame_parse(
-            ws->recv_buffer->data + ws->recv_buffer->read_pos,
-            ws->recv_buffer->size - ws->recv_buffer->read_pos,
-            &frame
-        );
-
-        if (!result.complete) {
-            // Not enough data for a complete frame
-            if (ws->recv_buffer->read_pos > 0) {
-                // Move any remaining data to start of buffer
-                size_t remaining = ws->recv_buffer->size - ws->recv_buffer->read_pos;
-                if (remaining > 0) {
-                    memmove(ws->recv_buffer->data,
-                           ws->recv_buffer->data + ws->recv_buffer->read_pos,
-                           remaining);
-                }
-                ws->recv_buffer->size = remaining;
-                ws->recv_buffer->read_pos = 0;
+        // Read payload
+        uint8_t* payload = NULL;
+        if (payload_len > 0) {
+            payload = malloc(payload_len);
+            if (!payload) {
+                LOG_ERROR("Failed to allocate memory for payload");
+                ws_handle_error(ws, ERROR_MEMORY);
+                return;
             }
+
+            if (read_fully(payload, payload_len) != payload_len) {
+                free(payload);
+                ws_handle_error(ws, ERROR_NETWORK);
+                return;
+            }
+
+            // Unmask data if needed
+            if (masked) {
+                for (size_t i = 0; i < payload_len; i++) {
+                    payload[i] ^= mask_key[i % 4];
+                }
+            }
+        }
+
+        // Create frame structure
+        WebSocketFrame frame = {
+            .header = {
+                .fin = fin,
+                .opcode = opcode,
+                .mask = masked,
+                .payload_len = payload_len
+            },
+            .payload = payload
+        };
+
+        // Handle the frame
+        if (frame_validate(&frame)) {
+            ws_handle_frame(ws, &frame);
+        } else {
+            LOG_ERROR("Invalid frame received");
+            free(payload);
+            ws_handle_error(ws, ERROR_WS_INVALID_FRAME);
+            return;
+        }
+
+        // Cleanup
+        free(payload);
+
+        // For control frames, process immediately and return
+        if (opcode >= 0x8) {
             break;
         }
-
-        if (frame) {
-            if (frame_validate(frame)) {
-                ws_handle_frame(ws, frame);
-            }
-            frame_destroy(frame);
-        }
-
-        ws->recv_buffer->read_pos += result.bytes_consumed;
-    }
-
-    // Reset buffer if all data consumed
-    if (ws->recv_buffer->read_pos >= ws->recv_buffer->size) {
-        ws->recv_buffer->read_pos = 0;
-        ws->recv_buffer->size = 0;
     }
 }
 
@@ -331,4 +388,25 @@ void ws_close(WebSocket* ws) {
 
 bool ws_is_connected(const WebSocket* ws) {
     return ws && ws->connected;
-}
+
+ssize_t ws_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
+    size_t total_read = 0;
+    size_t attempts = 0;
+    const size_t MAX_ATTEMPTS = 10;
+
+    while (total_read < needed && attempts < MAX_ATTEMPTS) {
+        ssize_t bytes = read(ws->sock_fd, buffer + total_read, needed - total_read);
+        
+        if (bytes > 0) {
+            total_read += bytes;
+            attempts = 0;  // Reset attempts on successful read
+        } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
+            return -1;  // Error or connection closed
+        } else {
+            attempts++;
+            usleep(1000);  // Short delay before retry
+        }
+    }
+    
+    return total_read;
+}}

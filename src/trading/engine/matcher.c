@@ -67,10 +67,14 @@ bool order_handler_create_book(const char* symbol) {
         return false;
     }
 
+    LOG_DEBUG("Attempting to create/find book for symbol: %s (Active books: %zu)", 
+              symbol, active_books);
+
     // Check if book already exists
     BookEntry* entry = find_book_entry(symbol);
     if (entry) {
-        LOG_DEBUG("Using existing order book for symbol: %s", symbol);
+        LOG_DEBUG("Using existing order book for symbol: %s (Total orders: %lu)", 
+                  symbol, entry->book->total_orders);
         return true;
     }
 
@@ -101,12 +105,25 @@ bool order_handler_create_book(const char* symbol) {
 
     LOG_INFO("Order book created for symbol: %s (Total active books: %zu)", 
              symbol, active_books);
+    
+    // Debug log all active books
+    LOG_DEBUG("Current active books:");
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active) {
+            LOG_DEBUG("  - %s (Orders: %lu)", 
+                     order_books[i].symbol, 
+                     order_books[i].book->total_orders);
+        }
+    }
+    
     return true;
 }
 
 OrderHandlingResult order_handler_add_order(const Order* order) {
+    validate_books_state();
     if (!order) {
         LOG_ERROR("Invalid order (NULL)");
+        validate_books_state();
         return ORDER_INVALID;
     }
 
@@ -115,12 +132,14 @@ OrderHandlingResult order_handler_add_order(const Order* order) {
 
     // Find or create book for symbol
     if (!order_handler_create_book(order->symbol)) {
+        validate_books_state();
         return ORDER_INVALID;
     }
 
     BookEntry* entry = find_book_entry(order->symbol);
     if (!entry || !entry->book) {
         LOG_ERROR("Failed to get order book for symbol: %s", order->symbol);
+        validate_books_state();
         return ORDER_INVALID;
     }
 
@@ -128,6 +147,7 @@ OrderHandlingResult order_handler_add_order(const Order* order) {
     if (order->price <= 0.0 || order->quantity == 0) {
         LOG_ERROR("Invalid price (%.2f) or quantity (%u)",
                   order->price, order->quantity);
+        validate_books_state();
         return ORDER_INVALID;
     }
 
@@ -135,9 +155,11 @@ OrderHandlingResult order_handler_add_order(const Order* order) {
     if (order_book_add(entry->book, order)) {
         LOG_INFO("Order added successfully: id=%lu, price=%.2f, quantity=%u, is_buy=%d",
                  order->id, order->price, order->quantity, order->is_buy);
+        validate_books_state();
         return ORDER_SUCCESS;
     } else {
         LOG_ERROR("Failed to add order to order book");
+        validate_books_state();
         return ORDER_REJECTED;
     }
 }
@@ -173,4 +195,82 @@ OrderBook* order_handler_get_book(void) {
         }
     }
     return NULL;
+}
+
+// Get array of all active order books
+size_t order_handler_get_all_books(OrderBook** books, size_t max_books) {
+    validate_books_state();
+    size_t count = 0;
+    LOG_DEBUG("Getting all active books (max: %zu)", max_books);
+
+    for (size_t i = 0; i < MAX_SYMBOLS && count < max_books; i++) {
+        if (order_books[i].active && order_books[i].book) {
+            LOG_DEBUG("Adding book %zu: %s (Orders: %lu)", 
+                     count,
+                     order_books[i].symbol,
+                     order_books[i].book->total_orders);
+            books[count++] = order_books[i].book;
+        }
+    }
+
+    LOG_DEBUG("Returning %zu active books", count);
+    return count;
+}
+
+// Get current active book count
+size_t order_handler_get_active_book_count(void) {
+    size_t real_count = 0;
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active && order_books[i].book) {
+            real_count++;
+        }
+    }
+    
+    if (real_count != active_books) {
+        LOG_WARN("Active books count mismatch: tracked=%zu, actual=%zu", 
+                 active_books, real_count);
+        active_books = real_count;  // Fix the count
+    }
+    
+    return active_books;
+}
+
+static void validate_books_state(void) {
+    size_t actual_count = 0;
+    bool issues_found = false;
+
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active) {
+            actual_count++;
+            
+            if (!order_books[i].book) {
+                LOG_ERROR("Active book entry %zu has NULL book pointer", i);
+                issues_found = true;
+                continue;
+            }
+            
+            if (order_books[i].symbol[0] == '\0') {
+                LOG_ERROR("Active book entry %zu has empty symbol", i);
+                issues_found = true;
+            }
+            
+            if (strcmp(order_books[i].book->symbol, order_books[i].symbol) != 0) {
+                LOG_ERROR("Book symbol mismatch at %zu: entry=%s, book=%s", 
+                         i, order_books[i].symbol, order_books[i].book->symbol);
+                issues_found = true;
+            }
+        }
+    }
+
+    if (actual_count != active_books) {
+        LOG_ERROR("Active books count mismatch: tracked=%zu, actual=%zu", 
+                 active_books, actual_count);
+        issues_found = true;
+    }
+
+    if (issues_found) {
+        LOG_WARN("Order book state validation failed");
+    } else {
+        LOG_DEBUG("Order book state validation passed (%zu active books)", active_books);
+    }
 }
