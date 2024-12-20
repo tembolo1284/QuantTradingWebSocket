@@ -7,14 +7,32 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>
+#include <stdatomic.h>
+#include <stdint.h>
 
 #define DEFAULT_HOST "localhost"
 #define DEFAULT_PORT 8080
 
 static volatile bool running = true;
 static OrderBook* local_book = NULL;  // Local copy of order book
-static uint64_t next_order_id = 1;
+static atomic_uint_fast32_t order_counter = ATOMIC_VAR_INIT(0);
 
+static uint64_t generate_order_id(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    
+    // Use seconds for high 32 bits, combine counter with nanoseconds for low 32 bits
+    uint32_t counter = atomic_fetch_add(&order_counter, 1);
+    uint32_t nano_counter = (uint32_t)(ts.tv_nsec / 1000) ^ counter; // Convert to microseconds and mix with counter
+    
+    uint64_t id = ((uint64_t)ts.tv_sec << 32) | nano_counter;
+    
+    LOG_DEBUG("Generated order ID: %lu (timestamp: %lu, counter: %u)", 
+              id, (uint64_t)ts.tv_sec, counter);
+              
+    return id;
+}
 static void handle_signal(int sig) {
     (void)sig;
     LOG_INFO("Received shutdown signal");
@@ -173,7 +191,7 @@ static void send_order(WebSocket* ws, bool is_buy, double price, uint32_t quanti
     memcpy(msg.data.order_add.symbol, symbol, symbol_len);
     msg.data.order_add.symbol[symbol_len] = '\0';
 
-    msg.data.order_add.order.id = next_order_id++;
+    msg.data.order_add.order.id = generate_order_id();
     msg.data.order_add.order.price = price;
     msg.data.order_add.order.quantity = quantity;
     msg.data.order_add.order.is_buy = is_buy;
