@@ -214,38 +214,41 @@ static void ws_handle_frame(WebSocket* ws, const WebSocketFrame* frame) {
     }
 }
 
+// Helper function to read exact number of bytes from websocket
+static ssize_t ws_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
+    if (!ws || !buffer) return -1;
+    
+    size_t total_read = 0;
+    size_t attempts = 0;
+    const size_t MAX_ATTEMPTS = 10;
+
+    while (total_read < needed && attempts < MAX_ATTEMPTS) {
+        ssize_t bytes = read(ws->sock_fd, buffer + total_read, needed - total_read);
+        
+        if (bytes > 0) {
+            total_read += bytes;
+            attempts = 0;  // Reset attempts on successful read
+            ws->bytes_received += bytes;
+        } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
+            LOG_ERROR("Socket read error or connection closed: %s", strerror(errno));
+            return -1;
+        } else {
+            attempts++;
+            usleep(1000);  // Short delay before retry
+        }
+    }
+    
+    return total_read;
+}
+
+
 void ws_process(WebSocket* ws) {
     if (!ws || !ws->connected) return;
-
-    // Function to fully read required bytes
-    ssize_t read_fully(uint8_t* buffer, size_t needed) {
-        size_t total_read = 0;
-        size_t attempts = 0;
-        const size_t MAX_ATTEMPTS = 10;
-
-        while (total_read < needed && attempts < MAX_ATTEMPTS) {
-            ssize_t bytes = read(ws->sock_fd, buffer + total_read, needed - total_read);
-            
-            if (bytes > 0) {
-                total_read += bytes;
-                attempts = 0;  // Reset attempts on successful read
-                ws->bytes_received += bytes;
-            } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
-                LOG_ERROR("Socket read error or connection closed: %s", strerror(errno));
-                return -1;
-            } else {
-                attempts++;
-                usleep(1000);  // Short delay before retry
-            }
-        }
-        
-        return total_read;
-    }
 
     while (ws->connected) {
         // Read initial frame header (2 bytes)
         uint8_t header[2];
-        ssize_t header_read = read_fully(header, 2);
+        ssize_t header_read = ws_read_fully(ws, header, 2);
         if (header_read != 2) {
             if (header_read < 0) {
                 ws_handle_error(ws, ERROR_NETWORK);
@@ -271,7 +274,7 @@ void ws_process(WebSocket* ws) {
 
         // Read extended header if needed
         if (header_extra > 0) {
-            if (read_fully(header_ext, header_extra) != header_extra) {
+            if (ws_read_fully(ws, header_ext, header_extra) != (ssize_t)header_extra) {
                 ws_handle_error(ws, ERROR_NETWORK);
                 return;
             }
@@ -289,7 +292,7 @@ void ws_process(WebSocket* ws) {
         // Read masking key if present
         uint8_t mask_key[4];
         if (masked) {
-            if (read_fully(mask_key, 4) != 4) {
+            if (ws_read_fully(ws, mask_key, 4) != 4) {
                 ws_handle_error(ws, ERROR_NETWORK);
                 return;
             }
@@ -312,7 +315,7 @@ void ws_process(WebSocket* ws) {
                 return;
             }
 
-            if (read_fully(payload, payload_len) != payload_len) {
+            if (ws_read_fully(ws, payload, payload_len) != (ssize_t)payload_len) {
                 free(payload);
                 ws_handle_error(ws, ERROR_NETWORK);
                 return;
@@ -388,25 +391,4 @@ void ws_close(WebSocket* ws) {
 
 bool ws_is_connected(const WebSocket* ws) {
     return ws && ws->connected;
-
-ssize_t ws_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
-    size_t total_read = 0;
-    size_t attempts = 0;
-    const size_t MAX_ATTEMPTS = 10;
-
-    while (total_read < needed && attempts < MAX_ATTEMPTS) {
-        ssize_t bytes = read(ws->sock_fd, buffer + total_read, needed - total_read);
-        
-        if (bytes > 0) {
-            total_read += bytes;
-            attempts = 0;  // Reset attempts on successful read
-        } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)) {
-            return -1;  // Error or connection closed
-        } else {
-            attempts++;
-            usleep(1000);  // Short delay before retry
-        }
-    }
-    
-    return total_read;
-}}
+}
