@@ -60,6 +60,46 @@ static BookEntry* get_free_book_entry(void) {
     return NULL;
 }
 
+static void validate_books_state(void) {
+    size_t actual_count = 0;
+    bool issues_found = false;
+
+    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
+        if (order_books[i].active) {
+            actual_count++;
+            
+            if (!order_books[i].book) {
+                LOG_ERROR("Active book entry %zu has NULL book pointer", i);
+                issues_found = true;
+                continue;
+            }
+            
+            if (order_books[i].symbol[0] == '\0') {
+                LOG_ERROR("Active book entry %zu has empty symbol", i);
+                issues_found = true;
+            }
+            
+            if (strcmp(order_books[i].book->symbol, order_books[i].symbol) != 0) {
+                LOG_ERROR("Book symbol mismatch at %zu: entry=%s, book=%s", 
+                         i, order_books[i].symbol, order_books[i].book->symbol);
+                issues_found = true;
+            }
+        }
+    }
+
+    if (actual_count != active_books) {
+        LOG_ERROR("Active books count mismatch: tracked=%zu, actual=%zu", 
+                 active_books, actual_count);
+        issues_found = true;
+    }
+
+    if (issues_found) {
+        LOG_WARN("Order book state validation failed");
+    } else {
+        LOG_DEBUG("Order book state validation passed (%zu active books)", active_books);
+    }
+}
+
 bool order_handler_create_book(const char* symbol) {
     // Require symbol to be provided
     if (!symbol || symbol[0] == '\0') {
@@ -170,22 +210,6 @@ OrderBook* order_handler_get_book_by_symbol(const char* symbol) {
     return entry ? entry->book : NULL;
 }
 
-// Get array of all active order books
-size_t order_handler_get_all_books(OrderBook** books, size_t max_books) {
-    size_t count = 0;
-    for (size_t i = 0; i < MAX_SYMBOLS && count < max_books; i++) {
-        if (order_books[i].active) {
-            books[count++] = order_books[i].book;
-        }
-    }
-    return count;
-}
-
-// Get current active book count
-size_t order_handler_get_active_book_count(void) {
-    return active_books;
-}
-
 // Legacy function for backward compatibility
 OrderBook* order_handler_get_book(void) {
     // Return first active book or NULL
@@ -233,44 +257,4 @@ size_t order_handler_get_active_book_count(void) {
     }
     
     return active_books;
-}
-
-static void validate_books_state(void) {
-    size_t actual_count = 0;
-    bool issues_found = false;
-
-    for (size_t i = 0; i < MAX_SYMBOLS; i++) {
-        if (order_books[i].active) {
-            actual_count++;
-            
-            if (!order_books[i].book) {
-                LOG_ERROR("Active book entry %zu has NULL book pointer", i);
-                issues_found = true;
-                continue;
-            }
-            
-            if (order_books[i].symbol[0] == '\0') {
-                LOG_ERROR("Active book entry %zu has empty symbol", i);
-                issues_found = true;
-            }
-            
-            if (strcmp(order_books[i].book->symbol, order_books[i].symbol) != 0) {
-                LOG_ERROR("Book symbol mismatch at %zu: entry=%s, book=%s", 
-                         i, order_books[i].symbol, order_books[i].book->symbol);
-                issues_found = true;
-            }
-        }
-    }
-
-    if (actual_count != active_books) {
-        LOG_ERROR("Active books count mismatch: tracked=%zu, actual=%zu", 
-                 active_books, actual_count);
-        issues_found = true;
-    }
-
-    if (issues_found) {
-        LOG_WARN("Order book state validation failed");
-    } else {
-        LOG_DEBUG("Order book state validation passed (%zu active books)", active_books);
-    }
 }
