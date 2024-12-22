@@ -1,18 +1,63 @@
 cmake_minimum_required(VERSION 3.10)
 project(quant_trading C)
+
+# Compiler selection option
+option(USE_CLANG "Build with clang" OFF)  # Default to gcc, can be enabled with -DUSE_CLANG=ON
+
+# Force compiler selection if requested
+if(USE_CLANG)
+    set(CMAKE_C_COMPILER "clang")
+    set(CMAKE_CXX_COMPILER "clang++")
+endif()
+
 # Set C standard
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Compiler flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
+# Platform and compiler specific flags
+if(MSVC)
+    # MSVC specific flags
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Od /Zi")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2")
+else()
+    # GCC/Clang flags
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
+    
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+        # Clang specific flags
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-missing-field-initializers")
+    endif()
+    
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+        # GCC specific flags
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-parameter")
+    endif()
+    
+    # Debug/Release flags for GCC and Clang
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
+    if(APPLE)
+        # macOS specific optimization flags
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
+    else()
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
+    endif()
+endif()
+
+# Platform specific library handling
+if(WIN32)
+    # Windows specific libraries and settings
+    set(PLATFORM_LIBS ws2_32)
+    add_definitions(-D_WIN32_WINNT=0x0601)
+else()
+    set(PLATFORM_LIBS "")
+endif()
 
 # Options
 option(BUILD_TESTS "Build tests" ON)
@@ -47,42 +92,32 @@ if(BUILD_TESTS)
         set(BUILD_TESTS OFF)
     endif()
 endif()
-# Source files by component
 
+# Source files by component
 set(NET_SOURCES
-src/net/websocket.c
-src/net/websocket_server.c
-src/net/websocket_frame.c
-src/net/frame.c
-src/net/handshake.c
-src/net/socket.c
-src/net/buffer.c
+    src/net/websocket.c
+    src/net/websocket_server.c
+    src/net/websocket_frame.c
+    src/net/frame.c
+    src/net/handshake.c
+    src/net/socket.c
+    src/net/buffer.c
 )
 
 set(TRADING_ENGINE_SOURCES
-src/trading/engine/order.c
-src/trading/engine/order_book.c
-src/trading/engine/matcher.c
+    src/trading/engine/order.c
+    src/trading/engine/order_book.c
+    src/trading/engine/matcher.c
 )
 
 set(TRADING_PROTOCOL_SOURCES
-src/trading/protocol/messages.c
+    src/trading/protocol/messages.c
 )
 
 set(UTILS_SOURCES
-src/utils/logging.c
-src/utils/json_utils.c
+    src/utils/logging.c
+    src/utils/json_utils.c
 )
-
-# set(CLIENT_SOURCES
-# src/client/client_app.c
-# src/client/client_handler.c
-# )
-
-# set(SERVER_SOURCES
-# src/server/server_app.c
-# src/server/request_handler.c
-# )
 
 # Create main library
 add_library(quant_trading_lib 
@@ -107,22 +142,16 @@ target_link_libraries(quant_trading_lib
     OpenSSL::Crypto
     ${CMAKE_THREAD_LIBS_INIT}
     cjson
+    ${PLATFORM_LIBS}
 )
 
-# Create client library
-# add_library(client_lib STATIC ${CLIENT_SOURCES})
-# target_link_libraries(client_lib
-#     PUBLIC
-#     quant_trading_lib
-# )
-
-# Create server library
-# add_library(server_lib STATIC ${SERVER_SOURCES})
-# target_link_libraries(server_lib
-#     PUBLIC
-#     quant_trading_lib
-# )
-
+# Add compiler identification variables
+target_compile_definitions(quant_trading_lib
+    PRIVATE
+    $<$<C_COMPILER_ID:MSVC>:COMPILER_MSVC>
+    $<$<C_COMPILER_ID:GNU>:COMPILER_GCC>
+    $<$<C_COMPILER_ID:Clang>:COMPILER_CLANG>
+)
 
 # Create server executable
 add_executable(quant_trading src/server/server_app.c)
@@ -142,8 +171,4 @@ target_link_libraries(market_client
 if(BUILD_TESTS AND UNITY_FOUND)
     enable_testing()
     add_subdirectory(tests)
-endif()
-
-if(BUILD_EXAMPLES)
-    add_subdirectory(examples)
 endif()

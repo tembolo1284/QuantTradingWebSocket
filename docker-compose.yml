@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  quant_trading:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    networks:
+      - trading-net
+    command: quant_trading
+
+  market_client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    networks:
+      - trading-net
+    command: market_client
+
+networks:
+  trading-net:
+    external: true

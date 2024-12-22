@@ -203,3 +203,169 @@ Real-time visualization showing:
    - Memory usage tracking
    - Order flow analytics
    - Performance profiling
+
+## Build System
+
+### CMake Configuration
+The project uses CMake with support for multiple compilers and platforms:
+
+```bash
+# Configure with GCC (default)
+cmake -B build -G Ninja
+
+# Configure with Clang
+cmake -B build -G Ninja -DUSE_CLANG=ON
+
+# Build
+cmake --build build
+
+## Key CMake features:
+
+    - Multi-compiler support (GCC, Clang, MSVC)
+    - Platform-specific optimizations
+    - Configurable build options:
+        - BUILD_TESTS: Enable/disable test builds
+        - ENABLE_ASAN: Enable Address Sanitizer
+        - USE_CLANG: Switch to Clang compiler
+
+## Docker Support
+
+Dockerfile
+
+The project includes a multi-stage Dockerfile optimized for both development and production:
+
+    - Production build with minimal runtime dependencies
+    - Development build with full toolchain
+    - Support for both GCC and Clang
+    - Non-root user execution
+    - Optimized layer caching
+
+```bash
+# Build production image
+docker build -t quant_trading .
+
+# Build development image
+docker build -f Dockerfile.dev -t quant_trading_dev .
+
+
+## Docker Compose
+
+The docker-compose.yml file orchestrates the service containers:
+
+    - Trading server service
+    - Market client service
+    - Isolated network configuration
+    - Volume mounting for development
+    - Configurable ports and environment
+
+## Docker Run Script
+
+A convenient `docker-run.sh` script provides common operations:
+
+```bash
+./docker-run.sh [command]
+
+Commands:
+  build   - Build the Docker image
+  server  - Run the trading server
+  client  - Run the market client
+  test    - Run all tests
+  dev     - Start development environment
+  clean   - Clean up containers
+
+## Continuous Integration
+
+The project uses GitHub Actions for CI/CD with the following workflow:
+
+## Matrix Testing
+
+    - Ubuntu with GCC and Clang
+    - macOS with Clang
+    - Windows with MSVC
+
+## Automated Checks
+
+    - Compilation across all platforms
+    - Unit test execution
+    - Sanitizer checks
+    - Docker build verification
+    - Artifact generation
+
+## Dependencies
+
+CI automatically handles:
+
+    - Unity test framework setup
+    - cJSON library integration
+    - Platform-specific dependencies
+    - Compiler-specific configurations
+
+To enable CI:
+
+1. Place .github/workflows/ci.yml in your repository
+
+2. Ensure third_party/ directory exists
+
+3. Push to GitHub
+
+## Development Workflow
+
+### Local Development
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/quant_trading.git
+cd quant_trading
+
+2. Install dependencies:
+
+```bash
+# Ubuntu
+sudo apt-get update
+sudo apt-get install build-essential cmake ninja-build libssl-dev
+
+# macOS
+brew install cmake ninja openssl@3
+
+# Windows (with chocolatey)
+choco install cmake ninja openssl
+
+3. Setup third-party dependencies:
+
+```bash
+# Unity
+git clone https://github.com/ThrowTheSwitch/Unity.git third_party/Unity
+
+# cJSON
+git clone https://github.com/DaveGamble/cJSON.git third_party/cJSON
+
+4. Build and test:
+
+```bash
+# Configure
+cmake -B build -G Ninja
+
+# Build
+cmake --build build
+
+# Test
+ctest --test-dir build --output-on-failure
+
+## Docker Development
+
+1. Start development environment:
+
+```bash
+./docker-run.sh dev
+
+2. Inside container:
+
+```bash
+cmake -B build -G Ninja
+cmake --build build
+
+3. Run tests:
+```bash
+./docker-run.sh test
+
