@@ -86,17 +86,12 @@
 },
 {
   "directory": "/root/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_frame.dir/net/test_frame.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c",
-  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c"
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c"
 },
 {
   "directory": "/root/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c",
-  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c"
-},
-{
-  "directory": "/root/c-workspace/QuantTradingWebSocket/build",
-  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_socket.dir/net/test_socket.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c",
-  "file": "/root/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c"
+  "command": "/usr/bin/cc -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src  -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11 -o tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o -c /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c",
+  "file": "/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c"
 }
 ]

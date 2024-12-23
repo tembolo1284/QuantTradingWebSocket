@@ -1,9 +1,9 @@
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wcomma failed with the following output:
 Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_b6bf4 && [1/2] Building C object CMakeFiles/cmTC_b6bf4.dir/src.c.o
-FAILED: CMakeFiles/cmTC_b6bf4.dir/src.c.o 
-/usr/bin/cc -DFLAG_SUPPORTED_Wcomma  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong    -Wcomma -o CMakeFiles/cmTC_b6bf4.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
+Run Build Command(s):/usr/bin/ninja cmTC_b99ba && [1/2] Building C object CMakeFiles/cmTC_b99ba.dir/src.c.o
+FAILED: CMakeFiles/cmTC_b99ba.dir/src.c.o 
+/usr/bin/cc -DFLAG_SUPPORTED_Wcomma  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong    -Wcomma -o CMakeFiles/cmTC_b99ba.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
 cc: error: unrecognized command-line option '-Wcomma'; did you mean '-Wcomment'?
 ninja: build stopped: subcommand failed.
 
@@ -13,9 +13,9 @@ int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wmissingvariabledeclarations failed with the following output:
 Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_a2652 && [1/2] Building C object CMakeFiles/cmTC_a2652.dir/src.c.o
-FAILED: CMakeFiles/cmTC_a2652.dir/src.c.o 
-/usr/bin/cc -DFLAG_SUPPORTED_Wmissingvariabledeclarations  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros    -Wmissing-variable-declarations -o CMakeFiles/cmTC_a2652.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
+Run Build Command(s):/usr/bin/ninja cmTC_444e7 && [1/2] Building C object CMakeFiles/cmTC_444e7.dir/src.c.o
+FAILED: CMakeFiles/cmTC_444e7.dir/src.c.o 
+/usr/bin/cc -DFLAG_SUPPORTED_Wmissingvariabledeclarations  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros    -Wmissing-variable-declarations -o CMakeFiles/cmTC_444e7.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
 cc: error: unrecognized command-line option '-Wmissing-variable-declarations'; did you mean '-Wmissing-declarations'?
 ninja: build stopped: subcommand failed.
 
@@ -25,9 +25,9 @@ int main(void) { return 0; }
 Performing C SOURCE FILE Test FLAG_SUPPORTED_Wusedbutmarkedunused failed with the following output:
 Change Dir: /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/ninja cmTC_d5e1e && [1/2] Building C object CMakeFiles/cmTC_d5e1e.dir/src.c.o
-FAILED: CMakeFiles/cmTC_d5e1e.dir/src.c.o 
-/usr/bin/cc -DFLAG_SUPPORTED_Wusedbutmarkedunused  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros    -Wused-but-marked-unused -o CMakeFiles/cmTC_d5e1e.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
+Run Build Command(s):/usr/bin/ninja cmTC_a07ee && [1/2] Building C object CMakeFiles/cmTC_a07ee.dir/src.c.o
+FAILED: CMakeFiles/cmTC_a07ee.dir/src.c.o 
+/usr/bin/cc -DFLAG_SUPPORTED_Wusedbutmarkedunused  -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros    -Wused-but-marked-unused -o CMakeFiles/cmTC_a07ee.dir/src.c.o -c /root/c-workspace/QuantTradingWebSocket/build/CMakeFiles/CMakeTmp/src.c
 cc: error: unrecognized command-line option '-Wused-but-marked-unused'
 ninja: build stopped: subcommand failed.
 

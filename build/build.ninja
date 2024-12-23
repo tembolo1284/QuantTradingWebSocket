@@ -680,142 +680,76 @@ build third_party/cJSON/fuzzing/install/strip: phony third_party/cJSON/fuzzing/C
 # =============================================================================
 
 # =============================================================================
-# Object build statements for EXECUTABLE target test_frame
+# Object build statements for EXECUTABLE target test_order
 
 
 #############################################
-# Order-only phony target for test_frame
+# Order-only phony target for test_order
 
-build cmake_object_order_depends_target_test_frame: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
+build cmake_object_order_depends_target_test_order: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
 
-build tests/CMakeFiles/test_frame.dir/net/test_frame.c.o: C_COMPILER__test_frame_Release /root/c-workspace/QuantTradingWebSocket/tests/net/test_frame.c || cmake_object_order_depends_target_test_frame
-  DEP_FILE = tests/CMakeFiles/test_frame.dir/net/test_frame.c.o.d
+build tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o: C_COMPILER__test_order_Release /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c || cmake_object_order_depends_target_test_order
+  DEP_FILE = tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
   INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
-  OBJECT_DIR = tests/CMakeFiles/test_frame.dir
-  OBJECT_FILE_DIR = tests/CMakeFiles/test_frame.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_frame.dir/
-  TARGET_PDB = tests/test_frame.pdb
+  OBJECT_DIR = tests/CMakeFiles/test_order.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/test_order.dir/trading/engine
+  TARGET_COMPILE_PDB = tests/CMakeFiles/test_order.dir/
+  TARGET_PDB = tests/test_order.pdb
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target test_frame
+# Link build statements for EXECUTABLE target test_order
 
 
 #############################################
-# Link the executable tests/test_frame
+# Link the executable tests/test_order
 
-build tests/test_frame: C_EXECUTABLE_LINKER__test_frame_Release tests/CMakeFiles/test_frame.dir/net/test_frame.c.o | libquant_trading_lib.a libunity.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a libunity.a third_party/cJSON/libcjson.a
+build tests/test_order: C_EXECUTABLE_LINKER__test_order_Release tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o | libquant_trading_lib.a libunity.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a libunity.a third_party/cJSON/libcjson.a
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native
   LINK_LIBRARIES = libquant_trading_lib.a  libunity.a  /usr/lib/x86_64-linux-gnu/libssl.so  /usr/lib/x86_64-linux-gnu/libcrypto.so  third_party/cJSON/libcjson.a  -lm
-  OBJECT_DIR = tests/CMakeFiles/test_frame.dir
+  OBJECT_DIR = tests/CMakeFiles/test_order.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_frame.dir/
-  TARGET_FILE = tests/test_frame
-  TARGET_PDB = tests/test_frame.pdb
+  TARGET_COMPILE_PDB = tests/CMakeFiles/test_order.dir/
+  TARGET_FILE = tests/test_order
+  TARGET_PDB = tests/test_order.pdb
 
 # =============================================================================
-# Object build statements for EXECUTABLE target test_handshake
+# Object build statements for EXECUTABLE target test_order_book
 
 
 #############################################
-# Order-only phony target for test_handshake
+# Order-only phony target for test_order_book
 
-build cmake_object_order_depends_target_test_handshake: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
+build cmake_object_order_depends_target_test_order_book: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
 
-build tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o: C_COMPILER__test_handshake_Release /root/c-workspace/QuantTradingWebSocket/tests/net/test_handshake.c || cmake_object_order_depends_target_test_handshake
-  DEP_FILE = tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o.d
+build tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o: C_COMPILER__test_order_book_Release /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c || cmake_object_order_depends_target_test_order_book
+  DEP_FILE = tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
   INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
-  OBJECT_DIR = tests/CMakeFiles/test_handshake.dir
-  OBJECT_FILE_DIR = tests/CMakeFiles/test_handshake.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_handshake.dir/
-  TARGET_PDB = tests/test_handshake.pdb
+  OBJECT_DIR = tests/CMakeFiles/test_order_book.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/test_order_book.dir/trading/engine
+  TARGET_COMPILE_PDB = tests/CMakeFiles/test_order_book.dir/
+  TARGET_PDB = tests/test_order_book.pdb
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target test_handshake
+# Link build statements for EXECUTABLE target test_order_book
 
 
 #############################################
-# Link the executable tests/test_handshake
+# Link the executable tests/test_order_book
 
-build tests/test_handshake: C_EXECUTABLE_LINKER__test_handshake_Release tests/CMakeFiles/test_handshake.dir/net/test_handshake.c.o | libquant_trading_lib.a libunity.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a libunity.a third_party/cJSON/libcjson.a
+build tests/test_order_book: C_EXECUTABLE_LINKER__test_order_book_Release tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o | libquant_trading_lib.a libunity.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a libunity.a third_party/cJSON/libcjson.a
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native
   LINK_LIBRARIES = libquant_trading_lib.a  libunity.a  /usr/lib/x86_64-linux-gnu/libssl.so  /usr/lib/x86_64-linux-gnu/libcrypto.so  third_party/cJSON/libcjson.a  -lm
-  OBJECT_DIR = tests/CMakeFiles/test_handshake.dir
+  OBJECT_DIR = tests/CMakeFiles/test_order_book.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_handshake.dir/
-  TARGET_FILE = tests/test_handshake
-  TARGET_PDB = tests/test_handshake.pdb
-
-# =============================================================================
-# Object build statements for EXECUTABLE target test_socket
-
-
-#############################################
-# Order-only phony target for test_socket
-
-build cmake_object_order_depends_target_test_socket: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
-
-build tests/CMakeFiles/test_socket.dir/net/test_socket.c.o: C_COMPILER__test_socket_Release /root/c-workspace/QuantTradingWebSocket/tests/net/test_socket.c || cmake_object_order_depends_target_test_socket
-  DEP_FILE = tests/CMakeFiles/test_socket.dir/net/test_socket.c.o.d
-  FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
-  OBJECT_DIR = tests/CMakeFiles/test_socket.dir
-  OBJECT_FILE_DIR = tests/CMakeFiles/test_socket.dir/net
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_socket.dir/
-  TARGET_PDB = tests/test_socket.pdb
-
-
-# =============================================================================
-# Link build statements for EXECUTABLE target test_socket
-
-
-#############################################
-# Link the executable tests/test_socket
-
-build tests/test_socket: C_EXECUTABLE_LINKER__test_socket_Release tests/CMakeFiles/test_socket.dir/net/test_socket.c.o | libquant_trading_lib.a libunity.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so third_party/cJSON/libcjson.a || libquant_trading_lib.a libunity.a third_party/cJSON/libcjson.a
-  FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native
-  LINK_LIBRARIES = libquant_trading_lib.a  libunity.a  /usr/lib/x86_64-linux-gnu/libssl.so  /usr/lib/x86_64-linux-gnu/libcrypto.so  third_party/cJSON/libcjson.a  -lm
-  OBJECT_DIR = tests/CMakeFiles/test_socket.dir
-  POST_BUILD = :
-  PRE_LINK = :
-  TARGET_COMPILE_PDB = tests/CMakeFiles/test_socket.dir/
-  TARGET_FILE = tests/test_socket
-  TARGET_PDB = tests/test_socket.pdb
-
-
-#############################################
-# Utility command for test_net
-
-build tests/test_net: phony tests/CMakeFiles/test_net tests/test_frame tests/test_handshake tests/test_socket
-
-
-#############################################
-# Utility command for test_trading
-
-build tests/test_trading: phony tests/CMakeFiles/test_trading tests/test_frame tests/test_handshake tests/test_socket
-
-
-#############################################
-# Utility command for test_client
-
-build tests/test_client: phony tests/CMakeFiles/test_client tests/test_frame tests/test_handshake tests/test_socket
-
-
-#############################################
-# Utility command for test_server
-
-build tests/test_server: phony tests/CMakeFiles/test_server tests/test_frame tests/test_handshake tests/test_socket
-
-
-#############################################
-# Utility command for check
-
-build tests/check: phony tests/CMakeFiles/check tests/test_frame tests/test_handshake tests/test_socket
+  TARGET_COMPILE_PDB = tests/CMakeFiles/test_order_book.dir/
+  TARGET_FILE = tests/test_order_book
+  TARGET_PDB = tests/test_order_book.pdb
 
 
 #############################################
@@ -894,45 +828,8 @@ build tests/CMakeFiles/install/strip.util: CUSTOM_COMMAND tests/all
 
 build tests/install/strip: phony tests/CMakeFiles/install/strip.util
 
-
-#############################################
-# Custom command for tests/CMakeFiles/test_net
-
-build tests/CMakeFiles/test_net | ${cmake_ninja_workdir}tests/CMakeFiles/test_net: CUSTOM_COMMAND tests/test_frame tests/test_handshake tests/test_socket || libquant_trading_lib.a libunity.a tests/test_frame tests/test_handshake tests/test_socket third_party/cJSON/libcjson.a
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --output-on-failure --regexp test_.*_net
-
-
-#############################################
-# Custom command for tests/CMakeFiles/test_trading
-
-build tests/CMakeFiles/test_trading | ${cmake_ninja_workdir}tests/CMakeFiles/test_trading: CUSTOM_COMMAND tests/test_frame tests/test_handshake tests/test_socket || libquant_trading_lib.a libunity.a tests/test_frame tests/test_handshake tests/test_socket third_party/cJSON/libcjson.a
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --output-on-failure --regexp test_.*_trading
-
-
-#############################################
-# Custom command for tests/CMakeFiles/test_client
-
-build tests/CMakeFiles/test_client | ${cmake_ninja_workdir}tests/CMakeFiles/test_client: CUSTOM_COMMAND tests/test_frame tests/test_handshake tests/test_socket || libquant_trading_lib.a libunity.a tests/test_frame tests/test_handshake tests/test_socket third_party/cJSON/libcjson.a
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --output-on-failure --regexp test_.*_client
-
-
-#############################################
-# Custom command for tests/CMakeFiles/test_server
-
-build tests/CMakeFiles/test_server | ${cmake_ninja_workdir}tests/CMakeFiles/test_server: CUSTOM_COMMAND tests/test_frame tests/test_handshake tests/test_socket || libquant_trading_lib.a libunity.a tests/test_frame tests/test_handshake tests/test_socket third_party/cJSON/libcjson.a
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --output-on-failure --regexp test_.*_server
-
-
-#############################################
-# Custom command for tests/CMakeFiles/check
-
-build tests/CMakeFiles/check | ${cmake_ninja_workdir}tests/CMakeFiles/check: CUSTOM_COMMAND tests/test_frame tests/test_handshake tests/test_socket || libquant_trading_lib.a libunity.a tests/test_frame tests/test_handshake tests/test_socket third_party/cJSON/libcjson.a
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --output-on-failure
-
 # =============================================================================
 # Target aliases.
-
-build check: phony tests/check
 
 build cjson: phony third_party/cJSON/libcjson.a
 
@@ -940,19 +837,9 @@ build libcjson.a: phony third_party/cJSON/libcjson.a
 
 build quant_trading_lib: phony libquant_trading_lib.a
 
-build test_client: phony tests/test_client
+build test_order: phony tests/test_order
 
-build test_frame: phony tests/test_frame
-
-build test_handshake: phony tests/test_handshake
-
-build test_net: phony tests/test_net
-
-build test_server: phony tests/test_server
-
-build test_socket: phony tests/test_socket
-
-build test_trading: phony tests/test_trading
+build test_order_book: phony tests/test_order_book
 
 build uninstall: phony third_party/cJSON/uninstall
 
@@ -973,7 +860,7 @@ build all: phony libunity.a libquant_trading_lib.a quant_trading market_client t
 #############################################
 # Folder: /root/c-workspace/QuantTradingWebSocket/build/tests
 
-build tests/all: phony tests/test_frame tests/test_handshake tests/test_socket
+build tests/all: phony tests/test_order tests/test_order_book
 
 # =============================================================================
 

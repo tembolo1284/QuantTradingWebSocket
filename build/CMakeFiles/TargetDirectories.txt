@@ -32,14 +32,8 @@
 /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing/CMakeFiles/install.dir
 /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing/CMakeFiles/install/local.dir
 /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing/CMakeFiles/install/strip.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_frame.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_handshake.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_socket.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_net.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_trading.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_client.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_server.dir
-/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/check.dir
+/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_order.dir
+/root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test_order_book.dir
 /root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/test.dir
 /root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/edit_cache.dir
 /root/c-workspace/QuantTradingWebSocket/build/tests/CMakeFiles/rebuild_cache.dir
