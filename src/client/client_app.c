@@ -15,7 +15,7 @@
 #define DEFAULT_PORT 8080
 
 static volatile bool running = true;
-static OrderBook* local_book = NULL;  // Local copy of order book
+// static OrderBook* local_book = NULL;  // Local copy of order book
 static atomic_uint_fast32_t order_counter = ATOMIC_VAR_INIT(0);
 
 static uint64_t generate_order_id(void) {
@@ -313,36 +313,26 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Starting Market Client");
 
     // Parse command line arguments
-    const char* host = DEFAULT_HOST;
-    uint16_t port = DEFAULT_PORT;
+    const char* host = "quant_trading";
 
-    if (argc > 1) {
-        if (argc != 3) {
-            fprintf(stderr, "Usage: %s [host port]\n", argv[0]);
-            fprintf(stderr, "Or run without arguments to use defaults: %s:%d\n", 
-                    DEFAULT_HOST, DEFAULT_PORT);
-            return 1;
-        }
-        host = argv[1];
-        port = (uint16_t)atoi(argv[2]);
+    uint16_t port = 8080;
+    
+    // Parse command-line arguments
+    if (argc >= 2) {
+        host = argv[1]; // First argument is the host
+    }
+    if (argc >= 3) {
+        port = (uint16_t)atoi(argv[2]); // Second argument is the port
     }
 
     // Setup signal handler
     signal(SIGINT, handle_signal);
     signal(SIGTERM, handle_signal);
 
-    // Create local order book
-    local_book = order_book_create("AAPL");
-    if (!local_book) {
-        LOG_ERROR("Failed to create local order book");
-        return 1;
-    }
-
     // Setup WebSocket callbacks
     WebSocketCallbacks callbacks = {
         .on_message = on_message,
         .on_error = on_error,
-        .user_data = local_book
     };
 
     // Connect to server
@@ -350,7 +340,6 @@ int main(int argc, char* argv[]) {
     WebSocket* ws = ws_create(host, port, &callbacks);
     if (!ws) {
         LOG_ERROR("Failed to connect to server");
-        order_book_destroy(local_book);
         return 1;
     }
 
@@ -377,7 +366,6 @@ int main(int argc, char* argv[]) {
     // Cleanup
     LOG_INFO("Shutting down client...");
     ws_close(ws);
-    order_book_destroy(local_book);
     LOG_INFO("Client shutdown complete");
 
     return 0;

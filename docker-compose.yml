@@ -5,24 +5,32 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/app
     ports:
       - "8080:8080"
     networks:
-      - trading-net
+      trading-net:
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     command: quant_trading
 
   market_client:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/app
     networks:
-      - trading-net
+      trading-net:
+    environment:
+      - SERVER_HOST=quant_trading
+      - SERVER_PORT=8080
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     command: market_client
 
 networks:
   trading-net:
-    external: true
+    name: trading-net
+
