@@ -39,7 +39,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = /root/c-workspace/QuantTradingWebSocket/build/
+cmake_ninja_workdir = /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/
 # =============================================================================
 # Object build statements for STATIC_LIBRARY target unity
 
@@ -49,10 +49,10 @@ cmake_ninja_workdir = /root/c-workspace/QuantTradingWebSocket/build/
 
 build cmake_object_order_depends_target_unity: phony || CMakeFiles/unity.dir
 
-build CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o: C_COMPILER__unity_Release /root/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c || cmake_object_order_depends_target_unity
+build CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o: C_COMPILER__unity_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src/unity.c || cmake_object_order_depends_target_unity
   DEP_FILE = CMakeFiles/unity.dir/third_party/Unity/src/unity.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = CMakeFiles/unity.dir
   OBJECT_FILE_DIR = CMakeFiles/unity.dir/third_party/Unity/src
   TARGET_COMPILE_PDB = CMakeFiles/unity.dir/unity.pdb
@@ -84,131 +84,131 @@ build libunity.a: C_STATIC_LIBRARY_LINKER__unity_Release CMakeFiles/unity.dir/th
 
 build cmake_object_order_depends_target_quant_trading_lib: phony || cmake_object_order_depends_target_cjson
 
-build CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/websocket.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/websocket.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_server.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/websocket_server.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/websocket_frame.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/websocket_frame.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/frame.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/frame.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/frame.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/handshake.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/handshake.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/handshake.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/socket.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/socket.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/socket.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/net/buffer.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/net/buffer.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/net/buffer.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/net
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/trading/engine/order.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/trading/engine/order.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/trading/engine/order.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/engine/order.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/engine/order.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading/engine
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/trading/engine/order_book.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/trading/engine/order_book.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/trading/engine/order_book.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/engine/order_book.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/engine/order_book.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading/engine
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/trading/engine/matcher.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/trading/engine/matcher.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/trading/engine/matcher.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/engine/matcher.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/engine/matcher.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading/engine
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/trading/protocol/messages.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/trading/protocol/messages.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/trading/protocol/messages.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/trading/protocol/messages.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/trading/protocol/messages.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/trading/protocol
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/utils/logging.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/logging.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/utils/logging.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/utils
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
   TARGET_PDB = libquant_trading_lib.pdb
 
-build CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o: C_COMPILER__quant_trading_lib_Release /root/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c || cmake_object_order_depends_target_quant_trading_lib
+build CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o: C_COMPILER__quant_trading_lib_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/utils/json_utils.c || cmake_object_order_depends_target_quant_trading_lib
   DEFINES = -DCOMPILER_GCC
   DEP_FILE = CMakeFiles/quant_trading_lib.dir/src/utils/json_utils.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading_lib.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading_lib.dir/src/utils
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading_lib.dir/quant_trading_lib.pdb
@@ -240,10 +240,10 @@ build libquant_trading_lib.a: C_STATIC_LIBRARY_LINKER__quant_trading_lib_Release
 
 build cmake_object_order_depends_target_quant_trading: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib
 
-build CMakeFiles/quant_trading.dir/src/server/server_app.c.o: C_COMPILER__quant_trading_Release /root/c-workspace/QuantTradingWebSocket/src/server/server_app.c || cmake_object_order_depends_target_quant_trading
+build CMakeFiles/quant_trading.dir/src/server/server_app.c.o: C_COMPILER__quant_trading_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/server/server_app.c || cmake_object_order_depends_target_quant_trading
   DEP_FILE = CMakeFiles/quant_trading.dir/src/server/server_app.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/quant_trading.dir
   OBJECT_FILE_DIR = CMakeFiles/quant_trading.dir/src/server
   TARGET_COMPILE_PDB = CMakeFiles/quant_trading.dir/
@@ -276,10 +276,10 @@ build quant_trading: C_EXECUTABLE_LINKER__quant_trading_Release CMakeFiles/quant
 
 build cmake_object_order_depends_target_market_client: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib
 
-build CMakeFiles/market_client.dir/src/client/client_app.c.o: C_COMPILER__market_client_Release /root/c-workspace/QuantTradingWebSocket/src/client/client_app.c || cmake_object_order_depends_target_market_client
+build CMakeFiles/market_client.dir/src/client/client_app.c.o: C_COMPILER__market_client_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/src/client/client_app.c || cmake_object_order_depends_target_market_client
   DEP_FILE = CMakeFiles/market_client.dir/src/client/client_app.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party
   OBJECT_DIR = CMakeFiles/market_client.dir
   OBJECT_FILE_DIR = CMakeFiles/market_client.dir/src/client
   TARGET_COMPILE_PDB = CMakeFiles/market_client.dir/
@@ -308,7 +308,7 @@ build market_client: C_EXECUTABLE_LINKER__market_client_Release CMakeFiles/marke
 # Utility command for test
 
 build CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/ctest --force-new-ctest-process
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/ctest --force-new-ctest-process
   DESC = Running tests...
   pool = console
   restat = 1
@@ -320,7 +320,7 @@ build test: phony CMakeFiles/test.util
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -331,7 +331,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -349,7 +349,7 @@ build list_install_components: phony
 # Utility command for install
 
 build CMakeFiles/install.util: CUSTOM_COMMAND all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -P cmake_install.cmake
   DESC = Install the project...
   pool = console
   restat = 1
@@ -361,7 +361,7 @@ build install: phony CMakeFiles/install.util
 # Utility command for install/local
 
 build CMakeFiles/install/local.util: CUSTOM_COMMAND all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -373,7 +373,7 @@ build install/local: phony CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -382,7 +382,7 @@ build install/strip: phony CMakeFiles/install/strip.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# /root/c-workspace/QuantTradingWebSocket/CMakeLists.txt
+# /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/CMakeLists.txt
 # =============================================================================
 
 # =============================================================================
@@ -394,10 +394,10 @@ build install/strip: phony CMakeFiles/install/strip.util
 
 build cmake_object_order_depends_target_cjson: phony || third_party/cJSON/CMakeFiles/cjson.dir
 
-build third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o: C_COMPILER__cjson_Release /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c || cmake_object_order_depends_target_cjson
+build third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o: C_COMPILER__cjson_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/cJSON.c || cmake_object_order_depends_target_cjson
   DEFINES = -DCJSON_API_VISIBILITY -DCJSON_EXPORT_SYMBOLS -DENABLE_LOCALES
   DEP_FILE = third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o.d
-  FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden -O3 -DNDEBUG -O3 -march=native -std=gnu11
+  FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden  -O3 -DNDEBUG -O3 -march=native -std=gnu11
   OBJECT_DIR = third_party/cJSON/CMakeFiles/cjson.dir
   OBJECT_FILE_DIR = third_party/cJSON/CMakeFiles/cjson.dir
   TARGET_COMPILE_PDB = third_party/cJSON/CMakeFiles/cjson.dir/cjson.pdb
@@ -412,7 +412,7 @@ build third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o: C_COMPILER__cjson_Releas
 # Link the static library third_party/cJSON/libcjson.a
 
 build third_party/cJSON/libcjson.a: C_STATIC_LIBRARY_LINKER__cjson_Release third_party/cJSON/CMakeFiles/cjson.dir/cJSON.c.o
-  LANGUAGE_COMPILE_FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden -O3 -DNDEBUG -O3 -march=native
+  LANGUAGE_COMPILE_FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -std=c89 -pedantic -Wall -Wextra -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wundef -Wswitch-default -Wconversion -Wc++-compat -fstack-protector-strong -Wdouble-promotion -Wparentheses -Wformat-overflow -Wunused-macros -Wswitch-enum -fvisibility=hidden  -O3 -DNDEBUG -O3 -march=native
   OBJECT_DIR = third_party/cJSON/CMakeFiles/cjson.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -431,7 +431,7 @@ build third_party/cJSON/uninstall: phony third_party/cJSON/CMakeFiles/uninstall
 # Utility command for test
 
 build third_party/cJSON/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/ctest --force-new-ctest-process
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/ctest --force-new-ctest-process
   DESC = Running tests...
   pool = console
   restat = 1
@@ -443,7 +443,7 @@ build third_party/cJSON/test: phony third_party/cJSON/CMakeFiles/test.util
 # Utility command for edit_cache
 
 build third_party/cJSON/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -454,7 +454,7 @@ build third_party/cJSON/edit_cache: phony third_party/cJSON/CMakeFiles/edit_cach
 # Utility command for rebuild_cache
 
 build third_party/cJSON/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -472,7 +472,7 @@ build third_party/cJSON/list_install_components: phony
 # Utility command for install
 
 build third_party/cJSON/CMakeFiles/install.util: CUSTOM_COMMAND third_party/cJSON/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -P cmake_install.cmake
   DESC = Install the project...
   pool = console
   restat = 1
@@ -484,7 +484,7 @@ build third_party/cJSON/install: phony third_party/cJSON/CMakeFiles/install.util
 # Utility command for install/local
 
 build third_party/cJSON/CMakeFiles/install/local.util: CUSTOM_COMMAND third_party/cJSON/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -496,7 +496,7 @@ build third_party/cJSON/install/local: phony third_party/cJSON/CMakeFiles/instal
 # Utility command for install/strip
 
 build third_party/cJSON/CMakeFiles/install/strip.util: CUSTOM_COMMAND third_party/cJSON/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -508,11 +508,11 @@ build third_party/cJSON/install/strip: phony third_party/cJSON/CMakeFiles/instal
 # Custom command for third_party/cJSON/CMakeFiles/uninstall
 
 build third_party/cJSON/CMakeFiles/uninstall | ${cmake_ninja_workdir}third_party/cJSON/CMakeFiles/uninstall: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -P /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/library_config/uninstall.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON && /usr/bin/cmake -P /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/library_config/uninstall.cmake
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/CMakeLists.txt
+# /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/CMakeLists.txt
 # =============================================================================
 
 
@@ -520,7 +520,7 @@ build third_party/cJSON/CMakeFiles/uninstall | ${cmake_ninja_workdir}third_party
 # Utility command for test
 
 build third_party/cJSON/tests/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/ctest --force-new-ctest-process
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/ctest --force-new-ctest-process
   DESC = Running tests...
   pool = console
   restat = 1
@@ -532,7 +532,7 @@ build third_party/cJSON/tests/test: phony third_party/cJSON/tests/CMakeFiles/tes
 # Utility command for edit_cache
 
 build third_party/cJSON/tests/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -543,7 +543,7 @@ build third_party/cJSON/tests/edit_cache: phony third_party/cJSON/tests/CMakeFil
 # Utility command for rebuild_cache
 
 build third_party/cJSON/tests/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -561,7 +561,7 @@ build third_party/cJSON/tests/list_install_components: phony
 # Utility command for install
 
 build third_party/cJSON/tests/CMakeFiles/install.util: CUSTOM_COMMAND third_party/cJSON/tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -P cmake_install.cmake
   DESC = Install the project...
   pool = console
   restat = 1
@@ -573,7 +573,7 @@ build third_party/cJSON/tests/install: phony third_party/cJSON/tests/CMakeFiles/
 # Utility command for install/local
 
 build third_party/cJSON/tests/CMakeFiles/install/local.util: CUSTOM_COMMAND third_party/cJSON/tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -585,7 +585,7 @@ build third_party/cJSON/tests/install/local: phony third_party/cJSON/tests/CMake
 # Utility command for install/strip
 
 build third_party/cJSON/tests/CMakeFiles/install/strip.util: CUSTOM_COMMAND third_party/cJSON/tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -594,7 +594,7 @@ build third_party/cJSON/tests/install/strip: phony third_party/cJSON/tests/CMake
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# /root/c-workspace/QuantTradingWebSocket/third_party/cJSON/CMakeLists.txt
+# /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/cJSON/CMakeLists.txt
 # =============================================================================
 
 
@@ -602,7 +602,7 @@ build third_party/cJSON/tests/install/strip: phony third_party/cJSON/tests/CMake
 # Utility command for test
 
 build third_party/cJSON/fuzzing/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/ctest --force-new-ctest-process
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/ctest --force-new-ctest-process
   DESC = Running tests...
   pool = console
   restat = 1
@@ -614,7 +614,7 @@ build third_party/cJSON/fuzzing/test: phony third_party/cJSON/fuzzing/CMakeFiles
 # Utility command for edit_cache
 
 build third_party/cJSON/fuzzing/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -625,7 +625,7 @@ build third_party/cJSON/fuzzing/edit_cache: phony third_party/cJSON/fuzzing/CMak
 # Utility command for rebuild_cache
 
 build third_party/cJSON/fuzzing/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -643,7 +643,7 @@ build third_party/cJSON/fuzzing/list_install_components: phony
 # Utility command for install
 
 build third_party/cJSON/fuzzing/CMakeFiles/install.util: CUSTOM_COMMAND third_party/cJSON/fuzzing/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -P cmake_install.cmake
   DESC = Install the project...
   pool = console
   restat = 1
@@ -655,7 +655,7 @@ build third_party/cJSON/fuzzing/install: phony third_party/cJSON/fuzzing/CMakeFi
 # Utility command for install/local
 
 build third_party/cJSON/fuzzing/CMakeFiles/install/local.util: CUSTOM_COMMAND third_party/cJSON/fuzzing/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -667,7 +667,7 @@ build third_party/cJSON/fuzzing/install/local: phony third_party/cJSON/fuzzing/C
 # Utility command for install/strip
 
 build third_party/cJSON/fuzzing/CMakeFiles/install/strip.util: CUSTOM_COMMAND third_party/cJSON/fuzzing/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -676,7 +676,7 @@ build third_party/cJSON/fuzzing/install/strip: phony third_party/cJSON/fuzzing/C
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# /root/c-workspace/QuantTradingWebSocket/CMakeLists.txt
+# /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/CMakeLists.txt
 # =============================================================================
 
 # =============================================================================
@@ -688,10 +688,10 @@ build third_party/cJSON/fuzzing/install/strip: phony third_party/cJSON/fuzzing/C
 
 build cmake_object_order_depends_target_test_order: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
 
-build tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o: C_COMPILER__test_order_Release /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c || cmake_object_order_depends_target_test_order
+build tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o: C_COMPILER__test_order_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c || cmake_object_order_depends_target_test_order
   DEP_FILE = tests/CMakeFiles/test_order.dir/trading/engine/test_order.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = tests/CMakeFiles/test_order.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/test_order.dir/trading/engine
   TARGET_COMPILE_PDB = tests/CMakeFiles/test_order.dir/
@@ -724,10 +724,10 @@ build tests/test_order: C_EXECUTABLE_LINKER__test_order_Release tests/CMakeFiles
 
 build cmake_object_order_depends_target_test_order_book: phony || cmake_object_order_depends_target_cjson cmake_object_order_depends_target_quant_trading_lib cmake_object_order_depends_target_unity
 
-build tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o: C_COMPILER__test_order_book_Release /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c || cmake_object_order_depends_target_test_order_book
+build tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o: C_COMPILER__test_order_book_Release /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c || cmake_object_order_depends_target_test_order_book
   DEP_FILE = tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o.d
   FLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -O3 -DNDEBUG -O3 -march=native -std=gnu11
-  INCLUDES = -I/root/c-workspace/QuantTradingWebSocket/include -I/root/c-workspace/QuantTradingWebSocket/third_party -I/root/c-workspace/QuantTradingWebSocket/third_party/Unity/src
+  INCLUDES = -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/include -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party -I/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/Unity/src
   OBJECT_DIR = tests/CMakeFiles/test_order_book.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/test_order_book.dir/trading/engine
   TARGET_COMPILE_PDB = tests/CMakeFiles/test_order_book.dir/
@@ -756,7 +756,7 @@ build tests/test_order_book: C_EXECUTABLE_LINKER__test_order_book_Release tests/
 # Utility command for test
 
 build tests/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --force-new-ctest-process
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/ctest --force-new-ctest-process
   DESC = Running tests...
   pool = console
   restat = 1
@@ -768,7 +768,7 @@ build tests/test: phony tests/CMakeFiles/test.util
 # Utility command for edit_cache
 
 build tests/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -779,7 +779,7 @@ build tests/edit_cache: phony tests/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build tests/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake --regenerate-during-build -S/root/c-workspace/QuantTradingWebSocket -B/root/c-workspace/QuantTradingWebSocket/build
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake --regenerate-during-build -S/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket -B/home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -797,7 +797,7 @@ build tests/list_install_components: phony
 # Utility command for install
 
 build tests/CMakeFiles/install.util: CUSTOM_COMMAND tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -P cmake_install.cmake
   DESC = Install the project...
   pool = console
   restat = 1
@@ -809,7 +809,7 @@ build tests/install: phony tests/CMakeFiles/install.util
 # Utility command for install/local
 
 build tests/CMakeFiles/install/local.util: CUSTOM_COMMAND tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -821,7 +821,7 @@ build tests/install/local: phony tests/CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build tests/CMakeFiles/install/strip.util: CUSTOM_COMMAND tests/all
-  COMMAND = cd /root/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  COMMAND = cd /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -851,35 +851,35 @@ build unity: phony libunity.a
 # =============================================================================
 
 #############################################
-# Folder: /root/c-workspace/QuantTradingWebSocket/build
+# Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build
 
 build all: phony libunity.a libquant_trading_lib.a quant_trading market_client third_party/cJSON/all tests/all
 
 # =============================================================================
 
 #############################################
-# Folder: /root/c-workspace/QuantTradingWebSocket/build/tests
+# Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/tests
 
 build tests/all: phony tests/test_order tests/test_order_book
 
 # =============================================================================
 
 #############################################
-# Folder: /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON
+# Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON
 
 build third_party/cJSON/all: phony third_party/cJSON/libcjson.a third_party/cJSON/tests/all third_party/cJSON/fuzzing/all
 
 # =============================================================================
 
 #############################################
-# Folder: /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing
+# Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/fuzzing
 
 build third_party/cJSON/fuzzing/all: phony
 
 # =============================================================================
 
 #############################################
-# Folder: /root/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests
+# Folder: /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/build/third_party/cJSON/tests
 
 build third_party/cJSON/tests/all: phony
 

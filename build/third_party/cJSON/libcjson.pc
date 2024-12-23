@@ -2,7 +2,7 @@ libdir=/usr/local/lib
 includedir=/usr/local/include
 
 Name: libcjson
-Version: 1.7.18
+Version: 1.7.15
 Description: Ultralightweight JSON parser in ANSI C
 URL: https://github.com/DaveGamble/cJSON
 Libs: -L${libdir} -lcjson

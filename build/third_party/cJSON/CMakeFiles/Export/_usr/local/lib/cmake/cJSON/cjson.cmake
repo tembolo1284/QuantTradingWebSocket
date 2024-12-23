@@ -49,12 +49,7 @@ add_library(cjson STATIC IMPORTED)
 
 set_target_properties(cjson PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include"
-  INTERFACE_LINK_LIBRARIES "m"
 )
-
-if(CMAKE_VERSION VERSION_LESS 2.8.12)
-  message(FATAL_ERROR "This file relies on consumers using CMake 2.8.12 or greater.")
-endif()
 
 # Load information for each installed configuration.
 get_filename_component(_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)

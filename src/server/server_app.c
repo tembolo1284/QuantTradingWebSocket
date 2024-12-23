@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
     }
 
     LOG_INFO("Trading server started on port %u. Press Ctrl+C to exit.", port);
-    print_server_status();  // Initial status
+    // print_server_status();  // Initial status
 
     while (running) {
         ws_server_process(server);

@@ -1,10 +1,11 @@
-#define _GNU_SOURCE  // Add this before includes to enable memmem() if available
+#define _GNU_SOURCE  // to enable memmem() if available
 #include "net/websocket_server.h"
 #include "net/socket.h"
 #include "net/handshake.h"
 #include "net/buffer.h"
 #include "net/websocket_frame.h"
 #include "utils/logging.h"
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -134,41 +135,94 @@ static bool perform_websocket_handshake(WebSocketClient* client, const uint8_t* 
 }
 
 // Create a new WebSocket client
+// Add this at the top of the file with other static variables
+static atomic_uint_fast32_t next_client_id = ATOMIC_VAR_INIT(1);
+
 static WebSocketClient* create_websocket_client(int socket) {
-    WebSocketClient* client = malloc(sizeof(WebSocketClient));
-    if (!client) {
-        LOG_ERROR("Failed to allocate memory for WebSocket client");
+    // Validate socket
+    if (socket < 0) {
+        LOG_ERROR("Invalid socket passed to create_websocket_client");
         return NULL;
     }
 
-    client->socket = socket;
-    client->is_websocket = false;
-    client->handshake_complete = false;
-    client->user_data = NULL;
-    client->read_buffer = buffer_create(BUFFER_SIZE);
-    client->write_buffer = buffer_create(BUFFER_SIZE);
+    // Allocate client structure
+    WebSocketClient* client = malloc(sizeof(WebSocketClient));
+    if (!client) {
+        LOG_ERROR("Memory allocation failed for WebSocket client");
+        return NULL;
+    }
 
-    if (!client->read_buffer || !client->write_buffer) {
-        LOG_ERROR("Failed to create buffers for WebSocket client");
-        buffer_destroy(client->read_buffer);
-        buffer_destroy(client->write_buffer);
+    // Initialize all fields to zero/default values
+    memset(client, 0, sizeof(WebSocketClient));
+
+    // Set socket and generate unique client ID
+    client->socket = socket;
+    client->client_id = atomic_fetch_add(&next_client_id, 1);
+
+    // Create read buffer
+    client->read_buffer = buffer_create(BUFFER_SIZE);
+    if (!client->read_buffer) {
+        LOG_ERROR("Failed to create read buffer for client %u", client->client_id);
         free(client);
         return NULL;
     }
 
+    // Create write buffer
+    client->write_buffer = buffer_create(BUFFER_SIZE);
+    if (!client->write_buffer) {
+        LOG_ERROR("Failed to create write buffer for client %u", client->client_id);
+        buffer_destroy(client->read_buffer);
+        free(client);
+        return NULL;
+    }
+
+    // Set initial connection state
+    client->is_websocket = false;
+    client->handshake_complete = false;
+    client->user_data = NULL;
+
+    // Optional: Set socket to non-blocking mode
+    int flags = fcntl(socket, F_GETFL, 0);
+    if (flags != -1) {
+        fcntl(socket, F_SETFL, flags | O_NONBLOCK);
+    } else {
+        LOG_WARN("Failed to set socket to non-blocking mode for client %u", client->client_id);
+    }
+
+    LOG_DEBUG("Created WebSocket client (ID: %u, Socket: %d)", 
+              client->client_id, client->socket);
+
     return client;
 }
 
-// Destroy a WebSocket client
 static void destroy_websocket_client(WebSocketClient* client) {
     if (!client) return;
 
+    LOG_DEBUG("Destroying WebSocket client (ID: %u, Socket: %d)", 
+              client->client_id, client->socket);
+
+    // Shutdown socket to prevent resource leaks
     if (client->socket > 0) {
+        shutdown(client->socket, SHUT_RDWR);
         close(client->socket);
     }
 
-    buffer_destroy(client->read_buffer);
-    buffer_destroy(client->write_buffer);
+    // Safely destroy buffers
+    if (client->read_buffer) {
+        buffer_destroy(client->read_buffer);
+        client->read_buffer = NULL;
+    }
+
+    if (client->write_buffer) {
+        buffer_destroy(client->write_buffer);
+        client->write_buffer = NULL;
+    }
+
+    // Free any user data if needed (depends on your specific implementation)
+    // You might want to add a user_data_free callback if complex cleanup is required
+    client->user_data = NULL;
+
+    // Finally, free the client structure
     free(client);
 }
 

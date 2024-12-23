@@ -2,6 +2,8 @@
 #define QUANT_TRADING_WEBSOCKET_SERVER_H
 
 #include "common/types.h"
+#include "net/buffer.h"
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -38,8 +40,8 @@ typedef struct WebSocketClient {
     bool is_websocket;
     bool handshake_complete;
     void* user_data;
-    Buffer* read_buffer;
-    Buffer* write_buffer:
+    struct Buffer* read_buffer;
+    struct Buffer* write_buffer;
     uint32_t client_id;
 } WebSocketClient;
 
