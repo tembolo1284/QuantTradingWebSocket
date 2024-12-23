@@ -85,6 +85,7 @@ if(BUILD_TESTS)
         )
         target_include_directories(unity PUBLIC
             ${UNITY_ROOT}/src
+            ${CMAKE_SOURCE_DIR}/third_party/Unity/src
         )
         target_compile_definitions(unity PUBLIC
             UNITY_INCLUDE_DOUBLE
