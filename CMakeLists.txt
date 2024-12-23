@@ -33,6 +33,7 @@ else()
     if(CMAKE_C_COMPILER_ID MATCHES "Clang")
         # Clang specific flags
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-missing-field-initializers")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
     endif()
     
     if(CMAKE_C_COMPILER_ID MATCHES "GNU")
