@@ -55,12 +55,12 @@ jobs:
      run: |
        mkdir -p third_party/Unity/src
        cat > third_party/Unity/src/unity_config.h << EOL
-   #ifndef UNITY_CONFIG_H
-   #define UNITY_CONFIG_H
-   #define UNITY_INCLUDE_DOUBLE
-   #define UNITY_DOUBLE_PRECISION 0.00001
-   #endif // UNITY_CONFIG_H
-   EOL
+           #ifndef UNITY_CONFIG_H
+           #define UNITY_CONFIG_H
+           #define UNITY_INCLUDE_DOUBLE
+           #define UNITY_DOUBLE_PRECISION 0.00001
+           #endif // UNITY_CONFIG_H
+       EOL
 
    - name: Setup cJSON
      run: |
@@ -125,12 +125,12 @@ jobs:
      run: |
        mkdir -p third_party/Unity/src
        cat > third_party/Unity/src/unity_config.h << EOL
-   #ifndef UNITY_CONFIG_H
-   #define UNITY_CONFIG_H
-   #define UNITY_INCLUDE_DOUBLE
-   #define UNITY_DOUBLE_PRECISION 0.00001
-   #endif // UNITY_CONFIG_H
-   EOL
+           #ifndef UNITY_CONFIG_H
+           #define UNITY_CONFIG_H
+           #define UNITY_INCLUDE_DOUBLE
+           #define UNITY_DOUBLE_PRECISION 0.00001
+           #endif // UNITY_CONFIG_H
+       EOL
 
    - name: Setup cJSON
      run: |
