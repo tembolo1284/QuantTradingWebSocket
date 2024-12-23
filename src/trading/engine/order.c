@@ -6,9 +6,21 @@
 static uint64_t next_order_id = 1;
 
 Order* order_create(const char* symbol, double price, uint32_t quantity, bool is_buy) {
-    if (!symbol || price <= 0 || quantity == 0) {
-        LOG_ERROR("Invalid order parameters: symbol=%s, price=%.2f, quantity=%u", 
-                 symbol ? symbol : "NULL", price, quantity);
+    // Check for NULL or empty symbol
+    if (!symbol || symbol[0] == '\0') {
+        LOG_ERROR("Empty or NULL symbol");
+        return NULL;
+    }
+
+    // Check for invalid price
+    if (price <= 0.0) {
+        LOG_ERROR("Invalid order price: %.2f", price);
+        return NULL;
+    }
+
+    // Check for zero quantity
+    if (quantity <= 0) {
+        LOG_ERROR("Invalid order quantity: 0");
         return NULL;
     }
 

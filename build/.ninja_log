@@ -31,3 +31,9 @@
 0	38	1734966976436957846	tests/CMakeFiles/test_order_book.dir/trading/engine/test_order_book.c.o	1a80e8bfaad1551c
 29	108	1734966976506957847	tests/test_order	63568ddf8a164377
 38	118	1734966976516957847	tests/test_order_book	178d064d599bdffb
+0	22	1734967350456963455	CMakeFiles/quant_trading_lib.dir/src/trading/engine/order.c.o	d7673ca7b025c0c6
+22	42	1734967350486963455	libquant_trading_lib.a	92af0f137cb12365
+42	90	1734967350526963456	tests/test_order_book	178d064d599bdffb
+42	90	1734967350526963456	tests/test_order	63568ddf8a164377
+42	100	1734967350536963456	quant_trading	5f1146cb7e9e7607
+42	100	1734967350536963456	market_client	e4e5bacd0394167a
