@@ -1,25 +1,25 @@
-Start testing: Dec 23 10:22 EST
+Start testing: Dec 23 14:30 EST
 ----------------------------------------------------------
 1/2 Testing: test_order
 1/2 Test: test_order
 Command: "/root/c-workspace/QuantTradingWebSocket/build/tests/test_order"
 Directory: /root/c-workspace/QuantTradingWebSocket/build/tests
-"test_order" start time: Dec 23 10:22 EST
+"test_order" start time: Dec 23 14:30 EST
 Output:
 ----------------------------------------------------------
-[2024-12-23 10:22:37] [DEBUG] [order.c:44] Created order: id=1, symbol=AAPL, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [ERROR] [order.c:11] Empty or NULL symbol
-[2024-12-23 10:22:37] [ERROR] [order.c:11] Empty or NULL symbol
-[2024-12-23 10:22:37] [ERROR] [order.c:17] Invalid order price: 0.00
-[2024-12-23 10:22:37] [ERROR] [order.c:17] Invalid order price: -100.00
-[2024-12-23 10:22:37] [ERROR] [order.c:23] Invalid order quantity: 0
-[2024-12-23 10:22:37] [ERROR] [order.c:58] Invalid order price: 0.00
-[2024-12-23 10:22:37] [ERROR] [order.c:63] Invalid order quantity: 0
-[2024-12-23 10:22:37] [ERROR] [order.c:68] Empty order symbol
-[2024-12-23 10:22:37] [ERROR] [order.c:75] Order timestamp is in the future
-[2024-12-23 10:22:37] [DEBUG] [order.c:44] Created order: id=2, symbol=AAPL, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order.c:44] Created order: id=3, symbol=AAPL, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order.c:44] Created order: id=4, symbol=AAPL, price=150.50, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order.c:44] Created order: id=1, symbol=AAPL, price=150.50, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [ERROR] [order.c:11] Empty or NULL symbol
+[2024-12-23 14:30:58] [ERROR] [order.c:11] Empty or NULL symbol
+[2024-12-23 14:30:58] [ERROR] [order.c:17] Invalid order price: 0.00
+[2024-12-23 14:30:58] [ERROR] [order.c:17] Invalid order price: -100.00
+[2024-12-23 14:30:58] [ERROR] [order.c:23] Invalid order quantity: 0
+[2024-12-23 14:30:58] [ERROR] [order.c:58] Invalid order price: 0.00
+[2024-12-23 14:30:58] [ERROR] [order.c:63] Invalid order quantity: 0
+[2024-12-23 14:30:58] [ERROR] [order.c:68] Empty order symbol
+[2024-12-23 14:30:58] [ERROR] [order.c:75] Order timestamp is in the future
+[2024-12-23 14:30:58] [DEBUG] [order.c:44] Created order: id=2, symbol=AAPL, price=150.50, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order.c:44] Created order: id=3, symbol=AAPL, price=150.50, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order.c:44] Created order: id=4, symbol=AAPL, price=150.50, quantity=100, is_buy=1
 /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c:113:test_order_create_valid:PASS
 /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c:114:test_order_create_invalid_params:PASS
 /root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order.c:115:test_order_validate:PASS
@@ -32,7 +32,7 @@ OK
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"test_order" end time: Dec 23 10:22 EST
+"test_order" end time: Dec 23 14:30 EST
 "test_order" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -40,141 +40,78 @@ Test Passed.
 2/2 Test: test_order_book
 Command: "/root/c-workspace/QuantTradingWebSocket/build/tests/test_order_book"
 Directory: /root/c-workspace/QuantTradingWebSocket/build/tests
-"test_order_book" start time: Dec 23 10:22 EST
+"test_order_book" start time: Dec 23 14:30 EST
 Output:
 ----------------------------------------------------------
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:557] Order book destroyed
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=1, symbol=AAPL, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=1, price=150.50, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.50, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:329]   Buy order: id=1, price=150.50, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=2, symbol=AAPL, price=151.00, quantity=100, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=151.00, quantity=100, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:156] Checking price level: price=150.50, order_count=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:165] Price does not cross: incoming=151.00, counter=150.50
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=2, price=151.00, quantity=100, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.50, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:413]   Sell order: id=2, price=151.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:557] Order book destroyed
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=1, symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=1, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:329]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=2, symbol=AAPL, price=150.00, quantity=100, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:156] Checking price level: price=150.00, order_count=1
-[2024-12-23 10:22:37] [INFO] [order_book.c:105] TRADE EXECUTED: Symbol=AAPL, Quantity=100, Price=150.00
-[2024-12-23 10:22:37] [INFO] [order_book.c:107] BUY ORDER: ID=1, Trader=TODO: Add trader identifier
-[2024-12-23 10:22:37] [INFO] [order_book.c:109] SELL ORDER: ID=2, Trader=TODO: Add trader identifier
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:191] Trade executed: trade_qty=100, remaining_incoming_qty=0, current_order_qty=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=0, matched=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=1, remaining_quantity=0
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=1, symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=1, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:329]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=2, symbol=AAPL, price=150.00, quantity=60, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=60, is_buy=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:156] Checking price level: price=150.00, order_count=1
-[2024-12-23 10:22:37] [INFO] [order_book.c:105] TRADE EXECUTED: Symbol=AAPL, Quantity=60, Price=150.00
-[2024-12-23 10:22:37] [INFO] [order_book.c:107] BUY ORDER: ID=1, Trader=TODO: Add trader identifier
-[2024-12-23 10:22:37] [INFO] [order_book.c:109] SELL ORDER: ID=2, Trader=TODO: Add trader identifier
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:191] Trade executed: trade_qty=60, remaining_incoming_qty=0, current_order_qty=40
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=60, remaining_qty=0, matched=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=1, remaining_quantity=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:557] Order book destroyed
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=1, symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=1, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [INFO] [order_book.c:492] Order cancelled successfully: id=1
-[2024-12-23 10:22:37] [WARNING] [order_book.c:496] Order not found for cancellation: id=999
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:557] Order book destroyed
-[2024-12-23 10:22:37] [INFO] [order_book.c:297] Created order book for symbol: AAPL
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:321] Existing orders in AAPL book before adding new order:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:325] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:338] Sell Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:353] Incoming order: id=1, symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:136] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:360] Matching result: matched=0, remaining_quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:387] Added remaining order to book: id=1, price=150.00, quantity=100, is_buy=1
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:392] Updated AAPL book state:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:396] Buy Orders:
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:400]   Buy order: id=1, price=150.00, quantity=100
-[2024-12-23 10:22:37] [DEBUG] [order_book.c:409] Sell Orders:
-[2024-12-23 10:22:37] [ERROR] [order.c:75] Order timestamp is in the future
-[2024-12-23 10:22:37] [ERROR] [order_book.c:309] Order failed validation
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:225:test_order_book_create:PASS
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:226:test_order_book_add_orders:PASS
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:106:test_order_matching_exact:FAIL: Expected 0 Was 150
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:228:test_order_matching_partial:PASS
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:229:test_order_cancellation:PASS
-/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:201:test_price_time_priority:FAIL: Expected TRUE Was FALSE
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:468] Order book destroyed
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.50, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=151.00, quantity=100, is_buy=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:176] Checking price level: price=150.50, order_count=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:468] Order book destroyed
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:58] [INFO] [test_order_book.c:87] After buy order: best_bid = 150.00, best_ask = 0.00
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:176] Checking price level: price=150.00, order_count=1
+[2024-12-23 14:30:58] [INFO] [order_book.c:106] TRADE EXECUTED: Symbol=AAPL, Quantity=100, Price=150.00
+[2024-12-23 14:30:58] [INFO] [order_book.c:108] BUY ORDER: ID=1, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:58] [INFO] [order_book.c:110] SELL ORDER: ID=2, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:198] Trade executed: trade_qty=100, remaining_incoming_qty=0, current_order_qty=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=0, remaining_qty=0, matched=1
+[2024-12-23 14:30:58] [INFO] [test_order_book.c:100] After sell order: best_bid = 0.00, best_ask = 0.00
+[2024-12-23 14:30:58] [INFO] [test_order_book.c:112] Final state: best_bid = 0.00, best_ask = 0.00
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:468] Order book destroyed
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=60, is_buy=0
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:176] Checking price level: price=150.00, order_count=1
+[2024-12-23 14:30:58] [INFO] [order_book.c:106] TRADE EXECUTED: Symbol=AAPL, Quantity=60, Price=150.00
+[2024-12-23 14:30:58] [INFO] [order_book.c:108] BUY ORDER: ID=1, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:58] [INFO] [order_book.c:110] SELL ORDER: ID=2, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:198] Trade executed: trade_qty=60, remaining_incoming_qty=0, current_order_qty=40
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=0, remaining_qty=0, matched=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:468] Order book destroyed
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:58] [INFO] [order_book.c:405] Order cancelled successfully: id=1
+[2024-12-23 14:30:58] [WARNING] [order_book.c:409] Order not found for cancellation: id=999
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:468] Order book destroyed
+[2024-12-23 14:30:58] [INFO] [order_book.c:298] Created order book for symbol: AAPL
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
+[2024-12-23 14:30:58] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=1
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:221] Matching complete: original_qty=100, remaining_qty=100, matched=0
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:164] Attempting to match order: symbol=AAPL, price=150.00, quantity=100, is_buy=0
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:176] Checking price level: price=150.00, order_count=2
+[2024-12-23 14:30:59] [INFO] [order_book.c:106] TRADE EXECUTED: Symbol=AAPL, Quantity=100, Price=150.00
+[2024-12-23 14:30:59] [INFO] [order_book.c:108] BUY ORDER: ID=1, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:59] [INFO] [order_book.c:110] SELL ORDER: ID=3, Trader=TODO: Add trader identifier
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:198] Trade executed: trade_qty=100, remaining_incoming_qty=0, current_order_qty=0
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:221] Matching complete: original_qty=0, remaining_qty=0, matched=1
+[2024-12-23 14:30:59] [DEBUG] [order_book.c:468] Order book destroyed
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:237:test_order_book_create:PASS
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:238:test_order_book_add_orders:PASS
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:239:test_order_matching_exact:PASS
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:240:test_order_matching_partial:PASS
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:241:test_order_cancellation:PASS
+/root/c-workspace/QuantTradingWebSocket/tests/trading/engine/test_order_book.c:242:test_price_time_priority:PASS
 
 -----------------------
-6 Tests 2 Failures 0 Ignored 
-FAIL
+6 Tests 0 Failures 0 Ignored 
+OK
 <end of output>
-Test time =   0.00 sec
+Test time =   0.10 sec
 ----------------------------------------------------------
-Test Failed.
-"test_order_book" end time: Dec 23 10:22 EST
+Test Passed.
+"test_order_book" end time: Dec 23 14:30 EST
 "test_order_book" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Dec 23 10:22 EST
+End testing: Dec 23 14:30 EST

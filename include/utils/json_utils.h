@@ -84,4 +84,5 @@ char* json_serialize_order_book(const OrderBook* book);
 // Free any dynamically allocated JSON resources
 void json_free_parsed_message(ParsedMessage* parsed_msg);
 
+char* market_update_serialize(const char* symbol, double best_bid, double best_ask);
 #endif // QUANT_TRADING_JSON_UTILS_H

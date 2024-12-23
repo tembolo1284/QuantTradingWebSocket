@@ -387,3 +387,17 @@ void json_free_parsed_message(ParsedMessage* parsed_msg) {
         memset(parsed_msg, 0, sizeof(ParsedMessage));
     }
 }
+
+char* market_update_serialize(const char* symbol, double best_bid, double best_ask) {
+    cJSON* root = cJSON_CreateObject();
+    if (!root) return NULL;
+
+    cJSON_AddStringToObject(root, "type", "market_update");
+    cJSON_AddStringToObject(root, "symbol", symbol);
+    cJSON_AddNumberToObject(root, "best_bid", best_bid);
+    cJSON_AddNumberToObject(root, "best_ask", best_ask);
+
+    char* json_str = cJSON_Print(root);
+    cJSON_Delete(root);
+    return json_str;
+}

@@ -58,10 +58,23 @@ static void on_trade_executed(const Trade* trade, void* user_data) {
 
     char* trade_json = trade_notification_serialize(trade);
     if (trade_json) {
-        LOG_INFO("Trade executed: %s at %.2f (Quantity: %u)", 
+        LOG_INFO("Trade executed: %s at %.2f (Quantity: %u)",
                 trade->symbol, trade->price, trade->quantity);
         ws_server_broadcast(server, (const uint8_t*)trade_json, strlen(trade_json));
         free(trade_json);
+    }
+
+    // Update best bid and ask
+    OrderBook* book = order_handler_get_book();
+    if (book) {
+        double best_bid = order_book_get_best_bid(book);
+        double best_ask = order_book_get_best_ask(book);
+
+        char* update_json = market_update_serialize(trade->symbol, best_bid, best_ask);
+        if (update_json) {
+            ws_server_broadcast(server, (const uint8_t*)update_json, strlen(update_json));
+            free(update_json);
+        }
     }
 }
 

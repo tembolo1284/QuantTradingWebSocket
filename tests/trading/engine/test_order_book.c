@@ -5,8 +5,10 @@
 
 #include "unity.h"
 #include "unity_config.h"
+#include "utils/logging.h"
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 static Trade last_trade;
 static bool trade_executed;
@@ -82,6 +84,8 @@ void test_order_matching_exact() {
         .is_buy = true
     };
     TEST_ASSERT_TRUE(order_book_add(book, &buy_order));
+    LOG_INFO("After buy order: best_bid = %.2f, best_ask = %.2f", 
+             order_book_get_best_bid(book), order_book_get_best_ask(book));
 
     // Add matching sell order
     Order sell_order = {
@@ -93,6 +97,8 @@ void test_order_matching_exact() {
         .is_buy = false
     };
     TEST_ASSERT_TRUE(order_book_add(book, &sell_order));
+    LOG_INFO("After sell order: best_bid = %.2f, best_ask = %.2f", 
+             order_book_get_best_bid(book), order_book_get_best_ask(book));
 
     // Verify trade
     TEST_ASSERT_TRUE(trade_executed);
@@ -103,6 +109,8 @@ void test_order_matching_exact() {
 
     // Verify order book state
     TEST_ASSERT_EQUAL_size_t(0, order_book_get_order_count(book));
+    LOG_INFO("Final state: best_bid = %.2f, best_ask = %.2f", 
+             order_book_get_best_bid(book), order_book_get_best_ask(book));
     TEST_ASSERT_EQUAL_DOUBLE(0.0, order_book_get_best_bid(book));
     TEST_ASSERT_EQUAL_DOUBLE(0.0, order_book_get_best_ask(book));
 
@@ -189,16 +197,20 @@ void test_price_time_priority() {
         .is_buy = true
     };
     TEST_ASSERT_TRUE(order_book_add(book, &buy_order1));
+    
+    usleep(50000);
 
     Order buy_order2 = {
         .id = 2,
         .symbol = "AAPL",
         .price = 150.00,
         .quantity = 100,
-        .timestamp = get_timestamp() + 1000,  // Later timestamp
+        .timestamp = get_timestamp(),
         .is_buy = true
     };
     TEST_ASSERT_TRUE(order_book_add(book, &buy_order2));
+
+    usleep(50000);
 
     // Add matching sell order
     Order sell_order = {
@@ -206,7 +218,7 @@ void test_price_time_priority() {
         .symbol = "AAPL",
         .price = 150.00,
         .quantity = 100,
-        .timestamp = get_timestamp() + 2000,
+        .timestamp = get_timestamp(),
         .is_buy = false
     };
     TEST_ASSERT_TRUE(order_book_add(book, &sell_order));
