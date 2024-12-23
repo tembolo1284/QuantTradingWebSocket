@@ -6,7 +6,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-// Forward declarations
+#define MAX_CLIENTS 64
+
 typedef struct WebSocketServer WebSocketServer;
 typedef struct WebSocketClient WebSocketClient;
 
@@ -22,6 +23,25 @@ typedef struct {
     OnClientDisconnectCallback on_client_disconnect;
     OnClientMessageCallback on_client_message;
 } WebSocketServerConfig;
+
+typedef struct WebSocketServer {
+    int server_socket;
+    uint16_t port;
+    WebSocketServerConfig config;
+    WebSocketClient* clients[MAX_CLIENTS];
+    int client_count;
+    volatile bool shutdown_requested;
+} WebSocketServer;
+
+typedef struct WebSocketClient {
+    int socket;
+    bool is_websocket;
+    bool handshake_complete;
+    void* user_data;
+    Buffer* read_buffer;
+    Buffer* write_buffer:
+    uint32_t client_id;
+} WebSocketClient;
 
 // Server API
 WebSocketServer* ws_server_create(const WebSocketServerConfig* config);

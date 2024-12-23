@@ -10,6 +10,7 @@
 
 // Maximum number of orders per price level
 #define MAX_ORDERS_PER_PRICE 1000
+
 // Maximum number of symbols in a response
 #define MAX_SYMBOLS 10
 
@@ -19,6 +20,7 @@ typedef enum {
     JSON_MSG_ORDER_CANCEL,
     JSON_MSG_BOOK_QUERY,
     JSON_MSG_BOOK_RESPONSE,
+    JSON_MSG_ORDER_RESPONSE,
     JSON_MSG_UNKNOWN
 } JsonMessageType;
 
@@ -40,6 +42,13 @@ typedef struct {
     double best_ask;
 } BookSymbol;
 
+// Order response data
+typedef struct {
+    bool success;
+    uint64_t order_id;
+    char message[256];
+} OrderResponse;
+
 // Structure to represent a parsed message
 typedef struct {
     JsonMessageType type;
@@ -48,20 +57,18 @@ typedef struct {
             char symbol[16];
             Order order;
         } order_add;
-        
         struct {
             uint64_t order_id;
         } order_cancel;
-        
         struct {
             BookQueryType type;
             char symbol[16];
         } book_query;
-        
         struct {
             BookSymbol symbols[MAX_SYMBOLS];
             size_t symbols_count;
         } book_response;
+        OrderResponse order_response;
     } data;
 } ParsedMessage;
 

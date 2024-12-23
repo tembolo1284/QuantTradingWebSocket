@@ -8,20 +8,58 @@
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #define DEFAULT_PORT 8080
+#define STATUS_UPDATE_INTERVAL 30  // seconds
 
 static volatile bool running = true;
 static WebSocketServer* server = NULL;
+static time_t server_start_time;
 
-// Callback function for trade notifications
-static void on_trade_executed(const Trade* trade, void* user_data) {
-    (void)user_data;  // Unused parameter
+static void print_server_status(void) {
+    time_t now = time(NULL);
+    double uptime = difftime(now, server_start_time);
     
-    // Serialize trade notification
+    size_t max_books = order_handler_get_active_book_count();
+    OrderBook** books = malloc(sizeof(OrderBook*) * max_books);
+    size_t active_books = 0;
+    
+    if (books) {
+        active_books = order_handler_get_all_books(books, max_books);
+    }
+
+    LOG_INFO("=== Server Status Report ===");
+    LOG_INFO("Server Uptime: %.2f hours (%.0f seconds)", uptime / 3600.0, uptime);
+    LOG_INFO("Status: Active and accepting connections");
+    LOG_INFO("Active Order Books: %zu", active_books);
+    
+    if (books) {
+        for (size_t i = 0; i < active_books; i++) {
+            if (!books[i]) continue;
+            
+            double best_bid = order_book_get_best_bid(books[i]);
+            double best_ask = order_book_get_best_ask(books[i]);
+            size_t total_orders = order_book_get_order_count(books[i]);
+            
+            LOG_INFO("Order Book: %s", order_book_get_symbol(books[i]));
+            LOG_INFO("  - Total Orders: %zu", total_orders);
+            LOG_INFO("  - Best Bid: %.2f", best_bid);
+            LOG_INFO("  - Best Ask: %.2f", best_ask);
+            LOG_INFO("  - Spread: %.2f", best_ask > 0 && best_bid > 0 ? best_ask - best_bid : 0.0);
+        }
+        free(books);
+    }
+    LOG_INFO("=========================");
+}
+
+static void on_trade_executed(const Trade* trade, void* user_data) {
+    (void)user_data;
+
     char* trade_json = trade_notification_serialize(trade);
     if (trade_json) {
-        LOG_INFO("Broadcasting trade: %s", trade_json);
+        LOG_INFO("Trade executed: %s at %.2f (Quantity: %u)", 
+                trade->symbol, trade->price, trade->quantity);
         ws_server_broadcast(server, (const uint8_t*)trade_json, strlen(trade_json));
         free(trade_json);
     }
@@ -37,13 +75,22 @@ static void handle_signal(int sig) {
 }
 
 static void on_client_connect(WebSocketClient* client) {
-    (void)client;
-    LOG_INFO("New client connected");
+    LOG_INFO("New client connected - ID: %u", client->client_id);
+    
+    // Send current market snapshot to new client
+    BookQueryConfig query_config = {
+        .type = BOOK_QUERY_ALL
+    };
+    
+    char* snapshot = book_query_serialize(&query_config);
+    if (snapshot) {
+        ws_client_send(client, (const uint8_t*)snapshot, strlen(snapshot));
+        free(snapshot);
+    }
 }
 
 static void on_client_disconnect(WebSocketClient* client) {
-    (void)client;
-    LOG_INFO("Client disconnected");
+    LOG_INFO("Client disconnected - ID: %u", client->client_id);
 }
 
 static void on_client_message(WebSocketClient* client, const uint8_t* data, size_t len) {
@@ -55,15 +102,18 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
     memcpy(json_str, data, len);
     json_str[len] = '\0';
 
-    LOG_DEBUG("Received raw message from client (len=%zu): %s", len, json_str);
+    LOG_DEBUG("Received message from client %u (len=%zu): %s", 
+             client->client_id, len, json_str);
 
     ParsedMessage parsed_msg;
     if (json_parse_message(json_str, &parsed_msg)) {
-        LOG_DEBUG("Successfully parsed message, type=%d", parsed_msg.type);
+        LOG_DEBUG("Successfully parsed message from client %u, type=%d", 
+                 client->client_id, parsed_msg.type);
 
         switch (parsed_msg.type) {
             case JSON_MSG_ORDER_ADD: {
-                LOG_DEBUG("Processing order add: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
+                LOG_DEBUG("Client %u: Processing order add: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
+                         client->client_id,
                          parsed_msg.data.order_add.symbol,
                          parsed_msg.data.order_add.order.price,
                          parsed_msg.data.order_add.order.quantity,
@@ -77,7 +127,6 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
 
                 OrderHandlingResult result = order_handler_add_order(&parsed_msg.data.order_add.order);
 
-                // Send response to client
                 char* response = order_response_serialize(
                     parsed_msg.data.order_add.order.id,
                     result == ORDER_SUCCESS,
@@ -89,18 +138,14 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
                     free(response);
                 }
 
-                // Log order book state
-                OrderBook* book = order_handler_get_book();
-                if (book) {
-                    LOG_DEBUG("Updated book state - Best Bid: %.2f, Best Ask: %.2f",
-                            order_book_get_best_bid(book),
-                            order_book_get_best_ask(book));
-                }
+                // Trigger immediate status update after order
+                print_server_status();
                 break;
             }
 
             case JSON_MSG_ORDER_CANCEL: {
-                LOG_DEBUG("Processing order cancel: order_id=%lu", 
+                LOG_DEBUG("Client %u: Processing cancel for order %lu",
+                         client->client_id,
                          parsed_msg.data.order_cancel.order_id);
 
                 CancelResult result = order_book_cancel(
@@ -108,7 +153,6 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
                     parsed_msg.data.order_cancel.order_id
                 );
 
-                // Send response to client
                 char* response = cancel_response_serialize(
                     result,
                     parsed_msg.data.order_cancel.order_id
@@ -118,11 +162,15 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
                     ws_client_send(client, (const uint8_t*)response, strlen(response));
                     free(response);
                 }
+
+                // Trigger immediate status update after cancellation
+                print_server_status();
                 break;
             }
 
             case JSON_MSG_BOOK_QUERY: {
-                LOG_DEBUG("Processing book query: symbol=%s",
+                LOG_DEBUG("Client %u: Processing book query: symbol=%s",
+                         client->client_id,
                          parsed_msg.data.book_query.symbol);
 
                 BookQueryConfig query_config;
@@ -148,13 +196,15 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
             }
 
             default:
-                LOG_WARN("Unhandled message type: %d", parsed_msg.type);
+                LOG_WARN("Client %u: Unhandled message type: %d", 
+                        client->client_id, parsed_msg.type);
                 break;
         }
 
         json_free_parsed_message(&parsed_msg);
     } else {
-        LOG_ERROR("Failed to parse JSON message: %s", json_str);
+        LOG_ERROR("Client %u: Failed to parse message: %s", 
+                 client->client_id, json_str);
     }
 
     free(json_str);
@@ -163,6 +213,8 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
 int main(int argc, char* argv[]) {
     set_log_level(LOG_DEBUG);
     LOG_INFO("Starting Quant Trading Server");
+
+    server_start_time = time(NULL);
 
     if (!order_handler_init()) {
         LOG_ERROR("Failed to initialize order handler");
@@ -209,23 +261,19 @@ int main(int argc, char* argv[]) {
     }
 
     LOG_INFO("Trading server started on port %u. Press Ctrl+C to exit.", port);
+    print_server_status();  // Initial status
 
     while (running) {
         ws_server_process(server);
 
         static time_t last_status = 0;
         time_t now = time(NULL);
-        if (now - last_status >= 30) {
-            OrderBook* book = order_handler_get_book();
-            if (book) {
-                LOG_INFO("Server status - Best Bid: %.2f, Best Ask: %.2f",
-                        order_book_get_best_bid(book),
-                        order_book_get_best_ask(book));
-            }
+        if (now - last_status >= STATUS_UPDATE_INTERVAL) {
+            print_server_status();
             last_status = now;
         }
 
-        usleep(10000);
+        usleep(10000);  // 10ms sleep
     }
 
     LOG_INFO("Shutting down server...");

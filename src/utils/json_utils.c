@@ -44,8 +44,8 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             cJSON* order_item = cJSON_GetObjectItemCaseSensitive(root, "order");
 
             // Validate symbol and order
-            if (!cJSON_IsString(symbol_item) || 
-                strlen(symbol_item->valuestring) == 0 || 
+            if (!cJSON_IsString(symbol_item) ||
+                strlen(symbol_item->valuestring) == 0 ||
                 !cJSON_IsObject(order_item)) {
                 LOG_ERROR("Invalid order: missing or invalid symbol/order");
                 cJSON_Delete(root);
@@ -53,10 +53,10 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             }
 
             parsed_msg->type = JSON_MSG_ORDER_ADD;
-            
+
             // Copy the main symbol
-            strncpy(parsed_msg->data.order_add.symbol, 
-                    symbol_item->valuestring, 
+            strncpy(parsed_msg->data.order_add.symbol,
+                    symbol_item->valuestring,
                     sizeof(parsed_msg->data.order_add.symbol) - 1);
             parsed_msg->data.order_add.symbol[sizeof(parsed_msg->data.order_add.symbol) - 1] = '\0';
 
@@ -68,9 +68,9 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             cJSON* order_symbol_item = cJSON_GetObjectItemCaseSensitive(order_item, "symbol");
 
             // Validate order details
-            if (!cJSON_IsNumber(id_item) || 
-                !cJSON_IsNumber(price_item) || 
-                !cJSON_IsNumber(quantity_item) || 
+            if (!cJSON_IsNumber(id_item) ||
+                !cJSON_IsNumber(price_item) ||
+                !cJSON_IsNumber(quantity_item) ||
                 !cJSON_IsBool(is_buy_item) ||
                 !cJSON_IsString(order_symbol_item)) {
                 LOG_ERROR("Invalid order details: missing required fields");
@@ -84,9 +84,9 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             order->price = price_item->valuedouble;
             order->quantity = (uint32_t)quantity_item->valueint;
             order->is_buy = cJSON_IsTrue(is_buy_item);
-            
+
             // Copy order symbol
-            strncpy(order->symbol, 
+            strncpy(order->symbol,
                     order_symbol_item->valuestring,
                     sizeof(order->symbol) - 1);
             order->symbol[sizeof(order->symbol) - 1] = '\0';
@@ -106,15 +106,15 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
 
             parsed_msg->type = JSON_MSG_ORDER_CANCEL;
             parsed_msg->data.order_cancel.order_id = (uint64_t)order_id_item->valuedouble;
-            
-            LOG_DEBUG("Successfully parsed cancel order: order_id=%lu", 
+
+            LOG_DEBUG("Successfully parsed cancel order: order_id=%lu",
                      parsed_msg->data.order_cancel.order_id);
         }
     }
     else if (strcmp(type_str, "book") == 0) {
         if (strcmp(action_str, "query") == 0) {
             parsed_msg->type = JSON_MSG_BOOK_QUERY;
-            
+
             // Parse query type
             cJSON* query_type_item = cJSON_GetObjectItemCaseSensitive(root, "query_type");
             if (cJSON_IsString(query_type_item)) {
@@ -132,11 +132,11 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             // Parse symbol if present
             cJSON* symbol_item = cJSON_GetObjectItemCaseSensitive(root, "symbol");
             if (cJSON_IsString(symbol_item)) {
-                strncpy(parsed_msg->data.book_query.symbol, 
-                        symbol_item->valuestring, 
+                strncpy(parsed_msg->data.book_query.symbol,
+                        symbol_item->valuestring,
                         sizeof(parsed_msg->data.book_query.symbol) - 1);
                 parsed_msg->data.book_query.symbol[sizeof(parsed_msg->data.book_query.symbol) - 1] = '\0';
-                LOG_DEBUG("Parsed book query: type=symbol, symbol=%s", 
+                LOG_DEBUG("Parsed book query: type=symbol, symbol=%s",
                          parsed_msg->data.book_query.symbol);
             } else if (parsed_msg->data.book_query.type == BOOK_QUERY_SYMBOL) {
                 LOG_ERROR("Symbol query missing symbol field");
@@ -145,10 +145,35 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             }
         }
     }
+    else if (strcmp(type_str, "order_response") == 0) {
+        parsed_msg->type = JSON_MSG_ORDER_RESPONSE;
+        
+        cJSON* success = cJSON_GetObjectItemCaseSensitive(root, "success");
+        cJSON* order_id = cJSON_GetObjectItemCaseSensitive(root, "order_id");
+        cJSON* message = cJSON_GetObjectItemCaseSensitive(root, "message");
+
+        if (!cJSON_IsBool(success) || !cJSON_IsNumber(order_id) || !cJSON_IsString(message)) {
+            LOG_ERROR("Invalid order response: missing or invalid fields");
+            cJSON_Delete(root);
+            return false;
+        }
+
+        parsed_msg->data.order_response.success = cJSON_IsTrue(success);
+        parsed_msg->data.order_response.order_id = (uint64_t)order_id->valuedouble;
+        strncpy(parsed_msg->data.order_response.message, 
+                message->valuestring,
+                sizeof(parsed_msg->data.order_response.message) - 1);
+        parsed_msg->data.order_response.message[sizeof(parsed_msg->data.order_response.message) - 1] = '\0';
+
+        LOG_INFO("Order response: success=%d, order_id=%lu, message=%s",
+                 parsed_msg->data.order_response.success,
+                 parsed_msg->data.order_response.order_id,
+                 parsed_msg->data.order_response.message);
+    }
     else if (strcmp(type_str, "book_response") == 0) {
         parsed_msg->type = JSON_MSG_BOOK_RESPONSE;
         parsed_msg->data.book_response.symbols_count = 0;
-        
+
         cJSON* symbols_array = cJSON_GetObjectItemCaseSensitive(root, "symbols");
         if (!cJSON_IsArray(symbols_array)) {
             LOG_ERROR("Invalid book response: missing symbols array");
@@ -168,7 +193,7 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
 
             cJSON* symbol_name = cJSON_GetObjectItemCaseSensitive(symbol_obj, "symbol");
             if (cJSON_IsString(symbol_name)) {
-                strncpy(curr_symbol->symbol, symbol_name->valuestring, 
+                strncpy(curr_symbol->symbol, symbol_name->valuestring,
                         sizeof(curr_symbol->symbol) - 1);
                 curr_symbol->symbol[sizeof(curr_symbol->symbol) - 1] = '\0';
             }
@@ -177,30 +202,20 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             curr_symbol->buy_orders_count = 0;
             cJSON* buy_orders = cJSON_GetObjectItemCaseSensitive(symbol_obj, "buy_orders");
             if (cJSON_IsArray(buy_orders)) {
-                cJSON* order_level = NULL;
-                cJSON_ArrayForEach(order_level, buy_orders) {
+                cJSON* order = NULL;
+                cJSON_ArrayForEach(order, buy_orders) {
                     if (curr_symbol->buy_orders_count >= MAX_ORDERS_PER_PRICE) break;
 
-                    cJSON* price = cJSON_GetObjectItemCaseSensitive(order_level, "price");
-                    cJSON* orders = cJSON_GetObjectItemCaseSensitive(order_level, "orders");
-                    
-                    if (cJSON_IsNumber(price) && cJSON_IsArray(orders)) {
-                        cJSON* order = NULL;
-                        cJSON_ArrayForEach(order, orders) {
-                            if (curr_symbol->buy_orders_count >= MAX_ORDERS_PER_PRICE) break;
+                    cJSON* id = cJSON_GetObjectItemCaseSensitive(order, "id");
+                    cJSON* price = cJSON_GetObjectItemCaseSensitive(order, "price");
+                    cJSON* quantity = cJSON_GetObjectItemCaseSensitive(order, "quantity");
 
-                            BookOrder* curr_order = &curr_symbol->buy_orders[curr_symbol->buy_orders_count];
-                            
-                            cJSON* id = cJSON_GetObjectItemCaseSensitive(order, "id");
-                            cJSON* quantity = cJSON_GetObjectItemCaseSensitive(order, "quantity");
-                            
-                            if (cJSON_IsNumber(id) && cJSON_IsNumber(quantity)) {
-                                curr_order->id = (uint64_t)id->valuedouble;
-                                curr_order->price = price->valuedouble;
-                                curr_order->quantity = (uint32_t)quantity->valueint;
-                                curr_symbol->buy_orders_count++;
-                            }
-                        }
+                    if (cJSON_IsNumber(id) && cJSON_IsNumber(price) && cJSON_IsNumber(quantity)) {
+                        BookOrder* curr_order = &curr_symbol->buy_orders[curr_symbol->buy_orders_count];
+                        curr_order->id = (uint64_t)id->valuedouble;
+                        curr_order->price = price->valuedouble;
+                        curr_order->quantity = (uint32_t)quantity->valueint;
+                        curr_symbol->buy_orders_count++;
                     }
                 }
             }
@@ -209,38 +224,39 @@ bool json_parse_message(const char* json_str, ParsedMessage* parsed_msg) {
             curr_symbol->sell_orders_count = 0;
             cJSON* sell_orders = cJSON_GetObjectItemCaseSensitive(symbol_obj, "sell_orders");
             if (cJSON_IsArray(sell_orders)) {
-                cJSON* order_level = NULL;
-                cJSON_ArrayForEach(order_level, sell_orders) {
+                cJSON* order = NULL;
+                cJSON_ArrayForEach(order, sell_orders) {
                     if (curr_symbol->sell_orders_count >= MAX_ORDERS_PER_PRICE) break;
 
-                    cJSON* price = cJSON_GetObjectItemCaseSensitive(order_level, "price");
-                    cJSON* orders = cJSON_GetObjectItemCaseSensitive(order_level, "orders");
-                    
-                    if (cJSON_IsNumber(price) && cJSON_IsArray(orders)) {
-                        cJSON* order = NULL;
-                        cJSON_ArrayForEach(order, orders) {
-                            if (curr_symbol->sell_orders_count >= MAX_ORDERS_PER_PRICE) break;
+                    cJSON* id = cJSON_GetObjectItemCaseSensitive(order, "id");
+                    cJSON* price = cJSON_GetObjectItemCaseSensitive(order, "price");
+                    cJSON* quantity = cJSON_GetObjectItemCaseSensitive(order, "quantity");
 
-                            BookOrder* curr_order = &curr_symbol->sell_orders[curr_symbol->sell_orders_count];
-                            
-                            cJSON* id = cJSON_GetObjectItemCaseSensitive(order, "id");
-                            cJSON* quantity = cJSON_GetObjectItemCaseSensitive(order, "quantity");
-                            
-                            if (cJSON_IsNumber(id) && cJSON_IsNumber(quantity)) {
-                                curr_order->id = (uint64_t)id->valuedouble;
-                                curr_order->price = price->valuedouble;
-                                curr_order->quantity = (uint32_t)quantity->valueint;
-                                curr_symbol->sell_orders_count++;
-                            }
-                        }
+                    if (cJSON_IsNumber(id) && cJSON_IsNumber(price) && cJSON_IsNumber(quantity)) {
+                        BookOrder* curr_order = &curr_symbol->sell_orders[curr_symbol->sell_orders_count];
+                        curr_order->id = (uint64_t)id->valuedouble;
+                        curr_order->price = price->valuedouble;
+                        curr_order->quantity = (uint32_t)quantity->valueint;
+                        curr_symbol->sell_orders_count++;
                     }
                 }
+            }
+
+            // Get best bid/ask
+            curr_symbol->best_bid = 0.0;
+            curr_symbol->best_ask = 0.0;
+            
+            if (curr_symbol->buy_orders_count > 0) {
+                curr_symbol->best_bid = curr_symbol->buy_orders[0].price;
+            }
+            if (curr_symbol->sell_orders_count > 0) {
+                curr_symbol->best_ask = curr_symbol->sell_orders[0].price;
             }
 
             parsed_msg->data.book_response.symbols_count++;
         }
 
-        LOG_DEBUG("Parsed book response with %zu symbols", 
+        LOG_DEBUG("Parsed book response with %zu symbols",
                  parsed_msg->data.book_response.symbols_count);
     }
     else {

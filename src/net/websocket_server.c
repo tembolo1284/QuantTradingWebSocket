@@ -15,11 +15,14 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
+#include <stdatomic.h>
 
-#define MAX_CLIENTS 64
+// #define MAX_CLIENTS 64
 #define BUFFER_SIZE 4096
 #define WEBSOCKET_GUID "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+//static atomic_uint_fast32_t next_client_id = ATOMIC_VAR_INIT(1);
 
+/*
 // Internal WebSocket server structure
 struct WebSocketServer {
     int server_socket;
@@ -38,7 +41,9 @@ struct WebSocketClient {
     void* user_data;
     Buffer* read_buffer;
     Buffer* write_buffer;
+    uint32_t client_id;
 };
+*/
 
 // Portable memmem implementation
 static void* portable_memmem(const void* haystack, size_t haystacklen, 
