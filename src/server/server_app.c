@@ -14,31 +14,39 @@
 static volatile bool running = true;
 static WebSocketServer* server = NULL;
 
+// Callback function for trade notifications
+static void on_trade_executed(const Trade* trade, void* user_data) {
+    (void)user_data;  // Unused parameter
+    
+    // Serialize trade notification
+    char* trade_json = trade_notification_serialize(trade);
+    if (trade_json) {
+        LOG_INFO("Broadcasting trade: %s", trade_json);
+        ws_server_broadcast(server, (const uint8_t*)trade_json, strlen(trade_json));
+        free(trade_json);
+    }
+}
+
 static void handle_signal(int sig) {
     LOG_INFO("Received shutdown signal %d", sig);
     running = false;
-    
-    // Signal server to stop if it exists
+
     if (server) {
         ws_server_request_shutdown(server);
     }
 }
 
-// Callback when a client connects
 static void on_client_connect(WebSocketClient* client) {
     (void)client;
     LOG_INFO("New client connected");
 }
 
-// Callback when a client disconnects
 static void on_client_disconnect(WebSocketClient* client) {
     (void)client;
     LOG_INFO("Client disconnected");
 }
 
-// Handle incoming messages from clients
 static void on_client_message(WebSocketClient* client, const uint8_t* data, size_t len) {
-    // Convert to null-terminated string
     char* json_str = malloc(len + 1);
     if (!json_str) {
         LOG_ERROR("Failed to allocate memory for message");
@@ -49,11 +57,10 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
 
     LOG_DEBUG("Received raw message from client (len=%zu): %s", len, json_str);
 
-    // Parse the JSON message
     ParsedMessage parsed_msg;
     if (json_parse_message(json_str, &parsed_msg)) {
         LOG_DEBUG("Successfully parsed message, type=%d", parsed_msg.type);
-        
+
         switch (parsed_msg.type) {
             case JSON_MSG_ORDER_ADD: {
                 LOG_DEBUG("Processing order add: symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
@@ -62,69 +69,80 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
                          parsed_msg.data.order_add.order.quantity,
                          parsed_msg.data.order_add.order.is_buy);
 
-                // Dynamically create or switch to the order's symbol
                 if (!order_handler_create_book(parsed_msg.data.order_add.symbol)) {
-                    LOG_ERROR("Failed to create/switch order book to symbol %s", 
+                    LOG_ERROR("Failed to create/switch order book to symbol %s",
                               parsed_msg.data.order_add.symbol);
                     break;
                 }
-                LOG_DEBUG("Successfully created/switched to order book for symbol %s",
-                         parsed_msg.data.order_add.symbol);
 
-                // Add order to the newly created/switched book
                 OrderHandlingResult result = order_handler_add_order(&parsed_msg.data.order_add.order);
-                
-                if (result != ORDER_SUCCESS) {
-                    LOG_ERROR("Failed to add order, result=%d", result);
-                } else {
-                    LOG_INFO("Successfully added order: id=%lu, symbol=%s, price=%.2f, quantity=%u, is_buy=%d",
-                            parsed_msg.data.order_add.order.id,
-                            parsed_msg.data.order_add.order.symbol,
-                            parsed_msg.data.order_add.order.price,
-                            parsed_msg.data.order_add.order.quantity,
-                            parsed_msg.data.order_add.order.is_buy);
-                    
-                    // Get updated book state
-                    OrderBook* book = order_handler_get_book();
-                    if (book) {
-                        LOG_DEBUG("Updated book state - Best Bid: %.2f, Best Ask: %.2f",
-                                order_book_get_best_bid(book),
-                                order_book_get_best_ask(book));
-                    }
+
+                // Send response to client
+                char* response = order_response_serialize(
+                    parsed_msg.data.order_add.order.id,
+                    result == ORDER_SUCCESS,
+                    result == ORDER_SUCCESS ? "Order accepted" : "Order rejected"
+                );
+
+                if (response) {
+                    ws_client_send(client, (const uint8_t*)response, strlen(response));
+                    free(response);
+                }
+
+                // Log order book state
+                OrderBook* book = order_handler_get_book();
+                if (book) {
+                    LOG_DEBUG("Updated book state - Best Bid: %.2f, Best Ask: %.2f",
+                            order_book_get_best_bid(book),
+                            order_book_get_best_ask(book));
+                }
+                break;
+            }
+
+            case JSON_MSG_ORDER_CANCEL: {
+                LOG_DEBUG("Processing order cancel: order_id=%lu", 
+                         parsed_msg.data.order_cancel.order_id);
+
+                CancelResult result = order_book_cancel(
+                    order_handler_get_book(),
+                    parsed_msg.data.order_cancel.order_id
+                );
+
+                // Send response to client
+                char* response = cancel_response_serialize(
+                    result,
+                    parsed_msg.data.order_cancel.order_id
+                );
+
+                if (response) {
+                    ws_client_send(client, (const uint8_t*)response, strlen(response));
+                    free(response);
                 }
                 break;
             }
 
             case JSON_MSG_BOOK_QUERY: {
-                LOG_DEBUG("Processing book query: symbol=%s", 
+                LOG_DEBUG("Processing book query: symbol=%s",
                          parsed_msg.data.book_query.symbol);
-                         
+
                 BookQueryConfig query_config;
-                query_config.type = strlen(parsed_msg.data.book_query.symbol) > 0 
-                    ? BOOK_QUERY_SYMBOL 
+                query_config.type = strlen(parsed_msg.data.book_query.symbol) > 0
+                    ? BOOK_QUERY_SYMBOL
                     : BOOK_QUERY_ALL;
-                
-                // Copy symbol if specific symbol query
+
                 if (query_config.type == BOOK_QUERY_SYMBOL) {
-                    size_t symbol_len = strnlen(parsed_msg.data.book_query.symbol, 
+                    size_t symbol_len = strnlen(parsed_msg.data.book_query.symbol,
                                                 sizeof(query_config.symbol) - 1);
-                    memcpy(query_config.symbol, 
-                           parsed_msg.data.book_query.symbol, 
+                    memcpy(query_config.symbol,
+                           parsed_msg.data.book_query.symbol,
                            symbol_len);
                     query_config.symbol[symbol_len] = '\0';
-                    LOG_DEBUG("Querying specific symbol: %s", query_config.symbol);
-                } else {
-                    LOG_DEBUG("Querying all symbols");
                 }
 
-                // Serialize book query result
                 char* book_json = book_query_serialize(&query_config);
                 if (book_json) {
-                    LOG_INFO("Sending order book snapshot: %s", book_json);
                     ws_client_send(client, (const uint8_t*)book_json, strlen(book_json));
                     free(book_json);
-                } else {
-                    LOG_ERROR("Failed to serialize order book");
                 }
                 break;
             }
@@ -145,8 +163,7 @@ static void on_client_message(WebSocketClient* client, const uint8_t* data, size
 int main(int argc, char* argv[]) {
     set_log_level(LOG_DEBUG);
     LOG_INFO("Starting Quant Trading Server");
-    
-    // Initialize order handler
+
     if (!order_handler_init()) {
         LOG_ERROR("Failed to initialize order handler");
         return 1;
@@ -157,19 +174,17 @@ int main(int argc, char* argv[]) {
         port = (uint16_t)atoi(argv[1]);
     }
 
-    // Setup signal handlers
     struct sigaction sa;
     sa.sa_handler = handle_signal;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-    
+
     if (sigaction(SIGINT, &sa, NULL) == -1 ||
         sigaction(SIGTERM, &sa, NULL) == -1) {
         LOG_ERROR("Failed to set up signal handlers");
         return 1;
     }
 
-    // Create WebSocket server
     WebSocketServerConfig config = {
         .port = port,
         .on_client_connect = on_client_connect,
@@ -183,13 +198,21 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Set up trade notification callback for all books
+    OrderBook** books = malloc(sizeof(OrderBook*) * MAX_SYMBOLS);
+    if (books) {
+        size_t book_count = order_handler_get_all_books(books, MAX_SYMBOLS);
+        for (size_t i = 0; i < book_count; i++) {
+            order_book_set_trade_callback(books[i], on_trade_executed, NULL);
+        }
+        free(books);
+    }
+
     LOG_INFO("Trading server started on port %u. Press Ctrl+C to exit.", port);
 
-    // Main server loop
     while (running) {
         ws_server_process(server);
-        
-        // Periodic tasks
+
         static time_t last_status = 0;
         time_t now = time(NULL);
         if (now - last_status >= 30) {
@@ -201,18 +224,17 @@ int main(int argc, char* argv[]) {
             }
             last_status = now;
         }
-        
-        usleep(10000);  // 10ms sleep
+
+        usleep(10000);
     }
 
-    // Cleanup
     LOG_INFO("Shutting down server...");
-    
+
     if (server) {
         ws_server_destroy(server);
         server = NULL;
     }
-    
+
     order_handler_shutdown();
 
     LOG_INFO("Server shutdown complete");

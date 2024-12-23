@@ -1,34 +1,23 @@
-// include/trading/order.h
-#ifndef QUANT_TRADING_ORDER_H
-#define QUANT_TRADING_ORDER_H
+#ifndef ORDER_H
+#define ORDER_H
 
 #include "common/types.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-typedef struct {
-    uint64_t id;
-    double price;
-    uint32_t quantity;
-    timestamp_t timestamp;
-    bool is_buy;
-    char symbol[16];
+typedef struct Order {
+    uint64_t id;              // Unique order identifier
+    char symbol[16];          // Trading symbol (e.g., "AAPL")
+    double price;             // Order price
+    uint32_t quantity;        // Order quantity
+    timestamp_t timestamp;    // Order creation timestamp
+    bool is_buy;             // true for buy orders, false for sell orders
 } Order;
 
-typedef struct {
-    uint64_t id;
-    char symbol[16];
-    double price;
-    uint32_t quantity;
-    timestamp_t timestamp;
-    bool is_buy;
-    bool is_market_order;
-    double stop_price;      // For stop orders
-    uint64_t expire_time;   // For time-in-force orders
-} ExtendedOrder;
-
-// Create new order
+// Create a new order
 Order* order_create(const char* symbol, double price, uint32_t quantity, bool is_buy);
 
-// Validate order
+// Validate an order's fields
 bool order_validate(const Order* order);
 
-#endif // QUANT_TRADING_ORDER_H
+#endif // ORDER_H

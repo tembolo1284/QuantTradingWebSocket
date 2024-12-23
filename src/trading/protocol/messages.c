@@ -1,66 +1,145 @@
 #include "trading/protocol/messages.h"
-#include "trading/engine/matcher.h"
-#include "trading/engine/order_book.h"
 #include "utils/logging.h"
 #include <cJSON/cJSON.h>
-#include <stdlib.h>
 #include <string.h>
 
-// Include the full structure definitions
-#include "trading/engine/order.h"
-
-// Use the actual structure definitions from order_book_internal implementation
-struct OrderNode {
-    Order order;
-    struct OrderNode* next;
-};
-
-struct PriceNode {
-    double price;
-    struct OrderNode* orders;      // Linked list of orders at this price
-    struct PriceNode* left;
-    struct PriceNode* right;
-    int height;
-    size_t order_count;    // Number of orders at this price level
-};
-
-// Helper function to add order details to JSON
-static void add_order_details_to_json(cJSON* symbol_orders, struct PriceNode* node, bool is_buy) {
-    if (!node) return;
-
-    // For buy orders, traverse high to low. For sell orders, traverse low to high
-    if (is_buy) {
-        add_order_details_to_json(symbol_orders, node->right, is_buy);
-    } else {
-        add_order_details_to_json(symbol_orders, node->left, is_buy);
+char* trade_notification_serialize(const Trade* trade) {
+    if (!trade) {
+        LOG_ERROR("Cannot serialize NULL trade");
+        return NULL;
     }
 
-    // Add current node
-    cJSON* price_level = cJSON_CreateObject();
-    cJSON_AddNumberToObject(price_level, "price", node->price);
+    cJSON* root = cJSON_CreateObject();
+    if (!root) {
+        LOG_ERROR("Failed to create JSON object");
+        return NULL;
+    }
 
-    cJSON* orders_array = cJSON_CreateArray();
-    struct OrderNode* current_order = node->orders;
-    
-    while (current_order) {
-        cJSON* order_obj = cJSON_CreateObject();
-        cJSON_AddNumberToObject(order_obj, "id", current_order->order.id);
-        cJSON_AddNumberToObject(order_obj, "quantity", current_order->order.quantity);
-        cJSON_AddBoolToObject(order_obj, "is_buy", is_buy);
+    cJSON_AddStringToObject(root, "type", "trade");
+    cJSON_AddNumberToObject(root, "trade_id", (double)trade->id);
+    cJSON_AddStringToObject(root, "symbol", trade->symbol);
+    cJSON_AddNumberToObject(root, "price", trade->price);
+    cJSON_AddNumberToObject(root, "quantity", trade->quantity);
+    cJSON_AddNumberToObject(root, "buy_order_id", (double)trade->buy_order_id);
+    cJSON_AddNumberToObject(root, "sell_order_id", (double)trade->sell_order_id);
+    cJSON_AddNumberToObject(root, "timestamp", (double)trade->timestamp);
+
+    char* json_str = cJSON_Print(root);
+    cJSON_Delete(root);
+
+    return json_str;
+}
+
+char* order_response_serialize(uint64_t order_id, bool success, const char* message) {
+    cJSON* root = cJSON_CreateObject();
+    if (!root) {
+        LOG_ERROR("Failed to create JSON object");
+        return NULL;
+    }
+
+    cJSON_AddStringToObject(root, "type", "order_response");
+    cJSON_AddBoolToObject(root, "success", success);
+    cJSON_AddNumberToObject(root, "order_id", (double)order_id);
+    if (message) {
+        cJSON_AddStringToObject(root, "message", message);
+    }
+
+    char* json_str = cJSON_Print(root);
+    cJSON_Delete(root);
+
+    return json_str;
+}
+
+char* cancel_response_serialize(CancelResult result, uint64_t order_id) {
+    cJSON* root = cJSON_CreateObject();
+    if (!root) {
+        LOG_ERROR("Failed to create JSON object");
+        return NULL;
+    }
+
+    cJSON_AddStringToObject(root, "type", "cancel_response");
+    cJSON_AddNumberToObject(root, "order_id", (double)order_id);
+
+    const char* status;
+    bool success;
+
+    switch (result) {
+        case CANCEL_SUCCESS:
+            status = "Order cancelled successfully";
+            success = true;
+            break;
+        case CANCEL_ORDER_NOT_FOUND:
+            status = "Order not found";
+            success = false;
+            break;
+        case CANCEL_INVALID_BOOK:
+            status = "Invalid order book";
+            success = false;
+            break;
+        case CANCEL_ALREADY_FILLED:
+            status = "Order already filled";
+            success = false;
+            break;
+        default:
+            status = "Unknown error";
+            success = false;
+    }
+
+    cJSON_AddBoolToObject(root, "success", success);
+    cJSON_AddStringToObject(root, "message", status);
+
+    char* json_str = cJSON_Print(root);
+    cJSON_Delete(root);
+
+    return json_str;
+}
+
+MessageType parse_message(const char* json, void* out_message) {
+    cJSON* root = cJSON_Parse(json);
+    if (!root) {
+        LOG_ERROR("Failed to parse JSON message");
+        return MESSAGE_UNKNOWN;
+    }
+
+    cJSON* type_obj = cJSON_GetObjectItem(root, "type");
+    if (!type_obj || !cJSON_IsString(type_obj)) {
+        cJSON_Delete(root);
+        return MESSAGE_UNKNOWN;
+    }
+
+    MessageType msg_type = MESSAGE_UNKNOWN;
+
+    if (strcmp(type_obj->valuestring, "order") == 0) {
+        OrderAddMessage* msg = (OrderAddMessage*)out_message;
+        msg->type = MESSAGE_ORDER_ADD;
         
-        cJSON_AddItemToArray(orders_array, order_obj);
-        current_order = current_order->next;
+        cJSON* symbol = cJSON_GetObjectItem(root, "symbol");
+        cJSON* price = cJSON_GetObjectItem(root, "price");
+        cJSON* quantity = cJSON_GetObjectItem(root, "quantity");
+        cJSON* is_buy = cJSON_GetObjectItem(root, "is_buy");
+
+        if (symbol && price && quantity && is_buy) {
+            strncpy(msg->symbol, symbol->valuestring, sizeof(msg->symbol) - 1);
+            msg->symbol[sizeof(msg->symbol) - 1] = '\0';
+            msg->price = price->valuedouble;
+            msg->quantity = (uint32_t)quantity->valueint;
+            msg->is_buy = cJSON_IsTrue(is_buy);
+            msg_type = MESSAGE_ORDER_ADD;
+        }
+    }
+    else if (strcmp(type_obj->valuestring, "cancel") == 0) {
+        OrderCancelMessage* msg = (OrderCancelMessage*)out_message;
+        msg->type = MESSAGE_ORDER_CANCEL;
+        
+        cJSON* order_id = cJSON_GetObjectItem(root, "order_id");
+        if (order_id && cJSON_IsNumber(order_id)) {
+            msg->order_id = (uint64_t)order_id->valuedouble;
+            msg_type = MESSAGE_ORDER_CANCEL;
+        }
     }
 
-    cJSON_AddItemToObject(price_level, "orders", orders_array);
-    cJSON_AddItemToArray(symbol_orders, price_level);
-
-    // Continue traversal in correct order
-    if (is_buy) {
-        add_order_details_to_json(symbol_orders, node->left, is_buy);
-    } else {
-        add_order_details_to_json(symbol_orders, node->right, is_buy);
-    }
+    cJSON_Delete(root);
+    return msg_type;
 }
 
 char* book_query_serialize(const BookQueryConfig* config) {
@@ -69,54 +148,13 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
-    // Root JSON object
+    // Create root JSON object
     cJSON* root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "type", "book_response");
 
-    // Symbols container
-    cJSON* symbols_array = cJSON_CreateArray();
-
-    // Get count of active order books
-    size_t max_books = order_handler_get_active_book_count();
-    if (max_books > 0) {
-        OrderBook** books = malloc(sizeof(OrderBook*) * max_books);
-        if (!books) {
-            LOG_ERROR("Failed to allocate memory for order books");
-            cJSON_Delete(root);
-            return NULL;
-        }
-
-        size_t actual_books = order_handler_get_all_books(books, max_books);
-        LOG_DEBUG("Processing %zu active order books", actual_books);
-
-        for (size_t i = 0; i < actual_books; i++) {
-            if (books[i] == NULL) continue;
-
-            // Skip if we're querying a specific symbol and this isn't it
-            if (config->type == BOOK_QUERY_SYMBOL && 
-                strcmp(books[i]->symbol, config->symbol) != 0) {
-                continue;
-            }
-
-            // Add this book to the response
-            cJSON* symbol_obj = cJSON_CreateObject();
-            cJSON_AddStringToObject(symbol_obj, "symbol", books[i]->symbol);
-
-            cJSON* buy_orders = cJSON_CreateArray();
-            cJSON* sell_orders = cJSON_CreateArray();
-
-            add_order_details_to_json(buy_orders, books[i]->buy_tree, true);
-            add_order_details_to_json(sell_orders, books[i]->sell_tree, false);
-
-            cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
-            cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-            cJSON_AddItemToArray(symbols_array, symbol_obj);
-        }
-
-        free(books);
-    }
-
-    cJSON_AddItemToObject(root, "symbols", symbols_array);
+    // Create symbols array
+    cJSON* symbols = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "symbols", symbols);
 
     // Convert to string
     char* json_str = cJSON_Print(root);
