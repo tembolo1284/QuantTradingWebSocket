@@ -221,7 +221,6 @@ static bool try_match_order(OrderBook* book, Order* incoming_order) {
     return matched;
 }
 
-// Add a new price level to the book
 static PriceNode* insert_price_node(PriceNode* node, double price, OrderNode* order) {
     if (!node) {
         PriceNode* new_node = malloc(sizeof(PriceNode));
@@ -235,20 +234,46 @@ static PriceNode* insert_price_node(PriceNode* node, double price, OrderNode* or
         return new_node;
     }
 
+    // Ensure consistent insertion based on price
     if (price < node->price) {
         node->left = insert_price_node(node->left, price, order);
     } else if (price > node->price) {
         node->right = insert_price_node(node->right, price, order);
     } else {
-        // Price level exists, prepend order to list
+        // Same price level, prepend to order list
         order->next = node->orders;
         node->orders = order;
         node->order_count++;
-        return node;
     }
 
     return balance_node(node);
 }
+
+/*
+static void collect_orders_in_order(PriceNode* node, OrderNode** order_list) {
+    if (!node) return;
+
+    // First, traverse the left subtree (lower prices)
+    collect_orders_in_order(node->left, order_list);
+
+    // Add orders at this price level in their original order
+    OrderNode* current = node->orders;
+    OrderNode* last = NULL;
+    while (current) {
+        OrderNode* next = current->next;
+        
+        // Prepend to maintain original order
+        current->next = *order_list;
+        *order_list = current;
+        
+        current = next;
+    }
+
+    // Then traverse the right subtree (higher prices)
+    collect_orders_in_order(node->right, order_list);
+}
+
+*/
 
 // Public functions
 OrderBook* order_book_create(const char* symbol) {

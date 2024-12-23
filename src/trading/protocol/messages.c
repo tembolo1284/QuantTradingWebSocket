@@ -22,6 +22,119 @@ struct PriceNode {
     size_t order_count;
 };
 
+// Helper function to add orders to an array
+static cJSON* add_orders_to_array(struct PriceNode* tree, bool ascending) {
+    cJSON* orders_array = cJSON_CreateArray();
+    
+    // Collect and add orders in a list to maintain order
+    struct OrderNode* order_list = NULL;
+    struct OrderNode* tail = NULL;
+
+    // Traverse the tree to collect orders
+    struct PriceNode* current = tree;
+
+    // Find the extreme node based on traversal direction
+    if (ascending) {
+        while (current && current->left) current = current->left;
+    } else {
+        while (current && current->right) current = current->right;
+    }
+
+    // Collect all orders preserving their original order
+    while (current) {
+        // Add orders at this price level
+        struct OrderNode* node_order = current->orders;
+        while (node_order) {
+            // Create a new list node
+            struct OrderNode* list_node = malloc(sizeof(struct OrderNode));
+            if (list_node) {
+                memcpy(&list_node->order, &node_order->order, sizeof(Order));
+                list_node->next = NULL;
+                
+                // Add to end of list
+                if (tail) {
+                    tail->next = list_node;
+                    tail = list_node;
+                } else {
+                    order_list = tail = list_node;
+                }
+            }
+            node_order = node_order->next;
+        }
+
+        // Move to next node in tree based on traversal direction
+        if (ascending) {
+            // Move to right subtree or parent
+            if (current->right) {
+                current = current->right;
+                while (current->left) current = current->left;
+            } else {
+                // Simulate parent traversal without parent pointer
+                struct PriceNode* prev = current;
+                current = NULL;
+                
+                // Search entire tree for next node
+                struct PriceNode* root = tree;
+                while (root) {
+                    if (root->price > prev->price) {
+                        current = root;
+                        break;
+                    }
+                    
+                    // Decide which subtree to traverse
+                    if (prev->price < root->price) {
+                        root = root->left;
+                    } else {
+                        root = root->right;
+                    }
+                }
+            }
+        } else {
+            // Move to left subtree or parent
+            if (current->left) {
+                current = current->left;
+                while (current->right) current = current->right;
+            } else {
+                // Simulate parent traversal without parent pointer
+                struct PriceNode* prev = current;
+                current = NULL;
+                
+                // Search entire tree for next node
+                struct PriceNode* root = tree;
+                while (root) {
+                    if (root->price < prev->price) {
+                        current = root;
+                        break;
+                    }
+                    
+                    // Decide which subtree to traverse
+                    if (prev->price > root->price) {
+                        root = root->right;
+                    } else {
+                        root = root->left;
+                    }
+                }
+            }
+        }
+    }
+
+    // Convert collected orders to JSON
+    while (order_list) {
+        cJSON* order_obj = cJSON_CreateObject();
+        cJSON_AddNumberToObject(order_obj, "id", (double)order_list->order.id);
+        cJSON_AddNumberToObject(order_obj, "price", order_list->order.price);
+        cJSON_AddNumberToObject(order_obj, "quantity", order_list->order.quantity);
+        cJSON_AddItemToArray(orders_array, order_obj);
+
+        // Free the temporary list node
+        struct OrderNode* temp = order_list;
+        order_list = order_list->next;
+        free(temp);
+    }
+
+    return orders_array;
+}
+
 char* book_query_serialize(const BookQueryConfig* config) {
     if (!config) {
         LOG_ERROR("Invalid book query configuration");
@@ -72,40 +185,12 @@ char* book_query_serialize(const BookQueryConfig* config) {
             cJSON* symbol_obj = cJSON_CreateObject();
             cJSON_AddStringToObject(symbol_obj, "symbol", order_book_get_symbol(books[i]));
 
-            // Add buy orders array
-            cJSON* buy_orders = cJSON_CreateArray();
-            struct PriceNode* buy_node = books[i]->buy_tree;
-            // Traverse right to get highest prices first
-            while (buy_node) {
-                struct OrderNode* order = buy_node->orders;
-                while (order) {
-                    cJSON* order_obj = cJSON_CreateObject();
-                    cJSON_AddNumberToObject(order_obj, "id", (double)order->order.id);
-                    cJSON_AddNumberToObject(order_obj, "price", buy_node->price);
-                    cJSON_AddNumberToObject(order_obj, "quantity", order->order.quantity);
-                    cJSON_AddItemToArray(buy_orders, order_obj);
-                    order = order->next;
-                }
-                buy_node = buy_node->right;  // Go to next lower price
-            }
+            // Add buy orders (descending price order)
+            cJSON* buy_orders = add_orders_to_array(books[i]->buy_tree, false);
             cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
 
-            // Add sell orders array
-            cJSON* sell_orders = cJSON_CreateArray();
-            struct PriceNode* sell_node = books[i]->sell_tree;
-            // Traverse left to get lowest prices first
-            while (sell_node) {
-                struct OrderNode* order = sell_node->orders;
-                while (order) {
-                    cJSON* order_obj = cJSON_CreateObject();
-                    cJSON_AddNumberToObject(order_obj, "id", (double)order->order.id);
-                    cJSON_AddNumberToObject(order_obj, "price", sell_node->price);
-                    cJSON_AddNumberToObject(order_obj, "quantity", order->order.quantity);
-                    cJSON_AddItemToArray(sell_orders, order_obj);
-                    order = order->next;
-                }
-                sell_node = sell_node->left;  // Go to next higher price
-            }
+            // Add sell orders (ascending price order)
+            cJSON* sell_orders = add_orders_to_array(books[i]->sell_tree, true);
             cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
 
             cJSON_AddItemToArray(symbols_array, symbol_obj);
