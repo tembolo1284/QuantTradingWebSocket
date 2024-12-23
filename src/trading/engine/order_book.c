@@ -101,10 +101,13 @@ static void process_trade(OrderBook* book, const Order* buy_order,
     };
     strncpy(trade.symbol, book->symbol, sizeof(trade.symbol) - 1);
     trade.symbol[sizeof(trade.symbol) - 1] = '\0';
-
-    LOG_INFO("Trade executed: %s - Qty: %u, Price: %.2f, Buy Order: %lu, Sell Order: %lu",
-             trade.symbol, trade.quantity, trade.price, 
-             trade.buy_order_id, trade.sell_order_id);
+    
+    LOG_INFO("TRADE EXECUTED: Symbol=%s, Quantity=%u, Price=%.2f", 
+             trade.symbol, trade.quantity, trade.price);
+    LOG_INFO("BUY ORDER: ID=%lu, Trader=%s", 
+             buy_order->id, "TODO: Add trader identifier");
+    LOG_INFO("SELL ORDER: ID=%lu, Trader=%s", 
+             sell_order->id, "TODO: Add trader identifier");
 
     if (book->trade_callback) {
         book->trade_callback(&trade, book->callback_user_data);

@@ -1,5 +1,10 @@
 #include "trading/engine/order_book.h"
+
+#define UNITY_DOUBLE_PRECISION 0.00001
+#define UNITY_DOUBLE_COMPARE_DELTA 0.00001
+
 #include "unity.h"
+#include "unity_config.h"
 #include <string.h>
 #include <stdlib.h>
 

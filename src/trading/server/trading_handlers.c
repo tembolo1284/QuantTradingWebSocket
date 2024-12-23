@@ -66,6 +66,17 @@ void handle_trading_message(WebSocketClient* client, const uint8_t* data, size_t
             }
             break;
         }
+        
+        case MESSAGE_TRADE: {
+            // Log trade details
+            LOG_INFO("Trade Notification Received:");
+            LOG_INFO("  Symbol: %s", msg.trade.symbol);
+            LOG_INFO("  Quantity: %u", msg.trade.quantity);
+            LOG_INFO("  Price: %.2f", msg.trade.price);
+            LOG_INFO("  Buy Order ID: %lu", msg.trade.buy_order_id);
+            LOG_INFO("  Sell Order ID: %lu", msg.trade.sell_order_id);
+            break;
+        }
 
         case MESSAGE_ORDER_CANCEL: {
             CancelResult result = order_book_cancel(
