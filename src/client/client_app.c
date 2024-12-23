@@ -11,7 +11,7 @@
 #include <stdatomic.h>
 #include <stdint.h>
 
-#define DEFAULT_HOST "localhost"
+#define DEFAULT_HOST "quant_trading"
 #define DEFAULT_PORT 8080
 
 static volatile bool running = true;

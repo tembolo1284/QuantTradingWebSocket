@@ -48,7 +48,7 @@ run_server() {
 run_client() {
     echo "Starting market client..."
     ensure_network
-    docker-compose run --rm market_client
+    docker-compose run --rm --service-ports market_client
 }
 
 # Function to run development environment
