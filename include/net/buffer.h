@@ -10,7 +10,7 @@ typedef struct Buffer {
     size_t capacity;
     size_t size;
     size_t read_pos;
-    size_t write_pos;  // Added this field
+    size_t write_pos;
 } Buffer;
 
 // Create a new buffer with initial capacity
