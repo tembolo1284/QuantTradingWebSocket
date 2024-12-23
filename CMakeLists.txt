@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
-project(quant_trading C)
 
 # Compiler selection option
 option(USE_CLANG "Build with clang" OFF)  # Default to gcc, can be enabled with -DUSE_CLANG=ON
 
 # Force compiler selection if requested
 if(USE_CLANG)
-    set(CMAKE_C_COMPILER "clang")
-    set(CMAKE_CXX_COMPILER "clang++")
+    set(CMAKE_C_COMPILER "/usr/bin/clang")
 endif()
+
+project(quant_trading C)
 
 # Set C standard
 set(CMAKE_C_STANDARD 11)

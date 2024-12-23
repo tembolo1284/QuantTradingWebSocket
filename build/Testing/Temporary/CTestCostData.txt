@@ -1,3 +1,0 @@
-test_order 26 2.34956e-05
-test_order_book 5 0.0201282
----
