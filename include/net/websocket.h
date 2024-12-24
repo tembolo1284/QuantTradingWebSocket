@@ -1,31 +1,45 @@
-#ifndef QUANT_TRADING_WEBSOCKET_H
-#define QUANT_TRADING_WEBSOCKET_H
+#ifndef WEBSOCKET_H
+#define WEBSOCKET_H
 
-#include "common/types.h"
 #include <stdint.h>
-#include <stddef.h>
-
-// Forward declarations
-typedef struct WebSocket WebSocket;
+#include <stdbool.h>
+#include <sys/types.h>
+#include "common/types.h"
+#include "net/buffer.h"
 
 // Callback function types
-typedef void (*OnMessageCallback)(const uint8_t* data, size_t len, void* user_data);
-typedef void (*OnErrorCallback)(ErrorCode error, void* user_data);
+typedef void (*WebSocketMessageCallback)(const uint8_t* data, size_t len, void* user_data);
+typedef void (*WebSocketErrorCallback)(ErrorCode error_code, void* user_data);
 
 typedef struct {
-    OnMessageCallback on_message;
-    OnErrorCallback on_error;
+    WebSocketMessageCallback on_message;
+    WebSocketErrorCallback on_error;
     void* user_data;
 } WebSocketCallbacks;
 
-// Main WebSocket API functions
+// WebSocket structure
+typedef struct WebSocket {
+    int sock_fd;
+    Buffer* recv_buffer;
+    Buffer* send_buffer;
+    WebSocketCallbacks callbacks;
+    bool connected;
+    char* host;
+    uint16_t port;
+    uint64_t message_count;
+    uint64_t bytes_sent;
+    uint64_t bytes_received;
+    time_t last_message_time;
+} WebSocket;
+
+// Core WebSocket functions
 WebSocket* ws_create(const char* host, uint16_t port, const WebSocketCallbacks* callbacks);
-bool ws_send(WebSocket* ws, const uint8_t* data, size_t len);
 void ws_process(WebSocket* ws);
+bool ws_send(WebSocket* ws, const uint8_t* data, size_t len);
 void ws_close(WebSocket* ws);
 bool ws_is_connected(const WebSocket* ws);
 
-// Error string conversion
+// Error handling
 const char* ws_error_string(ErrorCode error);
 
-#endif // QUANT_TRADING_WEBSOCKET_H
+#endif // WEBSOCKET_H

@@ -23,6 +23,9 @@ typedef enum ErrorCode {
     ERROR_TRADING_ORDER_NOT_FOUND
 } ErrorCode;
 
+// Function to convert error code to string
+const char* error_code_to_string(ErrorCode error);
+
 // Book query types
 typedef enum BookQueryType {
     BOOK_QUERY_ALL,     // Get all symbols

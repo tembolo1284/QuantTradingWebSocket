@@ -1,5 +1,6 @@
 #include "trading/engine/order_book.h"
 #include "net/websocket.h"
+#include "net/websocket_io.h"
 #include "utils/json_utils.h"
 #include "utils/logging.h"
 #include <stdio.h>
