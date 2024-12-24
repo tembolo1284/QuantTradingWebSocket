@@ -105,6 +105,11 @@ set(COMMON_SOURCES
     src/common/types.c
 )
 
+
+set(CLIENT_SOURCES
+    src/client/client_helper.c
+)
+
 add_library(quant_trading_lib
     STATIC
     ${NET_SOURCES}
@@ -112,6 +117,7 @@ add_library(quant_trading_lib
     ${TRADING_PROTOCOL_SOURCES}
     ${UTILS_SOURCES}
     ${COMMON_SOURCES}
+    ${CLIENT_SOURCES}
 )
 
 target_include_directories(quant_trading_lib

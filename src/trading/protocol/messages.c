@@ -122,7 +122,6 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
-    // Create root JSON object
     cJSON* root = cJSON_CreateObject();
     cJSON* symbols_array = cJSON_CreateArray();
     
@@ -136,7 +135,6 @@ char* book_query_serialize(const BookQueryConfig* config) {
     cJSON_AddStringToObject(root, "type", "book_response");
     cJSON_AddItemToObject(root, "symbols", symbols_array);
 
-    // Get active book count
     size_t max_books = order_handler_get_active_book_count();
     LOG_DEBUG("Total active order books: %zu", max_books);
 
@@ -146,7 +144,6 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return json_str;
     }
 
-    // Allocate space for book pointers
     OrderBook** books = calloc(max_books, sizeof(OrderBook*));
     if (!books) {
         LOG_ERROR("Memory allocation failed for order books");
@@ -154,19 +151,16 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
-    // Get all active books
     size_t actual_books = order_handler_get_all_books(books, max_books);
     LOG_DEBUG("Processed active order books: %zu", actual_books);
 
-    // Process each book
     for (size_t i = 0; i < actual_books; i++) {
-        OrderBook* book = books[i];
-        if (!book) {
+        if (!books[i]) {
             LOG_WARN("Null order book at index %zu", i);
             continue;
         }
 
-        const char* symbol = order_book_get_symbol(book);
+        const char* symbol = order_book_get_symbol(books[i]);
         if (!symbol) {
             LOG_WARN("Null symbol for order book at index %zu", i);
             continue;
@@ -178,18 +172,16 @@ char* book_query_serialize(const BookQueryConfig* config) {
             continue;
         }
 
-        // Create symbol JSON object
         cJSON* symbol_obj = cJSON_CreateObject();
         cJSON_AddStringToObject(symbol_obj, "symbol", symbol);
 
-        // Safe handling of buy orders
-        cJSON* buy_orders = book->buy_tree ? 
-            add_safe_orders_to_array(book->buy_tree, false) : 
+        // Defensive checks for buy and sell trees
+        cJSON* buy_orders = (books[i]->buy_tree && books[i]->buy_tree->orders) ? 
+            add_safe_orders_to_array(books[i]->buy_tree, false) : 
             cJSON_CreateArray();
 
-        // Safe handling of sell orders
-        cJSON* sell_orders = book->sell_tree ? 
-            add_safe_orders_to_array(book->sell_tree, true) : 
+        cJSON* sell_orders = (books[i]->sell_tree && books[i]->sell_tree->orders) ? 
+            add_safe_orders_to_array(books[i]->sell_tree, true) : 
             cJSON_CreateArray();
 
         cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
@@ -198,10 +190,7 @@ char* book_query_serialize(const BookQueryConfig* config) {
         cJSON_AddItemToArray(symbols_array, symbol_obj);
     }
 
-    // Cleanup
     free(books);
-
-    // Generate JSON string
     char* json_str = cJSON_Print(root);
     cJSON_Delete(root);
 

@@ -3,6 +3,8 @@
 #include "net/websocket_io.h"
 #include "utils/json_utils.h"
 #include "utils/logging.h"
+#include "client/client_helper.h"
+#include "common/types.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,99 +22,42 @@
 #define MAX_INPUT_SIZE 1024
 
 static volatile bool running = true;
-static atomic_uint_fast32_t order_counter = ATOMIC_VAR_INIT(0);
+// static atomic_uint_fast32_t order_counter = ATOMIC_VAR_INIT(0);
 
 static void handle_signal(int sig) {
     LOG_INFO("Received shutdown signal %d", sig);
     running = false;
 }
 
-static uint64_t generate_order_id(void) {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    uint32_t counter = atomic_fetch_add(&order_counter, 1);
-    uint32_t nano_counter = (uint32_t)(ts.tv_nsec / 1000) ^ counter;
-    uint64_t id = ((uint64_t)ts.tv_sec << 32) | nano_counter;
-    
-    LOG_DEBUG("Generated order ID: %lu (timestamp: %lu, counter: %u)",
-              id, (uint64_t)ts.tv_sec, counter);
-    return id;
-}
-
-static void print_usage(void) {
-    printf("\nAvailable commands:\n");
-    printf("  order buy <price> <quantity> <symbol>   - Place buy order\n");
-    printf("  order sell <price> <quantity> <symbol>  - Place sell order\n");
-    printf("  cancel <order_id>              - Cancel order\n");
-    printf("  book                           - Show order book\n");
-    printf("  help                           - Show this help\n");
-    printf("  quit                           - Exit client\n\n");
-}
-
 static void on_error(ErrorCode error, void* user_data) {
-    (void)user_data;
-    LOG_ERROR("WebSocket error: %s", ws_error_string(error));
+    LOG_ERROR("WebSocket error: %s", error_code_to_string(error));
     running = false;
-}
-
-static void print_order_book(const BookSymbol* symbol) {
-    time_t now;
-    time(&now);
-    char timestamp[64];
-    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtime(&now));
-
-    printf("\nOrder Book for %s\n", symbol->symbol);
-    printf("================================================================================\n\n");
-
-    printf("Buy Orders:\n");
-    printf("--------------------------------------------------------------------------------\n");
-    printf("    Order ID    Symbol       Price    Quantity\n");
-    printf("--------------------------------------------------------------------------------\n");
-
-    size_t total_buy_quantity = 0;
-    for (size_t i = 0; i < symbol->buy_orders_count; i++) {
-        const BookOrder* order = &symbol->buy_orders[i];
-        printf("%11lu    %-8s  %9.2f  %9u\n",
-               order->id,
-               symbol->symbol,
-               order->price,
-               order->quantity);
-        total_buy_quantity += order->quantity;
+    
+    switch (error) {
+        case ERROR_WS_SEND_FAILED:
+            LOG_ERROR("WebSocket send failed");
+            break;
+        case ERROR_WS_CONNECTION_FAILED:
+            LOG_ERROR("WebSocket connection failed");
+            break;
+        case ERROR_WS_HANDSHAKE_FAILED:
+            LOG_ERROR("WebSocket handshake failed");
+            break;
+        case ERROR_WS_INVALID_FRAME:
+            LOG_ERROR("Invalid WebSocket frame");
+            break;
+        default:
+            break;
     }
-    if (symbol->buy_orders_count == 0) {
-        printf("    No buy orders\n");
-    }
-    printf("\n");
-
-    printf("Sell Orders:\n");
-    printf("--------------------------------------------------------------------------------\n");
-    printf("    Order ID    Symbol       Price    Quantity\n");
-    printf("--------------------------------------------------------------------------------\n");
-
-    size_t total_sell_quantity = 0;
-    for (size_t i = 0; i < symbol->sell_orders_count; i++) {
-        const BookOrder* order = &symbol->sell_orders[i];
-        printf("%11lu    %-8s  %9.2f  %9u\n",
-               order->id,
-               symbol->symbol,
-               order->price,
-               order->quantity);
-        total_sell_quantity += order->quantity;
-    }
-    if (symbol->sell_orders_count == 0) {
-        printf("    No sell orders\n");
-    }
-    printf("\n");
-
-    printf("Summary:\n");
-    printf("--------------------------------------------------------------------------------\n");
-    printf("Total Buy Orders:  %zu (Volume: %zu)\n", symbol->buy_orders_count, total_buy_quantity);
-    printf("Total Sell Orders: %zu (Volume: %zu)\n", symbol->sell_orders_count, total_sell_quantity);
-    printf("Timestamp: %s\n\n", timestamp);
 }
 
 static void on_message(const uint8_t* data, size_t len, void* user_data) {
     (void)user_data;
+
+    if (!data || len == 0) {
+        LOG_ERROR("Received empty or NULL message");
+        return;
+    }
 
     char* json_str = malloc(len + 1);
     if (!json_str) {
@@ -125,9 +70,14 @@ static void on_message(const uint8_t* data, size_t len, void* user_data) {
     LOG_DEBUG("Received raw message (len=%zu): %s", len, json_str);
 
     ParsedMessage parsed_msg;
+    memset(&parsed_msg, 0, sizeof(ParsedMessage));
+
     if (json_parse_message(json_str, &parsed_msg)) {
         switch (parsed_msg.type) {
             case JSON_MSG_BOOK_RESPONSE: {
+                LOG_DEBUG("Processing book response with %zu symbols", 
+                          parsed_msg.data.book_response.symbols_count);
+
                 if (parsed_msg.data.book_response.symbols_count == 0) {
                     printf("\nNo orders in the book\n\n");
                 } else {
@@ -157,67 +107,6 @@ static void on_message(const uint8_t* data, size_t len, void* user_data) {
     free(json_str);
 }
 
-static bool send_book_query(WebSocket* ws, const char* symbol) {
-    ParsedMessage msg = {0};
-    msg.type = JSON_MSG_BOOK_QUERY;
-
-    if (symbol) {
-        strncpy(msg.data.book_query.symbol, symbol, sizeof(msg.data.book_query.symbol) - 1);
-        msg.data.book_query.type = BOOK_QUERY_SYMBOL;
-        LOG_INFO("Requesting order book snapshot for %s", msg.data.book_query.symbol);
-    } else {
-        msg.data.book_query.type = BOOK_QUERY_ALL;
-        msg.data.book_query.symbol[0] = '\0';
-        LOG_INFO("Requesting order book snapshot for all symbols");
-    }
-
-    char* json_str = json_serialize_message(&msg);
-    if (!json_str) return false;
-    
-    bool success = ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
-    free(json_str);
-    return success;
-}
-
-static bool send_order(WebSocket* ws, bool is_buy, double price, uint32_t quantity, const char* symbol) {
-    LOG_DEBUG("Creating order: %s %.2f %u %s", 
-             is_buy ? "buy" : "sell", price, quantity, symbol);
-
-    ParsedMessage msg = {0};
-    msg.type = JSON_MSG_ORDER_ADD;
-    msg.data.order_add.order.id = generate_order_id();
-    msg.data.order_add.order.price = price;
-    msg.data.order_add.order.quantity = quantity;
-    msg.data.order_add.order.is_buy = is_buy;
-
-    strncpy(msg.data.order_add.symbol, symbol, sizeof(msg.data.order_add.symbol) - 1);
-    strncpy(msg.data.order_add.order.symbol, symbol, sizeof(msg.data.order_add.order.symbol) - 1);
-
-    char* json_str = json_serialize_message(&msg);
-    if (!json_str) {
-        LOG_ERROR("Failed to serialize order");
-        return false;
-    }
-
-    LOG_DEBUG("Sending order JSON: %s", json_str);
-    bool success = ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
-    free(json_str);
-
-    return success;
-}
-
-static void send_order_cancel(WebSocket* ws, uint64_t order_id) {
-    ParsedMessage msg = {0};
-    msg.type = JSON_MSG_ORDER_CANCEL;
-    msg.data.order_cancel.order_id = order_id;
-
-    char* json_str = json_serialize_message(&msg);
-    if (json_str) {
-        LOG_INFO("Sending cancel request for order %lu", order_id);
-        ws_send(ws, (const uint8_t*)json_str, strlen(json_str));
-        free(json_str);
-    }
-}
 static void process_user_input(WebSocket* ws, const char* input) {
     if (!ws || !input) {
         LOG_ERROR("Invalid parameters");
@@ -294,38 +183,29 @@ static void process_user_input(WebSocket* ws, const char* input) {
 }
 
 int main(int argc, char* argv[]) {
-    // Extensive logging setup
     set_log_level(LOG_DEBUG);
     LOG_INFO("Starting Market Client (PID: %d)", getpid());
 
-    // Disable buffering for interactive use
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, NULL, _IONBF, 0);
 
-    // Parse command line arguments
     const char* host = argc >= 2 ? argv[1] : DEFAULT_HOST;
     uint16_t port = argc >= 3 ? (uint16_t)atoi(argv[2]) : DEFAULT_PORT;
     
     LOG_INFO("Connecting to host: %s, port: %u", host, port);
 
-    // Set up signal handlers with enhanced logging
-    if (signal(SIGINT, handle_signal) == SIG_ERR) {
-        LOG_ERROR("Failed to set up SIGINT handler");
-        return 1;
-    }
-    if (signal(SIGTERM, handle_signal) == SIG_ERR) {
-        LOG_ERROR("Failed to set up SIGTERM handler");
+    if (signal(SIGINT, handle_signal) == SIG_ERR ||
+        signal(SIGTERM, handle_signal) == SIG_ERR) {
+        LOG_ERROR("Failed to set up signal handlers");
         return 1;
     }
 
-    // Create and connect WebSocket with detailed logging
     WebSocketCallbacks callbacks = {
         .on_message = on_message,
         .on_error = on_error,
         .user_data = NULL
     };
 
-    LOG_DEBUG("Attempting to create WebSocket connection");
     WebSocket* ws = ws_create(host, port, &callbacks);
     if (!ws) {
         LOG_ERROR("Failed to connect to server at %s:%u", host, port);
@@ -335,14 +215,12 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Connected to trading server successfully");
     print_usage();
 
-    // Main event loop with extensive logging
     char input[MAX_INPUT_SIZE];
     time_t last_message_time = time(NULL);
 
     while (running && ws_is_connected(ws)) {
-        // Check if we should exit due to signal
-        if (!running) {
-            LOG_INFO("Interrupt received, initiating clean shutdown");
+        if (!running || !ws) {
+            LOG_INFO("Interrupt or connection lost, initiating shutdown");
             break;
         }
 
@@ -358,14 +236,13 @@ int main(int argc, char* argv[]) {
 
         if (ready < 0) {
             if (errno == EINTR) {
-                LOG_DEBUG("Select interrupted, checking exit condition");
+                LOG_DEBUG("Select interrupted, continuing");
                 continue;
             }
             LOG_ERROR("Select error: %s (errno: %d)", strerror(errno), errno);
             break;
         }
 
-        // Handle input with detailed logging
         if (ready > 0 && FD_ISSET(STDIN_FILENO, &readfds)) {
             if (fgets(input, sizeof(input), stdin)) {
                 input[strcspn(input, "\n")] = 0;
@@ -375,24 +252,20 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Handle socket events with detailed logging
         if (ready > 0 && FD_ISSET(ws->sock_fd, &readfds)) {
-            LOG_DEBUG("Socket ready for processing");
             ws_process(ws);
             last_message_time = time(NULL);
         }
 
-        // Connection timeout monitoring
         if (time(NULL) - last_message_time > 30) {
             if (!ws_is_connected(ws)) {
-                LOG_ERROR("Connection to server lost after 30 seconds of inactivity");
+                LOG_ERROR("Connection to server lost");
                 break;
             }
         }
 
-        // Avoid busy loop
         if (ready == 0) {
-            usleep(10000);  // 10ms sleep on timeout
+            usleep(10000);  // 10ms sleep
         }
     }
 
