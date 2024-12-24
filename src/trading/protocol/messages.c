@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Since order_book.c's internal structures are private, we need these definitions
-// to match the ones in order_book.c
+// Structure definitions to match order_book.c's internal structures
 struct OrderNode {
     Order order;
     struct OrderNode* next;
@@ -22,114 +21,96 @@ struct PriceNode {
     size_t order_count;
 };
 
-// Helper function to add orders to an array
-static cJSON* add_orders_to_array(struct PriceNode* tree, bool ascending) {
-    cJSON* orders_array = cJSON_CreateArray();
-    
-    // Collect and add orders in a list to maintain order
-    struct OrderNode* order_list = NULL;
-    struct OrderNode* tail = NULL;
+// Find leftmost node in a subtree
+static struct PriceNode* find_leftmost(struct PriceNode* node) {
+    if (!node) return NULL;
+    while (node->left) {
+        node = node->left;
+    }
+    return node;
+}
 
-    // Traverse the tree to collect orders
-    struct PriceNode* current = tree;
+// Find rightmost node in a subtree
+static struct PriceNode* find_rightmost(struct PriceNode* node) {
+    if (!node) return NULL;
+    while (node->right) {
+        node = node->right;
+    }
+    return node;
+}
 
-    // Find the extreme node based on traversal direction
-    if (ascending) {
-        while (current && current->left) current = current->left;
-    } else {
-        while (current && current->right) current = current->right;
+static struct PriceNode* find_next_node_ascending(struct PriceNode* root, struct PriceNode* current) {
+    if (!root || !current) return NULL;
+
+    // If current node has a right subtree, find leftmost node in right subtree
+    if (current->right) {
+        return find_leftmost(current->right);
     }
 
-    // Collect all orders preserving their original order
+    // Otherwise, find the nearest ancestor where current node is in the left subtree
+    struct PriceNode* ancestor = NULL;
+    struct PriceNode* search = root;
+    
+    while (search && search != current) {
+        if (current->price < search->price) {
+            ancestor = search;
+            search = search->left;
+        } else {
+            search = search->right;
+        }
+    }
+
+    return ancestor;
+}
+
+static struct PriceNode* find_next_node_descending(struct PriceNode* root, struct PriceNode* current) {
+    if (!root || !current) return NULL;
+
+    // If current node has a left subtree, find rightmost node in left subtree
+    if (current->left) {
+        return find_rightmost(current->left);
+    }
+
+    // Otherwise, find the nearest ancestor where current node is in the right subtree
+    struct PriceNode* ancestor = NULL;
+    struct PriceNode* search = root;
+    
+    while (search && search != current) {
+        if (current->price > search->price) {
+            ancestor = search;
+            search = search->right;
+        } else {
+            search = search->left;
+        }
+    }
+
+    return ancestor;
+}
+
+// Enhanced order collection with safer memory management
+static cJSON* add_safe_orders_to_array(struct PriceNode* tree, bool ascending) {
+    cJSON* orders_array = cJSON_CreateArray();
+    if (!tree) return orders_array;
+
+    // Start from the extreme node based on traversal direction
+    struct PriceNode* current = ascending ? find_leftmost(tree) : find_rightmost(tree);
+    
     while (current) {
-        // Add orders at this price level
         struct OrderNode* node_order = current->orders;
         while (node_order) {
-            // Create a new list node
-            struct OrderNode* list_node = malloc(sizeof(struct OrderNode));
-            if (list_node) {
-                memcpy(&list_node->order, &node_order->order, sizeof(Order));
-                list_node->next = NULL;
-                
-                // Add to end of list
-                if (tail) {
-                    tail->next = list_node;
-                    tail = list_node;
-                } else {
-                    order_list = tail = list_node;
-                }
-            }
+            cJSON* order_obj = cJSON_CreateObject();
+            cJSON_AddNumberToObject(order_obj, "id", (double)node_order->order.id);
+            cJSON_AddNumberToObject(order_obj, "price", node_order->order.price);
+            cJSON_AddNumberToObject(order_obj, "quantity", node_order->order.quantity);
+            cJSON_AddItemToArray(orders_array, order_obj);
+
             node_order = node_order->next;
         }
 
-        // Move to next node in tree based on traversal direction
-        if (ascending) {
-            // Move to right subtree or parent
-            if (current->right) {
-                current = current->right;
-                while (current->left) current = current->left;
-            } else {
-                // Simulate parent traversal without parent pointer
-                struct PriceNode* prev = current;
-                current = NULL;
-                
-                // Search entire tree for next node
-                struct PriceNode* root = tree;
-                while (root) {
-                    if (root->price > prev->price) {
-                        current = root;
-                        break;
-                    }
-                    
-                    // Decide which subtree to traverse
-                    if (prev->price < root->price) {
-                        root = root->left;
-                    } else {
-                        root = root->right;
-                    }
-                }
-            }
-        } else {
-            // Move to left subtree or parent
-            if (current->left) {
-                current = current->left;
-                while (current->right) current = current->right;
-            } else {
-                // Simulate parent traversal without parent pointer
-                struct PriceNode* prev = current;
-                current = NULL;
-                
-                // Search entire tree for next node
-                struct PriceNode* root = tree;
-                while (root) {
-                    if (root->price < prev->price) {
-                        current = root;
-                        break;
-                    }
-                    
-                    // Decide which subtree to traverse
-                    if (prev->price > root->price) {
-                        root = root->right;
-                    } else {
-                        root = root->left;
-                    }
-                }
-            }
-        }
-    }
-
-    // Convert collected orders to JSON
-    while (order_list) {
-        cJSON* order_obj = cJSON_CreateObject();
-        cJSON_AddNumberToObject(order_obj, "id", (double)order_list->order.id);
-        cJSON_AddNumberToObject(order_obj, "price", order_list->order.price);
-        cJSON_AddNumberToObject(order_obj, "quantity", order_list->order.quantity);
-        cJSON_AddItemToArray(orders_array, order_obj);
-
-        // Free the temporary list node
-        struct OrderNode* temp = order_list;
-        order_list = order_list->next;
-        free(temp);
+        // Move to next node based on traversal direction
+        current = ascending ? 
+            find_next_node_ascending(tree, current) : 
+            find_next_node_descending(tree, current);
     }
 
     return orders_array;
@@ -141,17 +122,21 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
+    // Create root JSON object
     cJSON* root = cJSON_CreateObject();
     cJSON* symbols_array = cJSON_CreateArray();
+    
     if (!root || !symbols_array) {
         LOG_ERROR("Failed to create JSON objects");
         cJSON_Delete(root);
         cJSON_Delete(symbols_array);
         return NULL;
     }
+
     cJSON_AddStringToObject(root, "type", "book_response");
     cJSON_AddItemToObject(root, "symbols", symbols_array);
 
+    // Get active book count
     size_t max_books = order_handler_get_active_book_count();
     LOG_DEBUG("Total active order books: %zu", max_books);
 
@@ -161,6 +146,7 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return json_str;
     }
 
+    // Allocate space for book pointers
     OrderBook** books = calloc(max_books, sizeof(OrderBook*));
     if (!books) {
         LOG_ERROR("Memory allocation failed for order books");
@@ -168,35 +154,42 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
+    // Get all active books
     size_t actual_books = order_handler_get_all_books(books, max_books);
     LOG_DEBUG("Processed active order books: %zu", actual_books);
 
+    // Process each book
     for (size_t i = 0; i < actual_books; i++) {
-        if (!books[i]) {
+        OrderBook* book = books[i];
+        if (!book) {
             LOG_WARN("Null order book at index %zu", i);
             continue;
         }
 
-        const char* symbol = order_book_get_symbol(books[i]);
+        const char* symbol = order_book_get_symbol(book);
         if (!symbol) {
             LOG_WARN("Null symbol for order book at index %zu", i);
             continue;
         }
 
+        // Filter by symbol if specified
         if (config->type == BOOK_QUERY_SYMBOL && 
             strcmp(symbol, config->symbol) != 0) {
             continue;
         }
 
+        // Create symbol JSON object
         cJSON* symbol_obj = cJSON_CreateObject();
         cJSON_AddStringToObject(symbol_obj, "symbol", symbol);
 
-        // Null checks for trees
-        cJSON* buy_orders = books[i]->buy_tree ? 
-            add_orders_to_array(books[i]->buy_tree, false) : 
+        // Safe handling of buy orders
+        cJSON* buy_orders = book->buy_tree ? 
+            add_safe_orders_to_array(book->buy_tree, false) : 
             cJSON_CreateArray();
-        cJSON* sell_orders = books[i]->sell_tree ? 
-            add_orders_to_array(books[i]->sell_tree, true) : 
+
+        // Safe handling of sell orders
+        cJSON* sell_orders = book->sell_tree ? 
+            add_safe_orders_to_array(book->sell_tree, true) : 
             cJSON_CreateArray();
 
         cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
@@ -205,13 +198,17 @@ char* book_query_serialize(const BookQueryConfig* config) {
         cJSON_AddItemToArray(symbols_array, symbol_obj);
     }
 
+    // Cleanup
     free(books);
+
+    // Generate JSON string
     char* json_str = cJSON_Print(root);
     cJSON_Delete(root);
 
     return json_str;
 }
 
+// Existing functions from your original implementation
 char* trade_notification_serialize(const Trade* trade) {
     if (!trade) {
         LOG_ERROR("Cannot serialize NULL trade");
