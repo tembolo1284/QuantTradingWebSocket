@@ -151,11 +151,18 @@ void ws_process(WebSocket* ws) {
     }
 
     // Check connection health
-    if (time(NULL) - ws->last_message_time > 30) {  // 30 second timeout
+    time_t current_time = time(NULL);
+    if (current_time - ws->last_message_time > 30) {  // 30 second timeout
         LOG_DEBUG("No messages received for 30 seconds, checking connection");
         WebSocketFrame* ping = frame_create(NULL, 0, FRAME_PING);
         if (ping) {
-            ws_send(ws, ping->payload, ping->header.payload_len);
+            if (ws->connected) {
+                bool send_result = ws_send(ws, ping->payload, ping->header.payload_len);
+                if (!send_result) {
+                    LOG_ERROR("Failed to send ping frame");
+                    ws->connected = false;
+                }
+            }
             frame_destroy(ping);
         }
     }
@@ -163,14 +170,14 @@ void ws_process(WebSocket* ws) {
     // First try to read the initial 2-byte header
     uint8_t header[2];
     ssize_t header_read = ws_io_read_fully(ws, header, 2);
-    
+
     if (header_read < 0) {
         if (ws_io_shutdown_requested()) {
             LOG_INFO("Shutdown detected during header read");
         }
         return;  // Just return on read timeout, don't close connection
     }
-    
+
     if (header_read == 0) {
         return;  // No data available - this is normal
     }

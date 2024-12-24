@@ -87,15 +87,23 @@ static struct PriceNode* find_next_node_descending(struct PriceNode* root, struc
     return ancestor;
 }
 
-// Enhanced order collection with safer memory management
 static cJSON* add_safe_orders_to_array(struct PriceNode* tree, bool ascending) {
     cJSON* orders_array = cJSON_CreateArray();
-    if (!tree) return orders_array;
+    if (!tree) {
+        LOG_DEBUG("Empty tree provided for serialization");
+        return orders_array;
+    }
 
-    // Start from the extreme node based on traversal direction
     struct PriceNode* current = ascending ? find_leftmost(tree) : find_rightmost(tree);
-    
+
     while (current) {
+        if (!current || !current->orders) { // Defensive checks
+            current = ascending ?
+                find_next_node_ascending(tree, current) :
+                find_next_node_descending(tree, current);
+            continue;
+        }
+
         struct OrderNode* node_order = current->orders;
         while (node_order) {
             cJSON* order_obj = cJSON_CreateObject();
@@ -107,16 +115,44 @@ static cJSON* add_safe_orders_to_array(struct PriceNode* tree, bool ascending) {
             node_order = node_order->next;
         }
 
-        // Move to next node based on traversal direction
-        current = ascending ? 
-            find_next_node_ascending(tree, current) : 
+        current = ascending ?
+            find_next_node_ascending(tree, current) :
             find_next_node_descending(tree, current);
     }
 
     return orders_array;
 }
 
+char* trade_notification_serialize(const Trade* trade) {
+    if (!trade) {
+        LOG_ERROR("Cannot serialize NULL trade");
+        return NULL;
+    }
+
+    cJSON* root = cJSON_CreateObject();
+    if (!root) {
+        LOG_ERROR("Failed to create JSON object");
+        return NULL;
+    }
+
+    cJSON_AddStringToObject(root, "type", "trade");
+    cJSON_AddNumberToObject(root, "trade_id", (double)trade->id);
+    cJSON_AddStringToObject(root, "symbol", trade->symbol);
+    cJSON_AddNumberToObject(root, "price", trade->price);
+    cJSON_AddNumberToObject(root, "quantity", trade->quantity);
+    cJSON_AddNumberToObject(root, "buy_order_id", (double)trade->buy_order_id);
+    cJSON_AddNumberToObject(root, "sell_order_id", (double)trade->sell_order_id);
+    cJSON_AddNumberToObject(root, "timestamp", (double)trade->timestamp);
+
+    char* json_str = cJSON_Print(root);
+    cJSON_Delete(root);
+
+    return json_str;
+}
+
 char* book_query_serialize(const BookQueryConfig* config) {
+    LOG_DEBUG("Starting book query serialization");
+
     if (!config) {
         LOG_ERROR("Invalid book query configuration");
         return NULL;
@@ -124,7 +160,7 @@ char* book_query_serialize(const BookQueryConfig* config) {
 
     cJSON* root = cJSON_CreateObject();
     cJSON* symbols_array = cJSON_CreateArray();
-    
+
     if (!root || !symbols_array) {
         LOG_ERROR("Failed to create JSON objects");
         cJSON_Delete(root);
@@ -141,6 +177,7 @@ char* book_query_serialize(const BookQueryConfig* config) {
     if (max_books == 0) {
         char* json_str = cJSON_Print(root);
         cJSON_Delete(root);
+        LOG_DEBUG("Returning empty book response");
         return json_str;
     }
 
@@ -166,23 +203,26 @@ char* book_query_serialize(const BookQueryConfig* config) {
             continue;
         }
 
-        // Filter by symbol if specified
-        if (config->type == BOOK_QUERY_SYMBOL && 
-            strcmp(symbol, config->symbol) != 0) {
-            continue;
-        }
+        LOG_DEBUG("Processing book for symbol: %s", symbol);
+        LOG_DEBUG("Buy tree: %p, Sell tree: %p",
+                  (void*)books[i]->buy_tree,
+                  (void*)books[i]->sell_tree);
 
         cJSON* symbol_obj = cJSON_CreateObject();
         cJSON_AddStringToObject(symbol_obj, "symbol", symbol);
 
-        // Defensive checks for buy and sell trees
-        cJSON* buy_orders = (books[i]->buy_tree && books[i]->buy_tree->orders) ? 
-            add_safe_orders_to_array(books[i]->buy_tree, false) : 
+        // Safely handle buy and sell trees
+        cJSON* buy_orders = books[i]->buy_tree ?
+            add_safe_orders_to_array(books[i]->buy_tree, false) :
             cJSON_CreateArray();
 
-        cJSON* sell_orders = (books[i]->sell_tree && books[i]->sell_tree->orders) ? 
-            add_safe_orders_to_array(books[i]->sell_tree, true) : 
+        cJSON* sell_orders = books[i]->sell_tree ?
+            add_safe_orders_to_array(books[i]->sell_tree, true) :
             cJSON_CreateArray();
+
+        LOG_DEBUG("Buy orders count: %d, Sell orders count: %d",
+                  cJSON_GetArraySize(buy_orders),
+                  cJSON_GetArraySize(sell_orders));
 
         cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
         cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
@@ -191,34 +231,6 @@ char* book_query_serialize(const BookQueryConfig* config) {
     }
 
     free(books);
-    char* json_str = cJSON_Print(root);
-    cJSON_Delete(root);
-
-    return json_str;
-}
-
-// Existing functions from your original implementation
-char* trade_notification_serialize(const Trade* trade) {
-    if (!trade) {
-        LOG_ERROR("Cannot serialize NULL trade");
-        return NULL;
-    }
-
-    cJSON* root = cJSON_CreateObject();
-    if (!root) {
-        LOG_ERROR("Failed to create JSON object");
-        return NULL;
-    }
-
-    cJSON_AddStringToObject(root, "type", "trade");
-    cJSON_AddNumberToObject(root, "trade_id", (double)trade->id);
-    cJSON_AddStringToObject(root, "symbol", trade->symbol);
-    cJSON_AddNumberToObject(root, "price", trade->price);
-    cJSON_AddNumberToObject(root, "quantity", trade->quantity);
-    cJSON_AddNumberToObject(root, "buy_order_id", (double)trade->buy_order_id);
-    cJSON_AddNumberToObject(root, "sell_order_id", (double)trade->sell_order_id);
-    cJSON_AddNumberToObject(root, "timestamp", (double)trade->timestamp);
-
     char* json_str = cJSON_Print(root);
     cJSON_Delete(root);
 

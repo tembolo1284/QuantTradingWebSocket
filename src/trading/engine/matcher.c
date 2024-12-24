@@ -221,7 +221,6 @@ OrderBook* order_handler_get_book(void) {
     return NULL;
 }
 
-// Get array of all active order books
 size_t order_handler_get_all_books(OrderBook** books, size_t max_books) {
     validate_books_state();
     size_t count = 0;
@@ -229,10 +228,13 @@ size_t order_handler_get_all_books(OrderBook** books, size_t max_books) {
 
     for (size_t i = 0; i < MAX_SYMBOLS && count < max_books; i++) {
         if (order_books[i].active && order_books[i].book) {
-            LOG_DEBUG("Adding book %zu: %s (Orders: %lu)", 
-                     count,
-                     order_books[i].symbol,
-                     order_books[i].book->total_orders);
+            LOG_DEBUG("Validating book: %s", order_books[i].symbol);
+            if (!order_books[i].book->sell_tree) {
+                LOG_WARN("Sell tree for book %s is NULL", order_books[i].symbol);
+            }
+            if (!order_books[i].book->buy_tree) {
+                LOG_WARN("Buy tree for book %s is NULL", order_books[i].symbol);
+            }
             books[count++] = order_books[i].book;
         }
     }

@@ -320,6 +320,9 @@ bool order_book_add(OrderBook* book, const Order* order) {
         order_node->next = NULL;
 
         PriceNode** tree = order_copy.is_buy ? &book->buy_tree : &book->sell_tree;
+        LOG_DEBUG("Adding order to %s tree for symbol: %s",
+                  order_copy.is_buy ? "buy" : "sell", book->symbol);
+
         *tree = insert_price_node(*tree, order_copy.price, order_node);
 
         if (!*tree) {
