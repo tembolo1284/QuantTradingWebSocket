@@ -6,7 +6,12 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_BUILD_TYPE Release)
+# Set default build type to Debug if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type (Debug, Release, RelWithDebInfo, MinSizeRel)" FORCE)
+endif()
+
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
 

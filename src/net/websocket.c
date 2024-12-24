@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <sys/select.h>
+#include <fcntl.h>
 
 #define MAX_FRAME_SIZE (16 * 1024 * 1024)  // 16MB max frame size
 #define READ_BUFFER_SIZE 8192               // 8KB read buffer
@@ -244,6 +246,42 @@ static ssize_t ws_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
 
 void ws_process(WebSocket* ws) {
     if (!ws || !ws->connected) return;
+    
+    static int timeout_ms = 100;  // Start with 100ms
+    static int consecutive_empty_reads = 0;
+
+    fd_set read_fds;
+    struct timeval tv = {0, timeout_ms * 1000};  // Convert to microseconds
+
+    FD_ZERO(&read_fds);
+    FD_SET(ws->sock_fd, &read_fds);
+
+    int ready = select(ws->sock_fd + 1, &read_fds, NULL, NULL, &tv);
+    if (ready < 0) {
+        if (errno != EINTR) {
+            LOG_ERROR("Select error: %s", strerror(errno));
+            ws->connected = false;
+        }
+        return;
+    }
+
+    if (ready == 0) {
+        consecutive_empty_reads++;
+        // Exponential backoff, max 1 second
+        if (timeout_ms < 1000) {
+            timeout_ms = (timeout_ms * 2 > 1000) ? 1000 : timeout_ms * 2;
+        }
+        
+        if (consecutive_empty_reads > 10) {
+            LOG_WARN("Consecutive empty reads, potential connection issue");
+            ws->connected = false;
+        }
+        return;
+    }
+
+    // Reset tracking on successful read
+    consecutive_empty_reads = 0;
+    timeout_ms = 100;  // Reset timeout
 
     while (ws->connected) {
         // Read initial frame header (2 bytes)

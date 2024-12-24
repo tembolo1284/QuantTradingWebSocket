@@ -141,65 +141,71 @@ char* book_query_serialize(const BookQueryConfig* config) {
         return NULL;
     }
 
-    // Create root JSON object
     cJSON* root = cJSON_CreateObject();
-    if (!root) {
-        LOG_ERROR("Failed to create JSON object");
+    cJSON* symbols_array = cJSON_CreateArray();
+    if (!root || !symbols_array) {
+        LOG_ERROR("Failed to create JSON objects");
+        cJSON_Delete(root);
+        cJSON_Delete(symbols_array);
         return NULL;
     }
-
     cJSON_AddStringToObject(root, "type", "book_response");
+    cJSON_AddItemToObject(root, "symbols", symbols_array);
 
-    // Create symbols array
-    cJSON* symbols_array = cJSON_CreateArray();
-    if (!symbols_array) {
-        LOG_ERROR("Failed to create symbols array");
+    size_t max_books = order_handler_get_active_book_count();
+    LOG_DEBUG("Total active order books: %zu", max_books);
+
+    if (max_books == 0) {
+        char* json_str = cJSON_Print(root);
+        cJSON_Delete(root);
+        return json_str;
+    }
+
+    OrderBook** books = calloc(max_books, sizeof(OrderBook*));
+    if (!books) {
+        LOG_ERROR("Memory allocation failed for order books");
         cJSON_Delete(root);
         return NULL;
     }
-    cJSON_AddItemToObject(root, "symbols", symbols_array);
 
-    // Get count of active order books
-    size_t max_books = order_handler_get_active_book_count();
-    if (max_books > 0) {
-        OrderBook** books = malloc(sizeof(OrderBook*) * max_books);
-        if (!books) {
-            LOG_ERROR("Failed to allocate memory for order books");
-            cJSON_Delete(root);
-            return NULL;
+    size_t actual_books = order_handler_get_all_books(books, max_books);
+    LOG_DEBUG("Processed active order books: %zu", actual_books);
+
+    for (size_t i = 0; i < actual_books; i++) {
+        if (!books[i]) {
+            LOG_WARN("Null order book at index %zu", i);
+            continue;
         }
 
-        size_t actual_books = order_handler_get_all_books(books, max_books);
-        LOG_DEBUG("Processing %zu active order books", actual_books);
-
-        for (size_t i = 0; i < actual_books; i++) {
-            if (!books[i]) continue;
-
-            // Skip if we're querying a specific symbol and this isn't it
-            if (config->type == BOOK_QUERY_SYMBOL && 
-                strcmp(order_book_get_symbol(books[i]), config->symbol) != 0) {
-                continue;
-            }
-
-            // Add this book to the response
-            cJSON* symbol_obj = cJSON_CreateObject();
-            cJSON_AddStringToObject(symbol_obj, "symbol", order_book_get_symbol(books[i]));
-
-            // Add buy orders (descending price order)
-            cJSON* buy_orders = add_orders_to_array(books[i]->buy_tree, false);
-            cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
-
-            // Add sell orders (ascending price order)
-            cJSON* sell_orders = add_orders_to_array(books[i]->sell_tree, true);
-            cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
-
-            cJSON_AddItemToArray(symbols_array, symbol_obj);
+        const char* symbol = order_book_get_symbol(books[i]);
+        if (!symbol) {
+            LOG_WARN("Null symbol for order book at index %zu", i);
+            continue;
         }
 
-        free(books);
+        if (config->type == BOOK_QUERY_SYMBOL && 
+            strcmp(symbol, config->symbol) != 0) {
+            continue;
+        }
+
+        cJSON* symbol_obj = cJSON_CreateObject();
+        cJSON_AddStringToObject(symbol_obj, "symbol", symbol);
+
+        // Null checks for trees
+        cJSON* buy_orders = books[i]->buy_tree ? 
+            add_orders_to_array(books[i]->buy_tree, false) : 
+            cJSON_CreateArray();
+        cJSON* sell_orders = books[i]->sell_tree ? 
+            add_orders_to_array(books[i]->sell_tree, true) : 
+            cJSON_CreateArray();
+
+        cJSON_AddItemToObject(symbol_obj, "buy_orders", buy_orders);
+        cJSON_AddItemToObject(symbol_obj, "sell_orders", sell_orders);
+
+        cJSON_AddItemToArray(symbols_array, symbol_obj);
     }
 
-    // Convert to string
+    free(books);
     char* json_str = cJSON_Print(root);
     cJSON_Delete(root);
 
