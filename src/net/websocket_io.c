@@ -1,8 +1,8 @@
 #include "net/websocket_io.h"
-#include "net/websocket.h"
 #include "net/socket.h"
 #include "net/frame.h"
 #include "utils/logging.h"
+#include "net/websocket.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -12,12 +12,10 @@
 #include <fcntl.h>
 #include <time.h>
 
-// Global shutdown flags
 static volatile sig_atomic_t shutdown_requested = 0;
 static volatile sig_atomic_t force_shutdown = 0;
 static volatile sig_atomic_t signal_count = 0;
 
-// Signal handler for graceful shutdown
 static void ws_signal_handler(int signum) {
     if (signum == SIGINT || signum == SIGTERM) {
         signal_count++;
@@ -25,7 +23,6 @@ static void ws_signal_handler(int signum) {
             shutdown_requested = 1;
         } else if (signal_count >= 3) {
             force_shutdown = 1;
-            exit(1);
         }
     }
 }
@@ -98,9 +95,9 @@ ssize_t ws_io_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
     if (!ws || !buffer) return -1;
     
     ssize_t total_read = 0;
-    const int READ_TIMEOUT_MS = 50;
+    const int READ_TIMEOUT_MS = 1000;
     int retry_count = 0;
-    const int MAX_RETRIES = 3;
+    const int MAX_RETRIES = 100;
     
     while ((size_t)total_read < needed && !shutdown_requested && retry_count < MAX_RETRIES) {
         fd_set read_fds;
@@ -113,19 +110,14 @@ ssize_t ws_io_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
         
         if (ready < 0) {
             if (errno == EINTR) {
-                if (shutdown_requested) {
-                    LOG_INFO("Read interrupted by shutdown request");
-                    return -1;
-                }
+                if (shutdown_requested) return -1;
                 continue;
             }
-            LOG_ERROR("Select error in read_fully: %s", strerror(errno));
             return -1;
         }
         
         if (ready == 0) {
-            LOG_DEBUG("Timeout waiting for data");
-            retry_count++;
+            retry_count = 0;
             continue;
         }
         
@@ -137,28 +129,21 @@ ssize_t ws_io_read_fully(WebSocket* ws, uint8_t* buffer, size_t needed) {
             ws->last_message_time = time(NULL);
             retry_count = 0;
         } else if (bytes == 0) {
-            LOG_ERROR("Connection closed by peer");
             return total_read > 0 ? total_read : -1;
         } else {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 retry_count++;
                 continue;
             }
-            LOG_ERROR("Read error: %s", strerror(errno));
             return -1;
         }
-    }
-    
-    if (retry_count >= MAX_RETRIES) {
-        LOG_ERROR("Max retries reached waiting for data");
-        return total_read > 0 ? total_read : -1;
     }
     
     return total_read;
 }
 
 bool ws_io_send_frame(WebSocket* ws, const uint8_t* data, size_t len) {
-    if (!ws || !data) return false;
+    if (!ws || !data || !ws->connected) return false;
 
     LOG_DEBUG("Creating WebSocket frame for %zu bytes of data", len);
     WebSocketFrame* frame = frame_create(data, len, FRAME_BINARY);
@@ -178,30 +163,38 @@ bool ws_io_send_frame(WebSocket* ws, const uint8_t* data, size_t len) {
 
     LOG_DEBUG("Sending frame of size %zu", frame_size);
     ssize_t sent = write(ws->sock_fd, encoded, frame_size);
-
     bool success = true;
-    if (sent < 0) {
+
+    if (sent < 0 && errno != EPIPE) {
         LOG_ERROR("Failed to send frame: %s", strerror(errno));
         success = false;
-    } else if ((size_t)sent != frame_size) {
+    } else if ((size_t)sent != frame_size && !shutdown_requested) {
         LOG_ERROR("Incomplete send: %zd of %zu bytes", sent, frame_size);
         success = false;
-    } else {
-        ws->bytes_sent += sent;
-        ws->message_count++;
-        ws->last_message_time = time(NULL);
     }
 
     free(encoded);
+    
+    if (success && !shutdown_requested) {
+        ws->bytes_sent += sent;
+        ws->message_count++;
+        ws->last_message_time = time(NULL);
+        LOG_DEBUG("Frame sent successfully");
+    }
+
     return success;
 }
 
 void ws_io_cleanup_socket(WebSocket* ws) {
-    if (!ws) return;
+    if (!ws || ws->sock_fd < 0) return;
     
-    if (ws->sock_fd >= 0) {
-        shutdown(ws->sock_fd, SHUT_RDWR);
-        close(ws->sock_fd);
-        ws->sock_fd = -1;
+    int flags = fcntl(ws->sock_fd, F_GETFL, 0);
+    if (flags >= 0) {
+        flags &= ~O_NONBLOCK;
+        fcntl(ws->sock_fd, F_SETFL, flags);
     }
+    
+    shutdown(ws->sock_fd, SHUT_RDWR);
+    close(ws->sock_fd);
+    ws->sock_fd = -1;
 }

@@ -8,6 +8,8 @@
 #include <string.h>
 #include <time.h>
 
+static volatile int cleanup_in_progress = 0;
+
 const char* ws_error_string(ErrorCode error) {
     return error_code_to_string(error);
 }
@@ -150,7 +152,7 @@ void ws_process(WebSocket* ws) {
 
     // Check connection health
     if (time(NULL) - ws->last_message_time > 30) {  // 30 second timeout
-        LOG_WARN("No messages received for 30 seconds, checking connection");
+        LOG_DEBUG("No messages received for 30 seconds, checking connection");
         WebSocketFrame* ping = frame_create(NULL, 0, FRAME_PING);
         if (ping) {
             ws_send(ws, ping->payload, ping->header.payload_len);
@@ -165,20 +167,12 @@ void ws_process(WebSocket* ws) {
     if (header_read < 0) {
         if (ws_io_shutdown_requested()) {
             LOG_INFO("Shutdown detected during header read");
-        } else {
-            LOG_ERROR("Fatal error reading header, closing connection");
-            ws->connected = false;
         }
-        return;
+        return;  // Just return on read timeout, don't close connection
     }
     
-    if (header_read != 2) {
-        if (header_read != 0) {  // 0 means no data available, which is normal
-            LOG_ERROR("Incomplete header read (%zd bytes), attempting recovery", header_read);
-            struct timespec ts = {0, 100000000}; // 100ms
-            nanosleep(&ts, NULL);
-        }
-        return;
+    if (header_read == 0) {
+        return;  // No data available - this is normal
     }
 
     // Parse frame header
@@ -270,6 +264,12 @@ void ws_process(WebSocket* ws) {
         ws->connected = false;
     }
 
+    if (!ws->connected) {
+        LOG_INFO("Connection marked as closed during frame processing");
+    } else {
+        ws->last_message_time = time(NULL);
+    }
+
     free(payload);
 
     // For control frames, return immediately after processing
@@ -280,6 +280,12 @@ void ws_process(WebSocket* ws) {
 
 void ws_close(WebSocket* ws) {
     if (!ws) return;
+    
+    // Prevent duplicate cleanup
+    if (__atomic_test_and_set(&cleanup_in_progress, __ATOMIC_SEQ_CST)) {
+        LOG_DEBUG("Cleanup already in progress, skipping");
+        return;
+    }
 
     LOG_INFO("Closing WebSocket connection...");
     
@@ -292,6 +298,7 @@ void ws_close(WebSocket* ws) {
             ws_send(ws, close_frame->payload, close_frame->header.payload_len);
             frame_destroy(close_frame);
         }
+        ws->connected = false;
     }
 
     // Clean up resources
@@ -305,6 +312,7 @@ void ws_close(WebSocket* ws) {
     
     free(ws);
     LOG_INFO("WebSocket cleanup complete");
+    __atomic_clear(&cleanup_in_progress, __ATOMIC_SEQ_CST);
 }
 
 bool ws_is_connected(const WebSocket* ws) {

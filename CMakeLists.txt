@@ -1,5 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Add an option to use Clang
+option(USE_CLANG "Use Clang as the compiler" OFF)
+
+if(USE_CLANG)
+    find_program(CLANG_C_COMPILER clang REQUIRED)
+    if(CLANG_C_COMPILER)
+        set(CMAKE_C_COMPILER "${CLANG_C_COMPILER}")
+        message(STATUS "Using Clang as the C compiler: ${CLANG_C_COMPILER}")
+    else()
+        message(FATAL_ERROR "Clang compiler not found. Please install Clang or unset USE_CLANG.")
+    endif()
+else()
+    message(STATUS "Using default C compiler: ${CMAKE_C_COMPILER}")
+endif()
+
 project(quant_trading C)
 
 set(CMAKE_C_STANDARD 11)
