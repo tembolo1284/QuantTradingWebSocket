@@ -11,7 +11,7 @@
 #include <time.h>
 
 #define DEFAULT_PORT 8080
-#define STATUS_UPDATE_INTERVAL 30  // seconds
+#define STATUS_UPDATE_INTERVAL 90  // seconds
 
 static volatile bool running = true;
 static WebSocketServer* server = NULL;
