@@ -87,6 +87,23 @@ set(UTILS_SOURCES
     src/utils/order_loader.c
 )
 
+set(SERVER_SOURCES
+    src/server/market_data.c
+    src/server/server_app.c
+    src/server/server_handlers.c
+    src/server/session_manager.c
+    src/server/ws_server.c
+)
+
+set(CLIENT_SOURCES
+    src/client/market_data.c
+    src/client/market_data.c
+    src/client/market_data.c
+    src/client/market_data.c
+    src/client/market_data.c
+    src/client/market_data.c
+)
+
 add_library(quant_trading_lib
     STATIC
     ${TRADING_ENGINE_SOURCES}
