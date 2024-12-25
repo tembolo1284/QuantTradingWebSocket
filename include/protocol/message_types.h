@@ -1,6 +1,9 @@
 #ifndef PROTOCOL_MESSAGE_TYPES_H
 #define PROTOCOL_MESSAGE_TYPES_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 // Client -> Server messages
 typedef enum {
     MSG_PLACE_ORDER = 1,

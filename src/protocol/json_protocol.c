@@ -2,8 +2,34 @@
 #include "protocol/protocol_validation.h"
 #include "utils/logging.h"
 #include <string.h>
+#include <stdlib.h>
 
 static char last_error[256];
+
+bool parse_base_message(const char* json, int* type) {
+    if (!json || !type) {
+        LOG_ERROR("Invalid parameters for base message parsing");
+        return false;
+    }
+
+    cJSON* root = cJSON_Parse(json);
+    if (!root) {
+        LOG_ERROR("Failed to parse JSON: %s", json);
+        return false;
+    }
+
+    cJSON* type_obj = cJSON_GetObjectItem(root, "type");
+    if (!type_obj || !cJSON_IsNumber(type_obj)) {
+        LOG_ERROR("Missing or invalid message type");
+        cJSON_Delete(root);
+        return false;
+    }
+
+    *type = type_obj->valueint;
+    cJSON_Delete(root);
+    LOG_DEBUG("Parsed message type: %d", *type);
+    return true;
+}
 
 char* serialize_order_message(const OrderMessage* order) {
     if (!order) {
@@ -20,7 +46,7 @@ char* serialize_order_message(const OrderMessage* order) {
 
     cJSON_AddStringToObject(root, "order_id", order->order_id);
     cJSON_AddStringToObject(root, "trader_id", order->trader_id);
-    cJSON_AddStringToObject(root, "symbol", order->stock_symbol);
+    cJSON_AddStringToObject(root, "symbol", order->symbol);
     cJSON_AddNumberToObject(root, "price", order->price);
     cJSON_AddNumberToObject(root, "quantity", order->quantity);
     cJSON_AddBoolToObject(root, "is_buy", order->is_buy);
@@ -128,7 +154,7 @@ bool parse_order_message(const char* json, OrderMessage* order) {
 
     strncpy(order->order_id, order_id->valuestring, sizeof(order->order_id) - 1);
     strncpy(order->trader_id, trader_id->valuestring, sizeof(order->trader_id) - 1);
-    strncpy(order->stock_symbol, symbol->valuestring, sizeof(order->stock_symbol) - 1);
+    strncpy(order->symbol, symbol->valuestring, sizeof(order->symbol) - 1);
     order->price = price->valuedouble;
     order->quantity = quantity->valueint;
     order->is_buy = cJSON_IsTrue(is_buy);

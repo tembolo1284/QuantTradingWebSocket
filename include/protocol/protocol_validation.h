@@ -3,6 +3,7 @@
 
 #include "protocol/message_types.h"
 #include <stdbool.h>
+#include <stddef.h>
 
 // Message validation
 bool validate_order_message(const OrderMessage* order, char* error_msg, size_t error_size);

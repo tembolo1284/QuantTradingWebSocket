@@ -50,6 +50,19 @@ add_subdirectory(third_party/cJSON)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(LibWebSockets REQUIRED)
+find_package(Curses REQUIRED)
+
+# Add these lines near the top with other find commands
+find_library(READLINE_LIBRARY 
+    NAMES readline
+    PATHS /usr/local/lib
+    REQUIRED
+)
+find_path(READLINE_INCLUDE_DIR
+    NAMES readline/readline.h
+    PATHS /usr/local/include
+    REQUIRED
+)
 
 # Unity for testing
 if(BUILD_TESTS)
@@ -147,9 +160,10 @@ target_link_libraries(market_server
 # Client executable
 add_executable(market_client src/client/client_app.c)
 target_link_libraries(market_client
-   PRIVATE
-   quant_trading_lib
-   readline
+    PRIVATE
+    quant_trading_lib
+    ${READLINE_LIBRARY}
+    ${CURSES_LIBRARIES}
 )
 
 # Install targets

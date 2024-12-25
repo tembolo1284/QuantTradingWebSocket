@@ -8,6 +8,9 @@
 #include "protocol/json_protocol.h"
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 static volatile bool running = true;
 static CommandLine* cmd_line = NULL;

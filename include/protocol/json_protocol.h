@@ -2,7 +2,7 @@
 #define PROTOCOL_JSON_PROTOCOL_H
 
 #include "protocol/message_types.h"
-#include <cJSON.h>
+#include <cJSON/cJSON.h>
 #include <stdbool.h>
 
 // Message serialization

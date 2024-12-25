@@ -1,5 +1,6 @@
 #include "server/server_handlers.h"
 #include "protocol/json_protocol.h"
+#include "trading_engine/order.h"
 #include "utils/logging.h"
 #include <pthread.h>
 #include <stdlib.h>

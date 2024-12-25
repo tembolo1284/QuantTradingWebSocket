@@ -4,6 +4,8 @@
 #include <string.h>
 #include <time.h>
 
+#define MAX_SYMBOLS 100
+
 struct MarketData {
     pthread_mutex_t lock;
     pthread_t snapshot_thread;
@@ -27,7 +29,7 @@ static void* snapshot_thread(void* arg) {
         };
         nanosleep(&ts, NULL);
         
-        pthread_mutex_lock(&market->lock);
+        pthread_mutex_lock((pthread_mutex_t*)&market->lock);
         
         for (int i = 0; i < market->book_count; i++) {
             BookSnapshot snapshot = {0};
@@ -57,7 +59,7 @@ static void* snapshot_thread(void* arg) {
             free(snapshot.ask_quantities);
         }
         
-        pthread_mutex_unlock(&market->lock);
+        pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     }
     
     return NULL;
@@ -69,7 +71,7 @@ MarketData* market_data_create(const MarketDataConfig* config) {
     
     market->snapshot_interval_ms = config->snapshot_interval_ms;
     market->max_depth = config->max_depth;
-    pthread_mutex_init(&market->lock, NULL);
+    pthread_mutex_init((pthread_mutex_t*)&market->lock, NULL);
     
     return market;
 }
@@ -85,7 +87,7 @@ void market_data_destroy(MarketData* market) {
         order_book_destroy(market->books[i]);
     }
     
-    pthread_mutex_destroy(&market->lock);
+    pthread_mutex_destroy((pthread_mutex_t*)&market->lock);
     free(market);
 }
 
@@ -112,7 +114,7 @@ int market_data_stop_snapshot_timer(MarketData* market) {
 int market_data_update_book(MarketData* market, const char* symbol, const OrderBook* book) {
     if (!market || !symbol || !book) return -1;
     
-    pthread_mutex_lock(&market->lock);
+    pthread_mutex_lock((pthread_mutex_t*)&market->lock);
     
     int index = -1;
     for (int i = 0; i < market->book_count; i++) {
@@ -132,14 +134,14 @@ int market_data_update_book(MarketData* market, const char* symbol, const OrderB
         // TODO: Implement deep copy of order book data
     }
     
-    pthread_mutex_unlock(&market->lock);
+    pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     return index != -1 ? 0 : -1;
 }
 
 int market_data_get_snapshot(MarketData* market, const char* symbol, BookSnapshot* snapshot) {
     if (!market || !symbol || !snapshot) return -1;
     
-    pthread_mutex_lock(&market->lock);
+    pthread_mutex_lock((pthread_mutex_t*)&market->lock);
     
     int result = -1;
     for (int i = 0; i < market->book_count; i++) {
@@ -166,18 +168,18 @@ int market_data_get_snapshot(MarketData* market, const char* symbol, BookSnapsho
         }
     }
     
-    pthread_mutex_unlock(&market->lock);
+    pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     return result;
 }
 
 int market_data_get_all_snapshots(MarketData* market, BookSnapshot** snapshots, int* num_snapshots) {
     if (!market || !snapshots || !num_snapshots) return -1;
     
-    pthread_mutex_lock(&market->lock);
+    pthread_mutex_lock((pthread_mutex_t*)&market->lock);
     
     *snapshots = calloc(market->book_count, sizeof(BookSnapshot));
     if (!*snapshots) {
-        pthread_mutex_unlock(&market->lock);
+        pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
         return -1;
     }
     
@@ -200,7 +202,7 @@ int market_data_get_all_snapshots(MarketData* market, BookSnapshot** snapshots, 
                 free((*snapshots)[j].ask_quantities);
             }
             free(*snapshots);
-            pthread_mutex_unlock(&market->lock);
+            pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
             return -1;
         }
         
@@ -208,7 +210,7 @@ int market_data_get_all_snapshots(MarketData* market, BookSnapshot** snapshots, 
         (*num_snapshots)++;
     }
     
-    pthread_mutex_unlock(&market->lock);
+    pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     return 0;
 }
 
@@ -221,13 +223,13 @@ int market_data_get_total_orders(const MarketData* market) {
     if (!market) return 0;
     
     int total = 0;
-    pthread_mutex_lock(&market->lock);
+    pthread_mutex_lock((pthread_mutex_t*)&market->lock);
     
     for (int i = 0; i < market->book_count; i++) {
         // TODO: Get order count from each book
     }
     
-    pthread_mutex_unlock(&market->lock);
+    pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     return total;
 }
 
@@ -235,12 +237,12 @@ double market_data_get_total_volume(const MarketData* market) {
     if (!market) return 0.0;
     
     double total = 0.0;
-    pthread_mutex_lock(&market->lock);
+    pthread_mutex_lock((pthread_mutex_t*)&market->lock);
     
     for (int i = 0; i < market->book_count; i++) {
         // TODO: Calculate total volume from each book
     }
     
-    pthread_mutex_unlock(&market->lock);
+    pthread_mutex_unlock((pthread_mutex_t*)&market->lock);
     return total;
 }

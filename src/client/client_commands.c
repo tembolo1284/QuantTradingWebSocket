@@ -1,7 +1,7 @@
 #include "client/client_commands.h"
 #include "utils/logging.h"
 #include "protocol/protocol_validation.h"
-#include <cjson/cJSON.h>
+#include <cJSON/cJSON.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>

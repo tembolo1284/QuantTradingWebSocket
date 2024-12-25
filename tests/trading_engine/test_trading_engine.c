@@ -162,6 +162,7 @@ void test_balance_updates(void) {
     LOG_INFO("Starting balance updates test");
     
     double buyer_initial = trader_get_balance(test_buyer);
+    (void) buyer_initial;
     double seller_initial = trader_get_balance(test_seller);
 
     Trade* trade = trade_create("BUY1", "SELL1", 150.0, 100);

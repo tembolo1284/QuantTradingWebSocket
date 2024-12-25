@@ -74,12 +74,23 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
 
 static struct lws_protocols protocols[] = {
     {
-        "trading-protocol",
-        callback_trading,
-        0,  // per_session_data_size
-        4096,  // rx buffer size
+        .name = "trading-protocol",
+        .callback = callback_trading,
+        .per_session_data_size = sizeof(WSClient),
+        .rx_buffer_size = 4096,
+        .tx_packet_size = 4096,
+        .id = 0,
+        .user = NULL,
     },
-    { NULL, NULL, 0, 0 }
+    {
+        .name = NULL,
+        .callback = NULL,
+        .per_session_data_size = 0,
+        .rx_buffer_size = 0,
+        .tx_packet_size = 0,
+        .id = 0,
+        .user = NULL,
+    }
 };
 
 static void* service_thread(void* arg) {

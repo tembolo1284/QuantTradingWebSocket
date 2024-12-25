@@ -82,8 +82,8 @@ bool validate_order_message(const OrderMessage* order, char* error_msg, size_t e
         return false;
     }
 
-    if (!validate_symbol(order->stock_symbol)) {
-        snprintf(error_msg, error_size, "Invalid symbol: %s", order->stock_symbol);
+    if (!validate_symbol(order->symbol)) {
+        snprintf(error_msg, error_size, "Invalid symbol: %s", order->symbol);
         return false;
     }
 

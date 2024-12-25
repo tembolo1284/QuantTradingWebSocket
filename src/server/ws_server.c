@@ -9,13 +9,14 @@ struct WSServer {
     struct lws_context* context;
     struct lws_vhost* vhost;
     const WSServerConfig* config;
-    
+    struct lws_context_creation_info info;
+
     // Callbacks
     ClientConnectCallback connect_cb;
     ClientDisconnectCallback disconnect_cb;
     MessageCallback message_cb;
     void* user_data;
-    
+
     // Threading
     pthread_t service_thread;
     bool running;
@@ -35,12 +36,23 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
 
 static struct lws_protocols protocols[] = {
     {
-        "trading-protocol",
-        callback_trading,
-        sizeof(WSClient),
-        4096,  // rx buffer size
+        .name = "trading-protocol",
+        .callback = callback_trading,
+        .per_session_data_size = sizeof(WSClient),
+        .rx_buffer_size = 4096,
+        .tx_packet_size = 4096,
+        .id = 0,
+        .user = NULL,
     },
-    { NULL, NULL, 0, 0 }
+    {
+        .name = NULL,
+        .callback = NULL,
+        .per_session_data_size = 0,
+        .rx_buffer_size = 0,
+        .tx_packet_size = 0,
+        .id = 0,
+        .user = NULL,
+    }
 };
 
 WSServer* ws_server_create(const WSServerConfig* config) {
@@ -53,15 +65,15 @@ WSServer* ws_server_create(const WSServerConfig* config) {
     server->config = config;
     pthread_mutex_init(&server->lock, NULL);
 
-    struct lws_context_creation_info info = {
-        .port = config->port,
-        .protocols = protocols,
-        .gid = -1,
-        .uid = -1,
-        .options = LWS_SERVER_OPTION_VALIDATE_UTF8
-    };
+    memset(&server->info, 0, sizeof(server->info));
+    server->info.port = config->port;
+    server->info.protocols = protocols;
+    server->info.gid = -1;
+    server->info.uid = -1;
+    server->info.options = LWS_SERVER_OPTION_VALIDATE_UTF8;
+    server->info.user = server;  // Store server pointer for callbacks
 
-    server->context = lws_create_context(&info);
+    server->context = lws_create_context(&server->info);
     if (!server->context) {
         LOG_ERROR("Failed to create libwebsockets context");
         free(server);
@@ -123,7 +135,7 @@ static void* service_thread(void* arg) {
 static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
                           void* user, void* in, size_t len) {
     WSClient* client = (WSClient*)user;
-    WSServer* server = lws_get_context_user(lws_get_context(wsi));
+    WSServer* server = (WSServer*)lws_context_user(lws_get_context(wsi));
 
     switch (reason) {
         case LWS_CALLBACK_PROTOCOL_INIT:
@@ -133,7 +145,7 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED: {
             client->wsi = wsi;
             client->server = server;
-            snprintf(client->info.client_id, sizeof(client->info.client_id), 
+            snprintf(client->info.client_id, sizeof(client->info.client_id),
                     "client-%p", (void*)wsi);
             client->info.connect_time = time(NULL);
             
@@ -169,17 +181,13 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
 int ws_server_broadcast(WSServer* server, const char* message, size_t len) {
     if (!server || !message) return -1;
 
-    // Need to allocate LWS_PRE bytes before the message
     unsigned char* buf = malloc(LWS_PRE + len);
     if (!buf) return -1;
 
     memcpy(buf + LWS_PRE, message, len);
     
     pthread_mutex_lock(&server->lock);
-    lws_start_foreach_llp(struct lws**, ppwsi, 
-                         lws_get_peer_wait_writeable(server->vhost)) {
-        lws_write(*ppwsi, buf + LWS_PRE, len, LWS_WRITE_TEXT);
-    } lws_end_foreach_llp(ppwsi, next);
+    lws_callback_all_protocol(server->context, &protocols[0], LWS_CALLBACK_SERVER_WRITEABLE);
     pthread_mutex_unlock(&server->lock);
 
     free(buf);
@@ -198,24 +206,24 @@ int ws_server_send(WSClient* client, const char* message, size_t len) {
     return 0;
 }
 
-void ws_server_set_connect_callback(WSServer* server, 
-                                  ClientConnectCallback callback, 
+void ws_server_set_connect_callback(WSServer* server,
+                                  ClientConnectCallback callback,
                                   void* user_data) {
     if (!server) return;
     server->connect_cb = callback;
     server->user_data = user_data;
 }
 
-void ws_server_set_disconnect_callback(WSServer* server, 
-                                     ClientDisconnectCallback callback, 
+void ws_server_set_disconnect_callback(WSServer* server,
+                                     ClientDisconnectCallback callback,
                                      void* user_data) {
     if (!server) return;
     server->disconnect_cb = callback;
     server->user_data = user_data;
 }
 
-void ws_server_set_message_callback(WSServer* server, 
-                                  MessageCallback callback, 
+void ws_server_set_message_callback(WSServer* server,
+                                  MessageCallback callback,
                                   void* user_data) {
     if (!server) return;
     server->message_cb = callback;
