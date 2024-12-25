@@ -1,7 +1,7 @@
 #ifndef PROTOCOL_JSON_PROTOCOL_H
 #define PROTOCOL_JSON_PROTOCOL_H
 
-#include "message_types.h"
+#include "protocol/message_types.h"
 #include <cJSON.h>
 #include <stdbool.h>
 

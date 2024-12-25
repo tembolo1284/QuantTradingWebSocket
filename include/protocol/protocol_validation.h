@@ -1,7 +1,7 @@
 #ifndef PROTOCOL_VALIDATION_H
 #define PROTOCOL_VALIDATION_H
 
-#include "message_types.h"
+#include "protocol/message_types.h"
 #include <stdbool.h>
 
 // Message validation

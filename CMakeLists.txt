@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Add an option to use Clang
 option(USE_CLANG "Use Clang as the compiler" OFF)
 
 if(USE_CLANG)
@@ -21,7 +20,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type (Debug, Release, RelWithDebInfo, MinSizeRel)" FORCE)
 endif()
@@ -43,16 +41,17 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
 
 option(BUILD_TESTS "Build tests" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
-
 option(ENABLE_CJSON_TEST "Enable cJSON tests" OFF)
 option(ENABLE_CJSON_UTILS "Enable cJSON utils" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+# Dependencies
 add_subdirectory(third_party/cJSON)
-
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
+find_package(LibWebSockets REQUIRED)
 
+# Unity for testing
 if(BUILD_TESTS)
    if(EXISTS ${CMAKE_SOURCE_DIR}/third_party/Unity/src/unity.c)
        set(UNITY_ROOT ${CMAKE_SOURCE_DIR}/third_party/Unity)
@@ -87,27 +86,34 @@ set(UTILS_SOURCES
     src/utils/order_loader.c
 )
 
+set(PROTOCOL_SOURCES
+    src/protocol/json_protocol.c
+    src/protocol/protocol_validation.c
+)
+
 set(SERVER_SOURCES
     src/server/market_data.c
-    src/server/server_app.c
     src/server/server_handlers.c
     src/server/session_manager.c
     src/server/ws_server.c
 )
 
 set(CLIENT_SOURCES
-    src/client/market_data.c
-    src/client/market_data.c
-    src/client/market_data.c
-    src/client/market_data.c
-    src/client/market_data.c
-    src/client/market_data.c
+    src/client/client_commands.c
+    src/client/command_line.c
+    src/client/market_monitor.c
+    src/client/order_entry.c
+    src/client/trade_history.c
+    src/client/ws_client.c
 )
 
 add_library(quant_trading_lib
     STATIC
     ${TRADING_ENGINE_SOURCES}
     ${UTILS_SOURCES}
+    ${PROTOCOL_SOURCES}
+    ${CLIENT_SOURCES}
+    ${SERVER_SOURCES}
 )
 
 target_include_directories(quant_trading_lib
@@ -122,8 +128,8 @@ target_link_libraries(quant_trading_lib
     OpenSSL::Crypto
     ${CMAKE_THREAD_LIBS_INIT}
     cjson
+    websockets
 )
-
 
 target_compile_definitions(quant_trading_lib
     PRIVATE
@@ -131,17 +137,24 @@ target_compile_definitions(quant_trading_lib
     $<$<C_COMPILER_ID:Clang>:COMPILER_CLANG>
 )
 
-# add_executable(quant_trading src/server/server_app.c)
-# target_link_libraries(quant_trading
-#    PRIVATE
-#    quant_trading_lib
-# )
+# Server executable
+add_executable(market_server src/server/server_app.c)
+target_link_libraries(market_server
+   PRIVATE
+   quant_trading_lib
+)
 
-# add_executable(market_client src/client/client_app.c)
-# target_link_libraries(market_client
-#    PRIVATE
-#    quant_trading_lib
-# )
+# Client executable
+add_executable(market_client src/client/client_app.c)
+target_link_libraries(market_client
+   PRIVATE
+   quant_trading_lib
+   readline
+)
+
+# Install targets
+install(TARGETS market_server market_client
+        RUNTIME DESTINATION bin)
 
 if(BUILD_TESTS AND UNITY_FOUND)
     enable_testing()
