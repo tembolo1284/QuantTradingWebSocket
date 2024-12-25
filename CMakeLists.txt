@@ -42,7 +42,6 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
 
 option(BUILD_TESTS "Build tests" ON)
-option(BUILD_EXAMPLES "Build examples" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 
 option(ENABLE_CJSON_TEST "Enable cJSON tests" OFF)
@@ -75,49 +74,23 @@ if(BUILD_TESTS)
    endif()
 endif()
 
-set(NET_SOURCES
-    src/net/websocket.c
-    src/net/websocket_io.c
-    src/net/websocket_server.c
-    src/net/websocket_frame.c
-    src/net/frame.c
-    src/net/handshake.c
-    src/net/socket.c
-    src/net/buffer.c
-)
-
 set(TRADING_ENGINE_SOURCES
-    src/trading/engine/order.c
-    src/trading/engine/order_book.c
-    src/trading/engine/matcher.c
-)
-
-set(TRADING_PROTOCOL_SOURCES
-    src/trading/protocol/messages.c
+    src/trading_engine/order.c
+    src/trading_engine/order_book.c
+    src/trading_engine/trade.c
+    src/trading_engine/trader.c
+    src/trading_engine/avl_tree.c
 )
 
 set(UTILS_SOURCES
     src/utils/logging.c
-    src/utils/json_utils.c
-)
-
-set(COMMON_SOURCES
-    src/common/types.c
-)
-
-
-set(CLIENT_SOURCES
-    src/client/client_helper.c
+    src/utils/order_loader.c
 )
 
 add_library(quant_trading_lib
     STATIC
-    ${NET_SOURCES}
     ${TRADING_ENGINE_SOURCES}
-    ${TRADING_PROTOCOL_SOURCES}
     ${UTILS_SOURCES}
-    ${COMMON_SOURCES}
-    ${CLIENT_SOURCES}
 )
 
 target_include_directories(quant_trading_lib
@@ -134,23 +107,24 @@ target_link_libraries(quant_trading_lib
     cjson
 )
 
+
 target_compile_definitions(quant_trading_lib
     PRIVATE
     $<$<C_COMPILER_ID:GNU>:COMPILER_GCC>
     $<$<C_COMPILER_ID:Clang>:COMPILER_CLANG>
 )
 
-add_executable(quant_trading src/server/server_app.c)
-target_link_libraries(quant_trading
-    PRIVATE
-    quant_trading_lib
-)
+# add_executable(quant_trading src/server/server_app.c)
+# target_link_libraries(quant_trading
+#    PRIVATE
+#    quant_trading_lib
+# )
 
-add_executable(market_client src/client/client_app.c)
-target_link_libraries(market_client
-    PRIVATE
-    quant_trading_lib
-)
+# add_executable(market_client src/client/client_app.c)
+# target_link_libraries(market_client
+#    PRIVATE
+#    quant_trading_lib
+# )
 
 if(BUILD_TESTS AND UNITY_FOUND)
     enable_testing()
