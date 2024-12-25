@@ -15,6 +15,7 @@ struct ServerHandlers {
     
     // Message queue
     char** message_queue;
+    WSClient** client_queue;
     int queue_size;
     int queue_head;
     int queue_tail;
@@ -34,6 +35,7 @@ static void* worker_thread(void* arg) {
     while (handlers->running) {
         pthread_mutex_lock(&handlers->queue_lock);
         
+        // Wait for messages if queue is empty
         while (handlers->queue_head == handlers->queue_tail && handlers->running) {
             pthread_cond_wait(&handlers->queue_cond, &handlers->queue_lock);
         }
@@ -43,22 +45,40 @@ static void* worker_thread(void* arg) {
             break;
         }
         
+        // Get message and client from queue
         char* message = handlers->message_queue[handlers->queue_head];
+        WSClient* client = handlers->client_queue[handlers->queue_head];
         handlers->queue_head = (handlers->queue_head + 1) % handlers->queue_size;
         
         pthread_mutex_unlock(&handlers->queue_lock);
         
         // Process message
         int msg_type;
+        char response[1024];  // Define response buffer here
+        
         if (parse_base_message(message, &msg_type)) {
+            cJSON* root = cJSON_Parse(message);
+            if (!root) {
+                LOG_ERROR("Failed to parse JSON message");
+                snprintf(response, sizeof(response),
+                        "{\"type\": %d, \"status\": \"failed\", \"reason\": \"invalid JSON\"}",
+                        MSG_ERROR);
+                ws_server_send(client, response, strlen(response));
+                free(message);
+                continue;
+            }
+            
             switch (msg_type) {
                 case MSG_PLACE_ORDER: {
                     OrderMessage order;
                     if (parse_order_message(message, &order)) {
                         pthread_rwlock_rdlock(&handlers->books_lock);
+                        bool order_placed = false;
+                        
+                        // Find matching order book
                         for (int i = 0; i < handlers->book_count; i++) {
                             if (strcmp(handlers->symbols[i], order.symbol) == 0) {
-                                Order* new_order = order_create(
+                                struct Order* new_order = order_create(
                                     order.order_id,
                                     order.trader_id,
                                     order.symbol,
@@ -68,17 +88,103 @@ static void* worker_thread(void* arg) {
                                 );
                                 if (new_order) {
                                     order_book_add_order(handlers->books[i], new_order);
+                                    order_placed = true;
+                                    
+                                    LOG_INFO("Order placed: %s %s %.2f x %d %s", 
+                                            order.order_id, order.symbol, order.price, 
+                                            order.quantity, order.is_buy ? "BUY" : "SELL");
+                                    
+                                    // Send confirmation
+                                    snprintf(response, sizeof(response), 
+                                            "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"success\"}",
+                                            MSG_ORDER_ACCEPTED, order.order_id);
+                                    ws_server_send(client, response, strlen(response));
+                                    
+                                    // Match orders
+                                    order_book_match_orders(handlers->books[i]);
                                 }
                                 break;
                             }
                         }
+                        
+                        if (!order_placed) {
+                            LOG_ERROR("Failed to place order for symbol %s", order.symbol);
+                            snprintf(response, sizeof(response), 
+                                    "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"failed\", \"reason\": \"invalid symbol\"}",
+                                    MSG_ORDER_REJECTED, order.order_id);
+                            ws_server_send(client, response, strlen(response));
+                        }
+                        
                         pthread_rwlock_unlock(&handlers->books_lock);
                     }
                     break;
                 }
-                // Handle other message types
-                // ...
+                
+                case MSG_CANCEL_ORDER: {
+                    const char* order_id = cJSON_GetObjectItem(root, "order_id")->valuestring;
+                    const char* trader_id = cJSON_GetObjectItem(root, "trader_id")->valuestring;
+                    bool is_buy = cJSON_GetObjectItem(root, "is_buy")->valueint;
+                    
+                    LOG_INFO("Cancel request: OrderID=%s, TraderID=%s", order_id, trader_id);
+                    
+                    int result = order_book_cancel_order(handlers->books[0], order_id, is_buy);
+                    if (result == 0) {
+                        snprintf(response, sizeof(response),
+                                "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"success\"}",
+                                MSG_ORDER_CANCELED, order_id);
+                    } else {
+                        snprintf(response, sizeof(response),
+                                "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"failed\", \"reason\": \"order not found\"}",
+                                MSG_ORDER_REJECTED, order_id);
+                    }
+                    ws_server_send(client, response, strlen(response));
+                    break;
+                }
+                
+                case MSG_REQUEST_BOOK: {
+                    const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
+                    LOG_INFO("Book request for symbol: %s", symbol);
+                    
+                    pthread_rwlock_rdlock(&handlers->books_lock);
+                    bool book_found = false;
+                    
+                    for (int i = 0; i < handlers->book_count; i++) {
+                        if (strcmp(handlers->symbols[i], symbol) == 0) {
+                            // Create book snapshot
+                            BookSnapshot snapshot = {0};
+                            strncpy(snapshot.symbol, symbol, sizeof(snapshot.symbol) - 1);
+                            
+                            // TODO: Fill snapshot from order book
+                            
+                            char* book_json = serialize_book_snapshot(&snapshot);
+                            if (book_json) {
+                                ws_server_send(client, book_json, strlen(book_json));
+                                free(book_json);
+                                book_found = true;
+                            }
+                            break;
+                        }
+                    }
+                    
+                    if (!book_found) {
+                        snprintf(response, sizeof(response),
+                                "{\"type\": %d, \"symbol\": \"%s\", \"status\": \"failed\", \"reason\": \"symbol not found\"}",
+                                MSG_ERROR, symbol);
+                        ws_server_send(client, response, strlen(response));
+                    }
+                    
+                    pthread_rwlock_unlock(&handlers->books_lock);
+                    break;
+                }
             }
+            
+            cJSON_Delete(root);
+        } else {
+            LOG_ERROR("Failed to parse message type");
+            snprintf(response, sizeof(response),
+                    "{\"type\": %d, \"status\": \"failed\", \"reason\": \"invalid message format\"}",
+                    MSG_ERROR);
+            ws_server_send(client, response, strlen(response));
         }
         
         free(message);
@@ -182,6 +288,7 @@ int server_handlers_process_message(ServerHandlers* handlers, WSClient* client,
     }
     
     handlers->message_queue[handlers->queue_tail] = msg_copy;
+    handlers->client_queue[handlers->queue_tail] = client;  // Store client reference
     handlers->queue_tail = (handlers->queue_tail + 1) % handlers->queue_size;
     
     pthread_cond_signal(&handlers->queue_cond);

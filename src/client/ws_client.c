@@ -93,29 +93,29 @@ static struct lws_protocols protocols[] = {
     }
 };
 
+// In ws_client.c, modify the service thread
 static void* service_thread(void* arg) {
     WSClient* client = (WSClient*)arg;
     
+    int retry_count = 0;
+    const int max_retries = 3;  // Limit reconnection attempts
+    
     while (client->running) {
-        lws_service(client->context, 50);  // 50ms timeout
+        lws_service(client->context, 50);
         
-        // Auto-reconnect if disconnected
-        if (!client->connected) {
-            struct lws_client_connect_info info = {
-                .context = client->context,
-                .address = client->host,
-                .port = client->port,
-                .path = "/",
-                .protocol = "trading-protocol",
-                .userdata = client
-            };
-            
-            client->connection = lws_client_connect_via_info(&info);
-            if (!client->connection) {
-                LOG_ERROR("Failed to reconnect, retrying in %d ms", 
-                         client->reconnect_interval_ms);
-                usleep(client->reconnect_interval_ms * 1000);
+        if (!client->connected && client->running) {
+            if (retry_count < max_retries) {
+                LOG_INFO("Connection lost, attempting reconnect (%d/%d)...", 
+                        retry_count + 1, max_retries);
+                sleep(1);  // Wait before retry
+                retry_count++;
+            } else {
+                LOG_ERROR("Max reconnection attempts reached, shutting down");
+                client->running = false;
+                break;
             }
+        } else {
+            retry_count = 0;  // Reset counter on successful connection
         }
     }
     

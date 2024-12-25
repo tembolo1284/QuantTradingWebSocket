@@ -25,9 +25,20 @@ static void handle_signal(int signum) {
     if (cmd_line) {
         command_line_stop(cmd_line);
     }
+    if (client) {
+        ws_client_disconnect(client);
+    }
 }
 
 static void handle_command(const Command* cmd, void* user_data) {
+    if (cmd->type == CMD_QUIT) {
+        LOG_INFO("Shutting down client...");
+        running = false;  // Set global running flag to false
+        command_line_stop(cmd_line);  // Stop command line input
+        ws_client_disconnect(client);  // Gracefully disconnect WebSocket
+        return;
+    }
+
     WSClient* ws_client = (WSClient*)user_data;
     if (!ws_client || !ws_client_is_connected(ws_client)) {
         LOG_ERROR("Not connected to server");
