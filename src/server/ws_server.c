@@ -165,6 +165,9 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
         }
 
         case LWS_CALLBACK_RECEIVE: {
+            LOG_INFO("Received message from client %s: %.*s", 
+                    client->info.client_id, (int)len, (char*)in);
+
             if (server->message_cb) {
                 server->message_cb(client, (const char*)in, len, server->user_data);
             }

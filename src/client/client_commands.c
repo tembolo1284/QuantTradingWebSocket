@@ -106,11 +106,6 @@ Command parse_command(const char* input) {
 }
 
 char* format_command_as_json(const Command* cmd, const char* trader_id) {
-    if (!cmd || !trader_id) {
-        LOG_ERROR("Invalid parameters for JSON formatting");
-        return NULL;
-    }
-
     cJSON* root = cJSON_CreateObject();
     if (!root) {
         LOG_ERROR("Failed to create JSON object");
@@ -119,7 +114,7 @@ char* format_command_as_json(const Command* cmd, const char* trader_id) {
 
     switch (cmd->type) {
         case CMD_BUY:
-        case CMD_SELL:
+        case CMD_SELL: {
             cJSON_AddNumberToObject(root, "type", MSG_PLACE_ORDER);
             cJSON_AddStringToObject(root, "order_id", cmd->order_id);
             cJSON_AddStringToObject(root, "trader_id", trader_id);
@@ -128,20 +123,13 @@ char* format_command_as_json(const Command* cmd, const char* trader_id) {
             cJSON_AddNumberToObject(root, "quantity", cmd->quantity);
             cJSON_AddBoolToObject(root, "is_buy", cmd->type == CMD_BUY);
             break;
-
-        case CMD_CANCEL:
-            cJSON_AddNumberToObject(root, "type", MSG_CANCEL_ORDER);
-            cJSON_AddStringToObject(root, "order_id", cmd->order_id);
-            cJSON_AddStringToObject(root, "trader_id", trader_id);
-            break;
-
-        case CMD_VIEW:
+        }
+        case CMD_VIEW: {
             cJSON_AddNumberToObject(root, "type", MSG_REQUEST_BOOK);
             cJSON_AddStringToObject(root, "symbol", cmd->symbol);
             break;
-
+        }
         default:
-            LOG_ERROR("Invalid command type for JSON formatting: %d", cmd->type);
             cJSON_Delete(root);
             return NULL;
     }
@@ -150,11 +138,8 @@ char* format_command_as_json(const Command* cmd, const char* trader_id) {
     cJSON_Delete(root);
 
     if (json_str) {
-        LOG_DEBUG("Formatted command as JSON: %s", json_str);
-    } else {
-        LOG_ERROR("Failed to format command as JSON");
+        LOG_INFO("Formatted command: %s", json_str);
     }
-
     return json_str;
 }
 
