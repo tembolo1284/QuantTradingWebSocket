@@ -32,7 +32,7 @@ datadir = ${datarootdir}
 
 top_srcdir = ..
 #BUILD_DIR = .
-BUILD_DIR = /root/c-workspace/QuantTradingWebSocket/third_party/readline-8.2
+BUILD_DIR = /home/tembolo381/Desktop/c-workspace/QuantTradingWebSocket/third_party/readline-8.2
 installdir = $(datadir)/readline
 
 INSTALL = /usr/bin/install -c

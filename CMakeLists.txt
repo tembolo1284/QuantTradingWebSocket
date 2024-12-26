@@ -102,6 +102,7 @@ set(UTILS_SOURCES
 set(PROTOCOL_SOURCES
     src/protocol/json_protocol.c
     src/protocol/protocol_validation.c
+    src/protocol/protocol_constants.c
 )
 
 set(SERVER_SOURCES

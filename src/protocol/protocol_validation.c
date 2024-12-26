@@ -10,13 +10,15 @@ bool validate_symbol(const char* symbol) {
         return false;
     }
 
-    for (const char* p = symbol; *p; p++) {
-        if (!isupper(*p)) {
-            LOG_ERROR("Invalid symbol character: %c in %s", *p, symbol);
-            return false;
+    // Check if symbol is in valid set
+    for (int i = 0; i < SYMBOL_COUNT; i++) {
+        if (strcmp(symbol, VALID_SYMBOLS[i]) == 0) {
+            return true;
         }
     }
-    return true;
+
+    LOG_ERROR("Invalid symbol: %s - must be one of: AAPL, GOOG, MSFT, AMZN, TSLA", symbol);
+    return false;
 }
 
 bool validate_order_id(const char* order_id) {

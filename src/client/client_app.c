@@ -32,10 +32,15 @@ static void handle_signal(int signum) {
 
 static void handle_command(const Command* cmd, void* user_data) {
     if (cmd->type == CMD_QUIT) {
-        LOG_INFO("Shutting down client...");
-        running = false;  // Set global running flag to false
-        command_line_stop(cmd_line);  // Stop command line input
-        ws_client_disconnect(client);  // Gracefully disconnect WebSocket
+        LOG_INFO("Initiating client shutdown...");
+        running = false;
+        
+        // Stop components in order
+        command_line_stop(cmd_line);
+        ws_client_disconnect(client);
+        
+        // Exit immediately
+        exit(0);
         return;
     }
 
@@ -64,31 +69,136 @@ static void handle_disconnect(WSClient* ws_client, void* user_data) {
 }
 
 static void handle_message(WSClient* ws_client, const char* message, size_t len, void* user_data) {
+    LOG_DEBUG("Received server message: %.*s", (int)len, message);
+    
     int msg_type;
     if (!parse_base_message(message, &msg_type)) {
         LOG_ERROR("Failed to parse message type");
         return;
     }
 
+    cJSON* root = cJSON_Parse(message);
+    if (!root) {
+        LOG_ERROR("Failed to parse JSON message");
+        return;
+    }
+
     switch (msg_type) {
+        case MSG_ORDER_ACCEPTED: {
+            const char* order_id = cJSON_GetObjectItem(root, "order_id")->valuestring;
+            const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
+            double price = cJSON_GetObjectItem(root, "price")->valuedouble;
+            int quantity = cJSON_GetObjectItem(root, "quantity")->valueint;
+            const char* side = cJSON_GetObjectItem(root, "side")->valuestring;
+            
+            printf("\n=== Order Successfully Placed ===\n");
+            printf("  Order ID: %s\n", order_id);
+            printf("  Symbol:   %s\n", symbol);
+            printf("  Side:     %s\n", side);
+            printf("  Price:    $%.2f\n", price);
+            printf("  Quantity: %d\n", quantity);
+            printf("===============================\n");
+            printf("\ntrading> ");
+            fflush(stdout);
+            break;
+        }
+
+        case MSG_ORDER_REJECTED: {
+            const char* order_id = cJSON_GetObjectItem(root, "order_id")->valuestring;
+            const char* reason = cJSON_GetObjectItem(root, "reason")->valuestring;
+            
+            printf("\n=== Order Rejected ===\n");
+            printf("  Order ID: %s\n", order_id);
+            printf("  Reason:   %s\n", reason);
+            printf("===================\n");
+            printf("\ntrading> ");
+            fflush(stdout);
+            break;
+        }
+
         case MSG_TRADE_EXECUTED: {
             TradeMessage trade;
             if (parse_trade_message(message, &trade)) {
                 trade_history_add_trade(trade_history, &trade);
                 market_monitor_update_trade(market_monitor, &trade);
+                
+                printf("\n=== Trade Executed ===\n");
+                printf("  Symbol:    %s\n", trade.symbol);
+                printf("  Price:     $%.2f\n", trade.price);
+                printf("  Quantity:  %d\n", trade.quantity);
+                printf("  Buy ID:    %s\n", trade.buy_order_id);
+                printf("  Sell ID:   %s\n", trade.sell_order_id);
+                printf("===================\n");
+                printf("\ntrading> ");
+                fflush(stdout);
+            } else {
+                LOG_ERROR("Failed to parse trade execution message");
             }
             break;
         }
+
         case MSG_BOOK_SNAPSHOT: {
-            BookSnapshot snapshot;
-            if (parse_book_snapshot(message, &snapshot)) {
-                market_monitor_update_book(market_monitor, &snapshot);
-                market_monitor_display(market_monitor);
+            const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
+            cJSON* bids = cJSON_GetObjectItem(root, "bids");
+            cJSON* asks = cJSON_GetObjectItem(root, "asks");
+            
+            if (!bids || !asks) {
+                LOG_ERROR("Invalid book snapshot format");
+                break;
             }
+            
+            printf("\n=== Order Book: %s ===\n", symbol);
+            printf("----------------------------------------\n");
+            printf("      BIDS          |        ASKS       \n");
+            printf("  Price    Volume   |   Price    Volume \n");
+            printf("----------------------------------------\n");
+            
+            int num_bids = cJSON_GetArraySize(bids);
+            int num_asks = cJSON_GetArraySize(asks);
+            int max_rows = (num_bids > num_asks) ? num_bids : num_asks;
+            
+            for (int i = 0; i < max_rows; i++) {
+                if (i < num_bids) {
+                    cJSON* bid = cJSON_GetArrayItem(bids, i);
+                    double price = cJSON_GetObjectItem(bid, "price")->valuedouble;
+                    int quantity = cJSON_GetObjectItem(bid, "quantity")->valueint;
+                    printf("%8.2f  %8d  |", price, quantity);
+                } else {
+                    printf("                   |");
+                }
+                
+                if (i < num_asks) {
+                    cJSON* ask = cJSON_GetArrayItem(asks, i);
+                    double price = cJSON_GetObjectItem(ask, "price")->valuedouble;
+                    int quantity = cJSON_GetObjectItem(ask, "quantity")->valueint;
+                    printf("  %8.2f  %8d", price, quantity);
+                }
+                printf("\n");
+            }
+            
+            printf("----------------------------------------\n");
+            if (num_bids == 0 && num_asks == 0) {
+                printf("        (Empty Order Book)             \n");
+            }
+            printf("\ntrading> ");
+            fflush(stdout);
             break;
         }
-        // Handle other message types
+
+        case MSG_SERVER_STATUS: {
+            const char* status = cJSON_GetObjectItem(root, "status")->valuestring;
+            printf("\nServer Status: %s\n", status);
+            printf("\ntrading> ");
+            fflush(stdout);
+            break;
+        }
+
+        default:
+            LOG_DEBUG("Received unhandled message type: %d", msg_type);
+            break;
     }
+
+    cJSON_Delete(root);
 }
 
 int main(int argc, char* argv[]) {

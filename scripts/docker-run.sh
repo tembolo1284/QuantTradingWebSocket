@@ -20,7 +20,9 @@ ensure_network() {
 build_image() {
     echo "Building Docker image..."
     ensure_network
-    docker-compose build
+    docker-compose build \
+        --build-arg BUILD_TYPE=${CMAKE_BUILD_TYPE:-Release} \
+        --build-arg BUILD_TESTS=${BUILD_TESTS:-OFF}
 }
 
 # Function to run tests
@@ -31,7 +33,10 @@ run_tests() {
         -e CMAKE_BUILD_TYPE=Debug \
         -e BUILD_TESTS=ON \
         quant_trading \
-        bash -c "cmake -B build -G Ninja -DBUILD_TESTS=ON && \
+        bash -c "ldconfig && \
+                 cmake -B build -G Ninja \
+                       -DCMAKE_BUILD_TYPE=Debug \
+                       -DBUILD_TESTS=ON && \
                  cmake --build build && \
                  cd build && \
                  ctest --output-on-failure"
@@ -41,14 +46,20 @@ run_tests() {
 run_server() {
     echo "Starting trading server..."
     ensure_network
-    docker-compose up quant_trading
+    docker-compose up -d market_server
+    echo "Server running on port 8080"
+    docker logs -f market_server
 }
 
 # Function to run the client
 run_client() {
     echo "Starting market client..."
     ensure_network
-    docker-compose run --rm --entrypoint market_client market_client quant_trading 8080
+    docker-compose run --rm \
+        -it \
+        --entrypoint market_client \
+        market_client \
+        market_server 8080
 }
 
 # Function to run development environment
@@ -57,11 +68,37 @@ run_dev() {
     ensure_network
     docker-compose run --rm \
         -e CMAKE_BUILD_TYPE=Debug \
+        -v ${PWD}:/app \
+        -it \
         quant_trading \
-        /bin/bash
+        bash -c "ldconfig && /bin/bash"
+}
+
+# Function to check dependencies
+check_deps() {
+    echo "Checking dependencies..."
+    local deps=(docker docker-compose)
+    for dep in "${deps[@]}"; do
+        if ! command -v $dep &> /dev/null; then
+            echo "Error: $dep is required but not installed"
+            exit 1
+        fi
+    done
+}
+
+# Function to show logs
+show_logs() {
+    local service=$1
+    if [ -z "$service" ]; then
+        docker-compose logs -f
+    else
+        docker-compose logs -f $service
+    fi
 }
 
 # Main script
+check_deps
+
 case "$1" in
     "build")
         build_image
@@ -82,14 +119,18 @@ case "$1" in
     "clean")
         cleanup
         ;;
+    "logs")
+        show_logs $2
+        ;;
     *)
-        echo "Usage: $0 {build|server|client|test|dev|clean}"
+        echo "Usage: $0 {build|server|client|test|dev|clean|logs}"
         echo "  build  - Build the Docker image"
         echo "  server - Run the trading server"
         echo "  client - Run the market client"
         echo "  test   - Run all tests"
         echo "  dev    - Start development environment"
         echo "  clean  - Clean up containers"
+        echo "  logs   - Show container logs (optional: specify service name)"
         exit 1
         ;;
 esac

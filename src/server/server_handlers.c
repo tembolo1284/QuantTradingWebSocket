@@ -29,6 +29,27 @@ struct ServerHandlers {
     pthread_rwlock_t books_lock;
 };
 
+static void collect_orders(Order* order, void* user_data) {
+    BookSnapshot* snap = (BookSnapshot*)user_data;
+    if (order->is_canceled || order->remaining_quantity <= 0) {
+        return;  // Skip canceled or fully filled orders
+    }
+
+    if (order_is_buy_order(order)) {
+        if ((size_t)snap->num_bids < snap->max_orders) {  // Fix signedness comparison
+            snap->bid_prices[snap->num_bids] = order_get_price(order);
+            snap->bid_quantities[snap->num_bids] = order_get_remaining_quantity(order);
+            snap->num_bids++;
+        }
+    } else {
+        if ((size_t)snap->num_asks < snap->max_orders) {  // Fix signedness comparison
+            snap->ask_prices[snap->num_asks] = order_get_price(order);
+            snap->ask_quantities[snap->num_asks] = order_get_remaining_quantity(order);
+            snap->num_asks++;
+        }
+    }
+}
+
 static void* worker_thread(void* arg) {
     ServerHandlers* handlers = (ServerHandlers*)arg;
     
@@ -72,45 +93,69 @@ static void* worker_thread(void* arg) {
                 case MSG_PLACE_ORDER: {
                     OrderMessage order;
                     if (parse_order_message(message, &order)) {
+                        LOG_INFO("Processing order: %s %s %.2f x %d", 
+                                 order.order_id, order.symbol, order.price, order.quantity);
+                        
                         pthread_rwlock_rdlock(&handlers->books_lock);
                         bool order_placed = false;
-                        
-                        // Find matching order book
+ 
+                        // Find or create order book
+                        OrderBook* book = NULL;
                         for (int i = 0; i < handlers->book_count; i++) {
                             if (strcmp(handlers->symbols[i], order.symbol) == 0) {
-                                struct Order* new_order = order_create(
-                                    order.order_id,
-                                    order.trader_id,
-                                    order.symbol,
-                                    order.price,
-                                    order.quantity,
-                                    order.is_buy
-                                );
-                                if (new_order) {
-                                    order_book_add_order(handlers->books[i], new_order);
-                                    order_placed = true;
-                                    
-                                    LOG_INFO("Order placed: %s %s %.2f x %d %s", 
-                                            order.order_id, order.symbol, order.price, 
-                                            order.quantity, order.is_buy ? "BUY" : "SELL");
-                                    
-                                    // Send confirmation
-                                    snprintf(response, sizeof(response), 
-                                            "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"success\"}",
-                                            MSG_ORDER_ACCEPTED, order.order_id);
-                                    ws_server_send(client, response, strlen(response));
-                                    
-                                    // Match orders
-                                    order_book_match_orders(handlers->books[i]);
-                                }
+                                book = handlers->books[i];
                                 break;
                             }
                         }
                         
+                        if (!book) {
+                            book = order_book_create();
+                            if (book) {
+                                handlers->books[handlers->book_count] = book;
+                                strncpy(handlers->symbols[handlers->book_count], order.symbol, 
+                                        sizeof(handlers->symbols[0]) - 1);
+                                handlers->book_count++;
+                                LOG_INFO("Created new order book for symbol %s", order.symbol);
+                            }
+                        }
+
+                        if (book) {
+                            struct Order* new_order = order_create(
+                                order.order_id, order.trader_id, order.symbol,
+                                order.price, order.quantity, order.is_buy
+                            );
+                            
+                            if (new_order) {
+                                order_book_add_order(book, new_order);
+                                order_placed = true;
+                                
+                                // Send confirmation to client
+                                snprintf(response, sizeof(response),
+                                    "{\"type\": %d, \"order_id\": \"%s\", \"symbol\": \"%s\", "
+                                    "\"price\": %.2f, \"quantity\": %d, \"side\": \"%s\", \"status\": \"success\"}",
+                                    MSG_ORDER_ACCEPTED, order.order_id, order.symbol,
+                                    order.price, order.quantity, order.is_buy ? "BUY" : "SELL");
+                                ws_server_send(client, response, strlen(response));
+                                LOG_INFO("Order placed and confirmed: %s", response);
+
+                                // Try to match orders
+                                LOG_INFO("Attempting to match orders for %s", order.symbol);
+                                order_book_match_orders(book);
+
+                                // Send updated book snapshot
+                                BookSnapshot snapshot = {0};
+                                // ... fill snapshot ...
+                                char* book_json = serialize_book_snapshot(&snapshot);
+                                if (book_json) {
+                                    ws_server_send(client, book_json, strlen(book_json));
+                                    free(book_json);
+                                }
+                            }
+                        }
                         if (!order_placed) {
                             LOG_ERROR("Failed to place order for symbol %s", order.symbol);
-                            snprintf(response, sizeof(response), 
-                                    "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"failed\", \"reason\": \"invalid symbol\"}",
+                            snprintf(response, sizeof(response),
+                                    "{\"type\": %d, \"order_id\": \"%s\", \"status\": \"failed\", \"reason\": \"failed to place order\"}",
                                     MSG_ORDER_REJECTED, order.order_id);
                             ws_server_send(client, response, strlen(response));
                         }
@@ -119,7 +164,7 @@ static void* worker_thread(void* arg) {
                     }
                     break;
                 }
-                
+
                 case MSG_CANCEL_ORDER: {
                     const char* order_id = cJSON_GetObjectItem(root, "order_id")->valuestring;
                     const char* trader_id = cJSON_GetObjectItem(root, "trader_id")->valuestring;
@@ -150,22 +195,52 @@ static void* worker_thread(void* arg) {
                     
                     for (int i = 0; i < handlers->book_count; i++) {
                         if (strcmp(handlers->symbols[i], symbol) == 0) {
+                            OrderBook* book = handlers->books[i];
+                            
                             // Create book snapshot
                             BookSnapshot snapshot = {0};
                             strncpy(snapshot.symbol, symbol, sizeof(snapshot.symbol) - 1);
-                            
-                            // TODO: Fill snapshot from order book
-                            
+
+                            // Get all orders and sort them into bids and asks
+                            snapshot.max_orders = 200;  // Reasonable limit for order book depth
+                            snapshot.bid_prices = malloc(snapshot.max_orders * sizeof(double));
+                            snapshot.bid_quantities = malloc(snapshot.max_orders * sizeof(int));
+                            snapshot.ask_prices = malloc(snapshot.max_orders * sizeof(double));
+                            snapshot.ask_quantities = malloc(snapshot.max_orders * sizeof(int));
+
+                            if (!snapshot.bid_prices || !snapshot.bid_quantities || 
+                                !snapshot.ask_prices || !snapshot.ask_quantities) {
+                                free(snapshot.bid_prices);
+                                free(snapshot.bid_quantities);
+                                free(snapshot.ask_prices);
+                                free(snapshot.ask_quantities);
+                                LOG_ERROR("Failed to allocate memory for book snapshot");
+                                break;
+                            }
+
+                            snapshot.num_bids = 0;
+                            snapshot.num_asks = 0;
+
+                            // Collect all orders
+                            avl_inorder_traverse(book->buy_orders, collect_orders, &snapshot);
+                            avl_inorder_traverse(book->sell_orders, collect_orders, &snapshot);
+
                             char* book_json = serialize_book_snapshot(&snapshot);
                             if (book_json) {
+                                LOG_INFO("Sending book snapshot for %s: %s", symbol, book_json);
                                 ws_server_send(client, book_json, strlen(book_json));
                                 free(book_json);
                                 book_found = true;
                             }
+
+                            // Cleanup
+                            free(snapshot.bid_prices);
+                            free(snapshot.bid_quantities);
+                            free(snapshot.ask_prices);
+                            free(snapshot.ask_quantities);
                             break;
                         }
-                    }
-                    
+                    }    
                     if (!book_found) {
                         snprintf(response, sizeof(response),
                                 "{\"type\": %d, \"symbol\": \"%s\", \"status\": \"failed\", \"reason\": \"symbol not found\"}",

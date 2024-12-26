@@ -24,4 +24,7 @@
 #define ERR_PROTOCOL_VERSION -4
 #define ERR_MESSAGE_SIZE -5
 
+// Available symbols
+#define SYMBOL_COUNT 5
+extern const char* VALID_SYMBOLS[SYMBOL_COUNT];
 #endif /* PROTOCOL_CONSTANTS_H */

@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 // Client -> Server messages
 typedef enum {
@@ -49,6 +50,7 @@ typedef struct {
     char symbol[16];
     int num_bids;
     int num_asks;
+    size_t max_orders;
     // Arrays will be allocated dynamically
     double* bid_prices;
     int* bid_quantities;
