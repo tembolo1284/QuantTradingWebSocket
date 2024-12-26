@@ -15,6 +15,11 @@ static void handle_signal(int signum) {
     running = false;
 }
 
+static void message_handler_wrapper(WSClient* client, const char* message, size_t len, void* user_data) {
+    ServerHandlers* handlers = (ServerHandlers*)user_data;
+    server_handlers_process_message(handlers, client, message, len);
+}
+
 int main(int argc, char* argv[]) {
     // Initialize logging
     set_log_level(LOG_INFO);
@@ -64,6 +69,8 @@ int main(int argc, char* argv[]) {
         ws_server_destroy(server);
         return EXIT_FAILURE;
     }
+
+    ws_server_set_message_callback(server, message_handler_wrapper, handlers);
 
     SessionManager* sessions = session_manager_create(&session_config);
     if (!sessions) {

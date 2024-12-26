@@ -30,6 +30,10 @@ static void* input_thread(void* arg) {
             
             if (cmd.type == CMD_QUIT) {
                 cmd_line->running = false;
+                if (cmd_line->callback) {
+                    cmd_line->callback(&cmd, cmd_line->user_data);
+                }
+                break;
             } else if (cmd.type == CMD_HELP) {
                 print_command_help();
             } else if (cmd.type != CMD_INVALID && cmd_line->callback) {

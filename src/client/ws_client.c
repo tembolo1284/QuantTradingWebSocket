@@ -53,9 +53,14 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
             break;
             
         case LWS_CALLBACK_CLIENT_RECEIVE:
+            char* msg = malloc(len+1);
+            memcpy(msg, in, len);
+            msg[len] = '\0';
+
             if (client->message_cb) {
                 client->message_cb(client, (const char*)in, len, client->user_data);
             }
+            free(msg);
             break;
             
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
@@ -219,7 +224,10 @@ void ws_client_disconnect(WSClient* client) {
 }
 
 int ws_client_send(WSClient* client, const char* message, size_t len) {
-    if (!client || !message || !client->connected) return -1;
+    if (!client || !message || !client->connected) {
+        LOG_ERROR("Invalid send parameters or client not connected");
+        return -1;
+    }
     
     unsigned char* buf = malloc(LWS_PRE + len);
     if (!buf) return -1;

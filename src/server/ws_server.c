@@ -199,14 +199,12 @@ int ws_server_broadcast(WSServer* server, const char* message, size_t len) {
 
 int ws_server_send(WSClient* client, const char* message, size_t len) {
     if (!client || !message) return -1;
-
     unsigned char* buf = malloc(LWS_PRE + len);
     if (!buf) return -1;
-
     memcpy(buf + LWS_PRE, message, len);
-    lws_write(client->wsi, buf + LWS_PRE, len, LWS_WRITE_TEXT);
+    int written = lws_write(client->wsi, buf + LWS_PRE, len, LWS_WRITE_TEXT);
     free(buf);
-    return 0;
+    return (written >=0 && (size_t)written == len) ? 0 : - 1;
 }
 
 void ws_server_set_connect_callback(WSServer* server,
