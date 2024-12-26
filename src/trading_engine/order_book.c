@@ -124,6 +124,14 @@ void order_book_match_orders(OrderBook* book) {
     }
 
     LOG_INFO("Starting order matching process");
+
+    // Early exit if either buy or sell order tree is empty
+    if (!book->buy_orders || !book->sell_orders ||
+        avl_is_empty(book->buy_orders) || avl_is_empty(book->sell_orders)) {
+        LOG_DEBUG("Cannot match orders: one or both sides are empty");
+        return;
+    }
+
     bool matches_found = true;
     int match_count = 0;
 

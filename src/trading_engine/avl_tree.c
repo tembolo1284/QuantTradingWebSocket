@@ -27,6 +27,10 @@ static int get_balance(AVLNode* node) {
     return node ? get_height(node->left) - get_height(node->right) : 0;
 }
 
+bool avl_is_empty(const AVLTree* tree) {
+    return !tree || !tree->root;
+}
+
 static AVLNode* find_min_node(AVLNode* node) {
     AVLNode* current = node;
     while (current && current->left) {
