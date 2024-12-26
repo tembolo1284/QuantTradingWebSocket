@@ -18,6 +18,7 @@ static WSClient* client = NULL;
 static OrderEntry* order_entry = NULL;
 static TradeHistory* trade_history = NULL;
 static MarketMonitor* market_monitor = NULL;
+static bool is_view_requested = false;
 
 static void handle_signal(int signum) {
     LOG_INFO("Received signal %d, shutting down...", signum);
@@ -42,6 +43,10 @@ static void handle_command(const Command* cmd, void* user_data) {
         // Exit immediately
         exit(0);
         return;
+    }
+
+    if (cmd->type == CMD_VIEW) {
+        is_view_requested = true;
     }
 
     WSClient* ws_client = (WSClient*)user_data;
@@ -69,7 +74,7 @@ static void handle_disconnect(WSClient* ws_client, void* user_data) {
 }
 
 static void handle_message(WSClient* ws_client, const char* message, size_t len, void* user_data) {
-    LOG_DEBUG("Received server message: %.*s", (int)len, message);
+    LOG_INFO("Raw message received (length %zu): %.*s", len, (int)len, message);
     
     int msg_type;
     if (!parse_base_message(message, &msg_type)) {
@@ -85,18 +90,33 @@ static void handle_message(WSClient* ws_client, const char* message, size_t len,
 
     switch (msg_type) {
         case MSG_ORDER_ACCEPTED: {
-            const char* order_id = cJSON_GetObjectItem(root, "order_id")->valuestring;
-            const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
-            double price = cJSON_GetObjectItem(root, "price")->valuedouble;
-            int quantity = cJSON_GetObjectItem(root, "quantity")->valueint;
-            const char* side = cJSON_GetObjectItem(root, "side")->valuestring;
-            
+            cJSON* order_id_item = cJSON_GetObjectItem(root, "Trade Details");
+            if (!order_id_item || !cJSON_IsObject(order_id_item)) {
+                LOG_ERROR("Invalid order accepted message format");
+                break;
+            }
+
+            cJSON* id = cJSON_GetObjectItem(order_id_item, "Order ID");
+            cJSON* symbol_item = cJSON_GetObjectItem(order_id_item, "Symbol");
+            cJSON* price_item = cJSON_GetObjectItem(order_id_item, "Price");
+            cJSON* quantity_item = cJSON_GetObjectItem(order_id_item, "Quantity");
+            cJSON* type_item = cJSON_GetObjectItem(order_id_item, "Type");
+
+            if (!id || !cJSON_IsString(id) ||
+                !symbol_item || !cJSON_IsString(symbol_item) ||
+                !price_item || !cJSON_IsNumber(price_item) ||
+                !quantity_item || !cJSON_IsNumber(quantity_item) ||
+                !type_item || !cJSON_IsString(type_item)) {
+                LOG_ERROR("Invalid order details");
+                break;
+            }
+
             printf("\n=== Order Successfully Placed ===\n");
-            printf("  Order ID: %s\n", order_id);
-            printf("  Symbol:   %s\n", symbol);
-            printf("  Side:     %s\n", side);
-            printf("  Price:    $%.2f\n", price);
-            printf("  Quantity: %d\n", quantity);
+            printf("  Order ID: %s\n", id->valuestring);
+            printf("  Symbol:   %s\n", symbol_item->valuestring);
+            printf("  Side:     %s\n", type_item->valuestring);
+            printf("  Price:    $%.2f\n", price_item->valuedouble);
+            printf("  Quantity: %d\n", quantity_item->valueint);
             printf("===============================\n");
             printf("\ntrading> ");
             fflush(stdout);
@@ -138,50 +158,53 @@ static void handle_message(WSClient* ws_client, const char* message, size_t len,
         }
 
         case MSG_BOOK_SNAPSHOT: {
-            const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
-            cJSON* bids = cJSON_GetObjectItem(root, "bids");
-            cJSON* asks = cJSON_GetObjectItem(root, "asks");
+            if (is_view_requested) {
+                const char* symbol = cJSON_GetObjectItem(root, "symbol")->valuestring;
+                cJSON* bids = cJSON_GetObjectItem(root, "bids");
+                cJSON* asks = cJSON_GetObjectItem(root, "asks");
             
-            if (!bids || !asks) {
-                LOG_ERROR("Invalid book snapshot format");
-                break;
-            }
-            
-            printf("\n=== Order Book: %s ===\n", symbol);
-            printf("----------------------------------------\n");
-            printf("      BIDS          |        ASKS       \n");
-            printf("  Price    Volume   |   Price    Volume \n");
-            printf("----------------------------------------\n");
-            
-            int num_bids = cJSON_GetArraySize(bids);
-            int num_asks = cJSON_GetArraySize(asks);
-            int max_rows = (num_bids > num_asks) ? num_bids : num_asks;
-            
-            for (int i = 0; i < max_rows; i++) {
-                if (i < num_bids) {
-                    cJSON* bid = cJSON_GetArrayItem(bids, i);
-                    double price = cJSON_GetObjectItem(bid, "price")->valuedouble;
-                    int quantity = cJSON_GetObjectItem(bid, "quantity")->valueint;
-                    printf("%8.2f  %8d  |", price, quantity);
-                } else {
-                    printf("                   |");
+                if (!bids || !asks) {
+                    LOG_ERROR("Invalid book snapshot format");
+                    break;
                 }
+            
+                printf("\n=== Order Book: %s ===\n", symbol);
+                printf("----------------------------------------\n");
+                printf("      BIDS          |        ASKS       \n");
+                printf("  Price    Volume   |   Price    Volume \n");
+                printf("----------------------------------------\n");
+            
+                int num_bids = cJSON_GetArraySize(bids);
+                int num_asks = cJSON_GetArraySize(asks);
+                int max_rows = (num_bids > num_asks) ? num_bids : num_asks;
+            
+                for (int i = 0; i < max_rows; i++) {
+                    if (i < num_bids) {
+                        cJSON* bid = cJSON_GetArrayItem(bids, i);
+                        double price = cJSON_GetObjectItem(bid, "price")->valuedouble;
+                        int quantity = cJSON_GetObjectItem(bid, "quantity")->valueint;
+                        printf("%8.2f  %8d  |", price, quantity);
+                    } else {
+                        printf("                   |");
+                    }
                 
-                if (i < num_asks) {
-                    cJSON* ask = cJSON_GetArrayItem(asks, i);
-                    double price = cJSON_GetObjectItem(ask, "price")->valuedouble;
-                    int quantity = cJSON_GetObjectItem(ask, "quantity")->valueint;
-                    printf("  %8.2f  %8d", price, quantity);
+                    if (i < num_asks) {
+                        cJSON* ask = cJSON_GetArrayItem(asks, i);
+                        double price = cJSON_GetObjectItem(ask, "price")->valuedouble;
+                        int quantity = cJSON_GetObjectItem(ask, "quantity")->valueint;
+                        printf("  %8.2f  %8d", price, quantity);
+                    }
+                    printf("\n");
                 }
-                printf("\n");
-            }
             
-            printf("----------------------------------------\n");
-            if (num_bids == 0 && num_asks == 0) {
-                printf("        (Empty Order Book)             \n");
+                printf("----------------------------------------\n");
+                if (num_bids == 0 && num_asks == 0) {
+                    printf("        (Empty Order Book)             \n");
+                }
+                printf("\ntrading> ");
+                fflush(stdout);
+                is_view_requested = false;
             }
-            printf("\ntrading> ");
-            fflush(stdout);
             break;
         }
 

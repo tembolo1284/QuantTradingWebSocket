@@ -282,8 +282,11 @@ void avl_destroy(AVLTree* tree) {
     if (tree) {
         LOG_INFO("Destroying AVL tree for %s orders", 
                 tree->is_buy_tree ? "buy" : "sell");
-        destroy_node(tree->root);
-        free(tree);
+        if(tree->root) {
+            destroy_node(tree->root);
+            tree->root = NULL;
+        }
+            free(tree);
     }
 }
 

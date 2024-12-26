@@ -18,17 +18,35 @@ bool parse_base_message(const char* json, int* type) {
         return false;
     }
 
+    // Check for explicit type
     cJSON* type_obj = cJSON_GetObjectItem(root, "type");
-    if (!type_obj || !cJSON_IsNumber(type_obj)) {
-        LOG_ERROR("Missing or invalid message type");
+    
+    if (type_obj && cJSON_IsNumber(type_obj)) {
+        *type = type_obj->valueint;
         cJSON_Delete(root);
-        return false;
+        LOG_DEBUG("Parsed message type: %d", *type);
+        return true;
     }
 
-    *type = type_obj->valueint;
+    // Handle book snapshot
+    if (cJSON_GetObjectItem(root, "symbol") && 
+        cJSON_GetObjectItem(root, "bids") && 
+        cJSON_GetObjectItem(root, "asks")) {
+        *type = MSG_BOOK_SNAPSHOT;
+        cJSON_Delete(root);
+        return true;
+    }
+
+    // Handle order acceptance
+    if (cJSON_GetObjectItem(root, "Trade Details")) {
+        *type = MSG_ORDER_ACCEPTED;
+        cJSON_Delete(root);
+        return true;
+    }
+
+    LOG_ERROR("Missing or invalid message type");
     cJSON_Delete(root);
-    LOG_DEBUG("Parsed message type: %d", *type);
-    return true;
+    return false;
 }
 
 char* serialize_order_message(const OrderMessage* order) {

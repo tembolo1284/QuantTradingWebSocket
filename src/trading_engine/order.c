@@ -51,6 +51,7 @@ Order* order_create(const char* order_id,
 void order_destroy(Order* order) {
     if (order) {
         LOG_DEBUG("Destroying order: ID=%s", order->order_id);
+        memset(order, 0, sizeof(Order)); //clear potentially sensitive data.
         free(order);
     }
 }

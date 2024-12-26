@@ -38,9 +38,11 @@ void order_book_destroy(OrderBook* book) {
     LOG_INFO("Destroying order book");
     if (book->buy_orders) {
         avl_destroy(book->buy_orders);
+        book->buy_orders = NULL;
     }
     if (book->sell_orders) {
         avl_destroy(book->sell_orders);
+        book->sell_orders = NULL;
     }
     free(book);
 }
@@ -137,7 +139,6 @@ void order_book_match_orders(OrderBook* book) {
 
     while (matches_found) {
         matches_found = false;
-
         Order* best_buy = avl_find_max(book->buy_orders);
         Order* best_sell = avl_find_min(book->sell_orders);
 
@@ -151,15 +152,18 @@ void order_book_match_orders(OrderBook* book) {
             matches_found = true;
             match_count++;
 
-            // Remove fully matched orders
+            // Safely remove fully matched orders
             if (best_buy->remaining_quantity == 0) {
                 LOG_DEBUG("Removing fully matched buy order %s", best_buy->order_id);
                 avl_delete_order(book->buy_orders, best_buy->price, best_buy->timestamp);
             }
+
             if (best_sell->remaining_quantity == 0) {
                 LOG_DEBUG("Removing fully matched sell order %s", best_sell->order_id);
                 avl_delete_order(book->sell_orders, best_sell->price, best_sell->timestamp);
             }
+        } else {
+            break;  // No more matches possible
         }
     }
 

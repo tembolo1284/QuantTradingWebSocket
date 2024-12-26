@@ -52,16 +52,20 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
             LOG_INFO("WebSocket connection closed");
             break;
             
-        case LWS_CALLBACK_CLIENT_RECEIVE:
+        case LWS_CALLBACK_CLIENT_RECEIVE: {
             char* msg = malloc(len+1);
-            memcpy(msg, in, len);
-            msg[len] = '\0';
+            if (msg) {
+                memcpy(msg, in, len);
+                msg[len] = '\0';
+            }
 
             if (client->message_cb) {
                 client->message_cb(client, (const char*)in, len, client->user_data);
             }
             free(msg);
             break;
+
+        }
             
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
             LOG_ERROR("WebSocket connection error");
