@@ -1,5 +1,6 @@
 #include "trading_engine/order_book.h"
 #include "trading_engine/order.h"
+#include "trading_engine/avl_tree.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
@@ -176,15 +177,26 @@ int order_book_cancel_order(OrderBook* book, const char* order_id, bool is_buy_o
         return -1;
     }
 
-    LOG_INFO("Attempting to cancel %s order: ID=%s",
-             is_buy_order ? "buy" : "sell", order_id);
+    AVLTree* order_tree = is_buy_order ? book->buy_orders : book->sell_orders;
+    AVLNode* current = order_tree->root;
 
-    // Note: In a real implementation, we would need a way to look up orders by ID
-    // This might require maintaining a separate hash map of order IDs to orders
-    // For now, we'll need to traverse the tree to find the order
+    while (current) {
+        if (strcmp(current->order->order_id, order_id) == 0) {
+            // Found the order
+            order_cancel(current->order);
+            LOG_INFO("Canceled order: %s", order_id);
+            return 0;
+        }
 
-    // Implementation needed: Find order by ID and cancel it
-    LOG_WARN("Order cancellation by ID not fully implemented");
+        // Traverse the tree based on price comparison
+        int cmp = compare_nodes(current->price, current->timestamp, 
+                                current->order->price, current->order->timestamp, 
+                                is_buy_order);
+        
+        current = (cmp < 0) ? current->left : current->right;
+    }
+
+    LOG_WARN("Order not found for cancellation: %s", order_id);
     return -1;
 }
 

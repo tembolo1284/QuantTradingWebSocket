@@ -11,9 +11,6 @@ static AVLNode* create_node(double price, int64_t timestamp, struct Order* order
 static AVLNode* right_rotate(AVLNode* y);
 static AVLNode* left_rotate(AVLNode* x);
 static void destroy_node(AVLNode* node);
-static int compare_nodes(double price1, int64_t timestamp1, 
-                        double price2, int64_t timestamp2, 
-                        bool is_buy_tree);
 
 static int max(int a, int b) {
     return (a > b) ? a : b;
@@ -95,7 +92,7 @@ static AVLNode* left_rotate(AVLNode* x) {
     return y;
 }
 
-static int compare_nodes(double price1, int64_t timestamp1, 
+int compare_nodes(double price1, int64_t timestamp1, 
                         double price2, int64_t timestamp2, 
                         bool is_buy_tree) {
     if (price1 != price2) {

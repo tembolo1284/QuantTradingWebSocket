@@ -30,6 +30,9 @@ struct Order* avl_find_max(const AVLTree* tree);
 void avl_delete_order(AVLTree* tree, double price, int64_t timestamp);
 bool avl_contains(const AVLTree* tree, double price, int64_t timestamp);
 bool avl_is_empty(const AVLTree* tree);
+int compare_nodes(double price1, int64_t timestamp1,
+                  double price2, int64_t timestamp2,
+                  bool is_buy_tree);
 
 // Helper functions for traversal
 typedef void (*TraversalCallback)(struct Order* order, void* user_data);
