@@ -180,7 +180,7 @@ static void handle_message(WSClient* ws_client, const char* message, size_t len,
             
                 for (int i = 0; i < max_rows; i++) {
                     if (i < num_bids) {
-                        cJSON* bid = cJSON_GetArrayItem(bids, i);
+                        cJSON* bid = cJSON_GetArrayItem(bids, num_bids - 1 - i);
                         double price = cJSON_GetObjectItem(bid, "price")->valuedouble;
                         int quantity = cJSON_GetObjectItem(bid, "quantity")->valueint;
                         printf("%8.2f  %8d  |", price, quantity);

@@ -15,6 +15,8 @@ typedef struct {
     int ping_interval_ms;
 } WSClientConfig;
 
+void ws_client_force_shutdown(void);
+
 // Client lifecycle
 WSClient* ws_client_create(const WSClientConfig* config);
 int ws_client_connect(WSClient* client);

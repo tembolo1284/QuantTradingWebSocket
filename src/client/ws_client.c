@@ -29,6 +29,12 @@ struct WSClient {
     void* command_handler_data;
 };
 
+void ws_client_force_shutdown(void) {
+    LOG_INFO("Force shutting down client");
+    exit(0);
+}
+
+
 void ws_client_set_command_callback(WSClient* client, CommandCallback callback, void* user_data) {
     if (!client) return;
     client->command_callback = callback;
@@ -120,7 +126,7 @@ static void* service_thread(void* arg) {
 
     while (client->running) {
         lws_service(client->context, 50);
-
+        
         if (!client->connected && client->running) {
             if (retry_count < max_retries) {
                 LOG_INFO("Connection lost, attempting reconnect (%d/%d)...",
@@ -143,7 +149,6 @@ static void* service_thread(void* arg) {
                 LOG_ERROR("Max reconnection attempts reached, shutting down");
                 client->running = false;
                 
-                // Force cleanup
                 if (client->disconnect_cb) {
                     client->disconnect_cb(client, client->user_data);
                 }
@@ -152,9 +157,11 @@ static void* service_thread(void* arg) {
                     Command cmd = {0};
                     cmd.type = CMD_QUIT;
                     client->command_callback(&cmd, client->command_handler_data);
-                }    
+                }
+                
+                ws_client_force_shutdown();
                 break;
-            } 
+            }
         }
     }
     return NULL;
@@ -247,19 +254,11 @@ void ws_client_disconnect(WSClient* client) {
 
     client->running = false;
     
-    // Send close frame if connected
-    if (client->connected && client->connection) {
-        lws_close_reason(client->connection, LWS_CLOSE_STATUS_GOINGAWAY, 
-                        (unsigned char*)"Client shutting down", 18);
-        lws_cancel_service(client->context);
-    }
-    
-    // Wait for service thread
+    lws_cancel_service(client->context);
     pthread_join(client->service_thread, NULL);
-    client->connection = NULL;
-    client->connected = false;
     
     LOG_INFO("WebSocket client disconnected");
+    ws_client_force_shutdown();
 }
 
 int ws_client_send(WSClient* client, const char* message, size_t len) {

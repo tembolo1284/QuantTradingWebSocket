@@ -11,6 +11,8 @@ typedef struct {
     int process_interval_ms;
 } HandlerConfig;
 
+void client_app_shutdown(void);
+
 ClientHandlers* client_handlers_create(const HandlerConfig* config);
 void client_handlers_destroy(ClientHandlers* handlers);
 

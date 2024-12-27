@@ -129,9 +129,30 @@ void order_book_match_orders(OrderBook* book) {
     LOG_INFO("Starting order matching process");
 
     // Early exit if either buy or sell order tree is empty
-    if (!book->buy_orders || !book->sell_orders ||
-        avl_is_empty(book->buy_orders) || avl_is_empty(book->sell_orders)) {
-        LOG_DEBUG("Cannot match orders: one or both sides are empty");
+    if (!book->buy_orders || !book->sell_orders) {
+        LOG_DEBUG("Cannot match orders: order trees not initialized");
+        return;
+    }
+
+    if (avl_is_empty(book->buy_orders)) {
+        LOG_INFO("No buy orders available for matching");
+        return;
+    }
+
+    if (avl_is_empty(book->sell_orders)) {
+        LOG_INFO("No sell orders available for matching");
+        return;
+    }
+
+    Order* best_buy = avl_find_max(book->buy_orders);
+    Order* best_sell = avl_find_min(book->sell_orders);
+    
+    LOG_INFO("Best buy order: %s at %.2f", best_buy->order_id, best_buy->price);
+    LOG_INFO("Best sell order: %s at %.2f", best_sell->order_id, best_sell->price);
+
+    if (!is_match_possible(best_buy, best_sell)) {
+        LOG_INFO("No match possible: Buy %.2f vs Sell %.2f", 
+                 best_buy->price, best_sell->price);
         return;
     }
 

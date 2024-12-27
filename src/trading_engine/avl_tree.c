@@ -29,19 +29,25 @@ bool avl_is_empty(const AVLTree* tree) {
 }
 
 static AVLNode* find_min_node(AVLNode* node) {
-    AVLNode* current = node;
-    while (current && current->left) {
-        current = current->left;
+    if (!node) { 
+        LOG_INFO("Node is empty can't find min node");
+        return NULL;
     }
-    return current;
+    while (node->left) {
+        node = node->left;
+    }
+    return node;
 }
 
 static AVLNode* find_max_node(AVLNode* node) {
-    AVLNode* current = node;
-    while (current && current->right) {
-        current = current->right;
+    if (!node) { 
+        LOG_INFO("Node is empty can't find max node");
+        return NULL;
     }
-    return current;
+    while (node->right) {
+        node = node->right;
+    }
+    return node;
 }
 
 static AVLNode* create_node(double price, int64_t timestamp, struct Order* order) {
@@ -97,7 +103,7 @@ int compare_nodes(double price1, int64_t timestamp1,
                         bool is_buy_tree) {
     if (price1 != price2) {
         if (is_buy_tree) {
-            return price1 > price2 ? -1 : 1;  // Higher prices first for buy orders
+            return price1 > price2 ? 1 : -1;  // Higher prices first for buy orders
         } else {
             return price1 < price2 ? -1 : 1;  // Lower prices first for sell orders
         }
