@@ -2,15 +2,17 @@
 #define ORDER_BOOK_H
 
 #include "avl_tree.h"
+#include "trade_broadcaster.h"
 #include <stdbool.h>
 
 typedef struct OrderBook {
     AVLTree* buy_orders;
     AVLTree* sell_orders;
+    TradeBroadcaster* trade_broadcaster;
 } OrderBook;
 
 // Constructor and destructor
-OrderBook* order_book_create(void);
+OrderBook* order_book_create(TradeBroadcaster* broadcaster);
 void order_book_destroy(OrderBook* book);
 
 // Order operations

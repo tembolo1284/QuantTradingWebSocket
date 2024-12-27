@@ -5,15 +5,17 @@
 #include "trading_engine/order.h"
 #include "trading_engine/order_book.h"
 #include "protocol/message_types.h"
+#include "trading_engine/trade_broadcaster.h"
 #include <cJSON/cJSON.h>
 
 typedef struct ServerHandlers ServerHandlers;
 
 // Handler configuration
 typedef struct {
-   int thread_pool_size;
-   int max_message_size;
-   int message_queue_size;
+    int thread_pool_size;
+    int max_message_size;
+    int message_queue_size;
+    TradeBroadcaster* trade_broadcaster;
 } HandlerConfig;
 
 // Message handler function type

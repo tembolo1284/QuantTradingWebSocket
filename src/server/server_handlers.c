@@ -1,6 +1,7 @@
 #include "server/server_handlers.h"
 #include "protocol/json_protocol.h"
 #include "protocol/message_types.h"
+#include "trading_engine/trade_broadcaster.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +29,8 @@ struct ServerHandlers {
     char symbols[MAX_SYMBOLS][16];
     int book_count;
     pthread_rwlock_t books_lock;
+
+    TradeBroadcaster* trade_broadcaster;
 };
 
 // Message handler lookup table
@@ -112,7 +115,7 @@ int handle_place_order(ServerHandlers* handlers, WSClient* client, const cJSON* 
     }
 
     if (!book) {
-        book = order_book_create();
+        book = order_book_create(handlers->trade_broadcaster);
         if (book) {
             handlers->books[handlers->book_count] = book;
             strncpy(handlers->symbols[handlers->book_count], order.symbol,
@@ -394,6 +397,7 @@ ServerHandlers* server_handlers_create(const HandlerConfig* config) {
     handlers->queue_size = config->message_queue_size;
     handlers->running = false;
     handlers->queue_head = handlers->queue_tail = 0;
+    handlers->trade_broadcaster = config->trade_broadcaster;
 
     handlers->worker_threads = calloc(config->thread_pool_size, sizeof(pthread_t));
     handlers->message_queue = calloc(config->message_queue_size, sizeof(char*));
@@ -524,7 +528,7 @@ int server_handlers_add_order_book(ServerHandlers* handlers, const char* symbol)
         }
     }
     
-    OrderBook* book = order_book_create();
+    OrderBook* book = order_book_create(handlers->trade_broadcaster);
     if (!book) {
         pthread_rwlock_unlock(&handlers->books_lock);
         return -1;

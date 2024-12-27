@@ -1,5 +1,6 @@
 #include "server/market_data.h"
 #include "utils/logging.h"
+#include "trading_engine/trade_broadcaster.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -7,6 +8,7 @@
 #define MAX_SYMBOLS 100
 
 struct MarketData {
+    TradeBroadcaster* trade_broadcaster;
     pthread_mutex_t lock;
     pthread_t snapshot_thread;
     bool running;
@@ -71,6 +73,7 @@ MarketData* market_data_create(const MarketDataConfig* config) {
     
     market->snapshot_interval_ms = config->snapshot_interval_ms;
     market->max_depth = config->max_depth;
+    market->trade_broadcaster = config->trade_broadcaster;
     pthread_mutex_init((pthread_mutex_t*)&market->lock, NULL);
     
     return market;
@@ -127,7 +130,7 @@ int market_data_update_book(MarketData* market, const char* symbol, const OrderB
     if (index == -1 && market->book_count < MAX_SYMBOLS) {
         index = market->book_count++;
         strncpy(market->symbols[index], symbol, sizeof(market->symbols[0]) - 1);
-        market->books[index] = order_book_create();
+        market->books[index] = order_book_create(market->trade_broadcaster);
     }
     
     if (index != -1 && market->books[index]) {

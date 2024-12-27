@@ -3,6 +3,7 @@
 
 #include "trading_engine/order_book.h"
 #include "protocol/message_types.h"
+#include "trading_engine/trade_broadcaster.h"
 #include <pthread.h>
 
 typedef struct MarketData MarketData;
@@ -11,6 +12,7 @@ typedef struct {
     int snapshot_interval_ms;
     int max_depth;
     int max_symbols;
+    TradeBroadcaster* trade_broadcaster;
 } MarketDataConfig;
 
 MarketData* market_data_create(const MarketDataConfig* config);

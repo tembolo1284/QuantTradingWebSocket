@@ -7,7 +7,7 @@
 
 Order* order_create(const char* order_id,
                    const char* trader_id,
-                   const char* stock_symbol,
+                   const char* symbol,
                    double price,
                    int quantity,
                    bool is_buy_order) {
@@ -20,7 +20,7 @@ Order* order_create(const char* order_id,
 
     if (strlen(order_id) >= MAX_ID_LENGTH || 
         strlen(trader_id) >= MAX_ID_LENGTH || 
-        strlen(stock_symbol) >= MAX_SYMBOL_LENGTH) {
+        strlen(symbol) >= MAX_SYMBOL_LENGTH) {
         LOG_ERROR("Input string length exceeds maximum allowed length");
         free(order);
         return NULL;
@@ -32,8 +32,8 @@ Order* order_create(const char* order_id,
     strncpy(order->trader_id, trader_id, MAX_ID_LENGTH - 1);
     order->trader_id[MAX_ID_LENGTH - 1] = '\0';
     
-    strncpy(order->stock_symbol, stock_symbol, MAX_SYMBOL_LENGTH - 1);
-    order->stock_symbol[MAX_SYMBOL_LENGTH - 1] = '\0';
+    strncpy(order->symbol, symbol, MAX_SYMBOL_LENGTH - 1);
+    order->symbol[MAX_SYMBOL_LENGTH - 1] = '\0';
 
     order->price = price;
     order->quantity = quantity;
@@ -43,7 +43,7 @@ Order* order_create(const char* order_id,
     order->is_canceled = false;
 
     LOG_INFO("Created new %s order: ID=%s, Symbol=%s, Price=%.2f, Quantity=%d",
-             is_buy_order ? "buy" : "sell", order_id, stock_symbol, price, quantity);
+             is_buy_order ? "buy" : "sell", order_id, symbol, price, quantity);
 
     return order;
 }
@@ -72,12 +72,12 @@ const char* order_get_trader_id(const Order* order) {
     return order->trader_id;
 }
 
-const char* order_get_stock_symbol(const Order* order) {
+const char* order_get_symbol(const Order* order) {
     if (!order) {
-        LOG_ERROR("Attempted to get stock symbol from NULL order");
+        LOG_ERROR("Attempted to get symbol from NULL order");
         return NULL;
     }
-    return order->stock_symbol;
+    return order->symbol;
 }
 
 double order_get_price(const Order* order) {
@@ -254,7 +254,7 @@ char* order_to_string(const Order* order) {
              "Order{id=%s, trader=%s, symbol=%s, price=%.2f, qty=%d, remaining=%d, %s, %s}",
              order->order_id,
              order->trader_id,
-             order->stock_symbol,
+             order->symbol,
              order->price,
              order->quantity,
              order->remaining_quantity,

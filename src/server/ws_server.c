@@ -184,16 +184,26 @@ static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
 int ws_server_broadcast(WSServer* server, const char* message, size_t len) {
     if (!server || !message) return -1;
 
-    unsigned char* buf = malloc(LWS_PRE + len);
-    if (!buf) return -1;
-
-    memcpy(buf + LWS_PRE, message, len);
-    
     pthread_mutex_lock(&server->lock);
+    
+    // Store message for sending
+    unsigned char* buf = malloc(LWS_PRE + len);
+    if (!buf) {
+        pthread_mutex_unlock(&server->lock);
+        return -1;
+    }
+    memcpy(buf + LWS_PRE, message, len);
+    server->broadcast_buf = buf;
+    server->broadcast_len = len;
+    
     lws_callback_all_protocol(server->context, &protocols[0], LWS_CALLBACK_SERVER_WRITEABLE);
-    pthread_mutex_unlock(&server->lock);
-
+    
+    // Cleanup
     free(buf);
+    server->broadcast_buf = NULL;
+    server->broadcast_len = 0;
+    
+    pthread_mutex_unlock(&server->lock);
     return 0;
 }
 

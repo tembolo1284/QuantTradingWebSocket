@@ -11,7 +11,7 @@
 typedef struct Order {
     char order_id[MAX_ID_LENGTH];
     char trader_id[MAX_ID_LENGTH];
-    char stock_symbol[MAX_SYMBOL_LENGTH];
+    char symbol[MAX_SYMBOL_LENGTH];
     double price;
     int quantity;
     int remaining_quantity;
@@ -23,7 +23,7 @@ typedef struct Order {
 // Constructor and destructor
 Order* order_create(const char* order_id,
                    const char* trader_id,
-                   const char* stock_symbol,
+                   const char* symbol,
                    double price,
                    int quantity,
                    bool is_buy_order);

@@ -91,6 +91,7 @@ set(TRADING_ENGINE_SOURCES
     src/trading_engine/order_book.c
     src/trading_engine/trade.c
     src/trading_engine/trader.c
+    src/trading_engine/trade_broadcaster.c
     src/trading_engine/avl_tree.c
 )
 

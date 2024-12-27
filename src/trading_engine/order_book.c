@@ -1,11 +1,12 @@
 #include "trading_engine/order_book.h"
 #include "trading_engine/order.h"
 #include "trading_engine/avl_tree.h"
+#include "trading_engine/trade_broadcaster.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 #include <string.h>
 
-OrderBook* order_book_create(void) {
+OrderBook* order_book_create(TradeBroadcaster* broadcaster) {
     OrderBook* book = (OrderBook*)malloc(sizeof(OrderBook));
     if (!book) {
         LOG_ERROR("Failed to allocate memory for order book");
@@ -23,6 +24,15 @@ OrderBook* order_book_create(void) {
     if (!book->sell_orders) {
         LOG_ERROR("Failed to create sell orders AVL tree");
         avl_destroy(book->buy_orders);
+        free(book);
+        return NULL;
+    }
+
+    book->trade_broadcaster = broadcaster;
+    if (!broadcaster) {
+        LOG_ERROR("NULL trade broadcaster provided");
+        avl_destroy(book->sell_orders);
+        avl_destroy(book->buy_orders); 
         free(book);
         return NULL;
     }
@@ -59,9 +69,9 @@ static bool is_match_possible(const Order* buy_order, const Order* sell_order) {
         return false;
     }
 
-    if (strcmp(buy_order->stock_symbol, sell_order->stock_symbol) != 0) {
+    if (strcmp(buy_order->symbol, sell_order->symbol) != 0) {
         LOG_DEBUG("Match rejected: different symbols (%s vs %s)",
-                 buy_order->stock_symbol, sell_order->stock_symbol);
+                 buy_order->symbol, sell_order->symbol);
         return false;
     }
 
@@ -81,23 +91,32 @@ static bool is_match_possible(const Order* buy_order, const Order* sell_order) {
     return true;
 }
 
-static void process_match(Order* buy_order, Order* sell_order) {
-    if (!buy_order || !sell_order) {
-        LOG_ERROR("Attempted to process match with NULL order(s)");
-        return;
-    }
+static void process_match(Order* buy_order, Order* sell_order, TradeBroadcaster* broadcaster) {
+   if (!buy_order || !sell_order) {
+       LOG_ERROR("Attempted to process match with NULL order(s)");
+       return;
+   }
 
-    int match_quantity = (buy_order->remaining_quantity < sell_order->remaining_quantity) ?
-                        buy_order->remaining_quantity : sell_order->remaining_quantity;
+   int match_quantity = (buy_order->remaining_quantity < sell_order->remaining_quantity) ?
+                       buy_order->remaining_quantity : sell_order->remaining_quantity;
 
-    LOG_INFO("Processing match: Buy Order=%s, Sell Order=%s, Quantity=%d, Price=%.2f",
-             buy_order->order_id, sell_order->order_id, match_quantity, sell_order->price);
+   LOG_INFO("Processing match: Buy Order=%s, Sell Order=%s, Quantity=%d, Price=%.2f",
+            buy_order->order_id, sell_order->order_id, match_quantity, sell_order->price);
 
-    order_reduce_quantity(buy_order, match_quantity);
-    order_reduce_quantity(sell_order, match_quantity);
+   order_reduce_quantity(buy_order, match_quantity);
+   order_reduce_quantity(sell_order, match_quantity);
 
-    LOG_DEBUG("After match: Buy Order remaining=%d, Sell Order remaining=%d",
-             buy_order->remaining_quantity, sell_order->remaining_quantity);
+   // Broadcast the trade
+   trade_broadcaster_send_trade(broadcaster, 
+                              buy_order->symbol,
+                              buy_order->order_id,
+                              sell_order->order_id,
+                              sell_order->price,
+                              match_quantity,
+                              time(NULL));
+
+   LOG_DEBUG("After match: Buy Order remaining=%d, Sell Order remaining=%d",
+            buy_order->remaining_quantity, sell_order->remaining_quantity);
 }
 
 int order_book_add_order(OrderBook* book, Order* order) {
@@ -108,7 +127,7 @@ int order_book_add_order(OrderBook* book, Order* order) {
 
     LOG_INFO("Adding %s order to book: ID=%s, Symbol=%s, Price=%.2f, Quantity=%d",
              order->is_buy_order ? "buy" : "sell",
-             order->order_id, order->stock_symbol,
+             order->order_id, order->symbol,
              order->price, order->quantity);
 
     if (order->is_buy_order) {
@@ -161,8 +180,8 @@ void order_book_match_orders(OrderBook* book) {
 
     while (matches_found) {
         matches_found = false;
-        Order* best_buy = avl_find_max(book->buy_orders);
-        Order* best_sell = avl_find_min(book->sell_orders);
+        best_buy = avl_find_max(book->buy_orders);
+        best_sell = avl_find_min(book->sell_orders);
 
         if (!best_buy || !best_sell) {
             LOG_DEBUG("No matching possible: one or both sides empty");
@@ -170,7 +189,7 @@ void order_book_match_orders(OrderBook* book) {
         }
 
         if (is_match_possible(best_buy, best_sell)) {
-            process_match(best_buy, best_sell);
+            process_match(best_buy, best_sell, book->trade_broadcaster);
             matches_found = true;
             match_count++;
 

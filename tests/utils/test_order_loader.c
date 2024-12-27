@@ -2,13 +2,15 @@
 #include "trading_engine/order_book.h"
 #include "trading_engine/order.h"
 #include "utils/order_loader.h"
+#include "trading_engine/trade_broadcaster.h"
 #include "utils/logging.h"
 #include <stdlib.h>
 
 OrderBook* book;
 
 void setUp(void) {
-    book = order_book_create();
+    TradeBroadcaster* broadcaster = NULL;
+    book = order_book_create(broadcaster);
 }
 
 void tearDown(void) {
