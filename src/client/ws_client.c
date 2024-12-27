@@ -1,5 +1,6 @@
 #include "client/ws_client.h"
 #include "utils/logging.h"
+#include "client/command_line.h"
 #include <libwebsockets.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,7 +24,16 @@ struct WSClient {
     void* user_data;
     
     pthread_mutex_t lock;
+
+    CommandHandlerCallback command_callback;
+    void* command_handler_data;
 };
+
+void ws_client_set_command_callback(WSClient* client, CommandCallback callback, void* user_data) {
+    if (!client) return;
+    client->command_callback = callback;
+    client->command_handler_data = user_data;
+}
 
 static int callback_trading(struct lws* wsi, enum lws_callback_reasons reason,
                           void* user, void* in, size_t len) {
@@ -102,32 +112,51 @@ static struct lws_protocols protocols[] = {
     }
 };
 
-// In ws_client.c, modify the service thread
 static void* service_thread(void* arg) {
     WSClient* client = (WSClient*)arg;
-    
     int retry_count = 0;
-    const int max_retries = 3;  // Limit reconnection attempts
-    
+    const int max_retries = 3;
+    const int backoff_ms[] = {1000, 2000, 4000};
+
     while (client->running) {
         lws_service(client->context, 50);
-        
+
         if (!client->connected && client->running) {
             if (retry_count < max_retries) {
-                LOG_INFO("Connection lost, attempting reconnect (%d/%d)...", 
+                LOG_INFO("Connection lost, attempting reconnect (%d/%d)...",
                         retry_count + 1, max_retries);
-                sleep(1);  // Wait before retry
+                
+                usleep(backoff_ms[retry_count] * 1000);
+                
+                struct lws_client_connect_info info = {
+                    .context = client->context,
+                    .address = client->host,
+                    .port = client->port,
+                    .path = "/",
+                    .protocol = "trading-protocol",
+                    .userdata = client
+                };
+                
+                client->connection = lws_client_connect_via_info(&info);
                 retry_count++;
             } else {
                 LOG_ERROR("Max reconnection attempts reached, shutting down");
                 client->running = false;
+                
+                // Force cleanup
+                if (client->disconnect_cb) {
+                    client->disconnect_cb(client, client->user_data);
+                }
+                
+                if (client->command_callback) {
+                    Command cmd = {0};
+                    cmd.type = CMD_QUIT;
+                    client->command_callback(&cmd, client->command_handler_data);
+                }    
                 break;
-            }
-        } else {
-            retry_count = 0;  // Reset counter on successful connection
+            } 
         }
     }
-    
     return NULL;
 }
 
@@ -215,14 +244,20 @@ int ws_client_connect(WSClient* client) {
 
 void ws_client_disconnect(WSClient* client) {
     if (!client || !client->running) return;
-    
+
     client->running = false;
-    pthread_join(client->service_thread, NULL);
     
-    if (client->connection) {
+    // Send close frame if connected
+    if (client->connected && client->connection) {
+        lws_close_reason(client->connection, LWS_CLOSE_STATUS_GOINGAWAY, 
+                        (unsigned char*)"Client shutting down", 18);
         lws_cancel_service(client->context);
-        client->connection = NULL;
     }
+    
+    // Wait for service thread
+    pthread_join(client->service_thread, NULL);
+    client->connection = NULL;
+    client->connected = false;
     
     LOG_INFO("WebSocket client disconnected");
 }

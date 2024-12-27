@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <client/command_line.h>
 
 typedef struct WSClient WSClient;
 
@@ -28,10 +29,12 @@ bool ws_client_is_connected(const WSClient* client);
 typedef void (*ConnectCallback)(WSClient* client, void* user_data);
 typedef void (*DisconnectCallback)(WSClient* client, void* user_data);
 typedef void (*MessageCallback)(WSClient* client, const char* message, size_t len, void* user_data);
+typedef void (*CommandHandlerCallback)(const Command* cmd, void* user_data);
 
 // Set callbacks
 void ws_client_set_connect_callback(WSClient* client, ConnectCallback callback, void* user_data);
 void ws_client_set_disconnect_callback(WSClient* client, DisconnectCallback callback, void* user_data);
 void ws_client_set_message_callback(WSClient* client, MessageCallback callback, void* user_data);
+void ws_client_set_command_callback(WSClient* client, CommandCallback callback, void* user_data);
 
 #endif /* CLIENT_WS_CLIENT_H */
