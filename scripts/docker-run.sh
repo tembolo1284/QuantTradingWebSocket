@@ -48,7 +48,8 @@ run_server() {
     ensure_network
     docker-compose up -d market_server
     echo "Server running on port 8080"
-    docker logs -f market_server
+    container_name=$(docker-compose ps -q market_server)
+    docker logs -f "$container_name"
 }
 
 # Function to run the client
@@ -57,9 +58,7 @@ run_client() {
     ensure_network
     docker-compose run --rm \
         -it \
-        --entrypoint market_client \
-        market_client \
-        market_server 8080
+        market_client
 }
 
 # Function to run development environment

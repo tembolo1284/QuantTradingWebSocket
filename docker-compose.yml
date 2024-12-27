@@ -1,28 +1,27 @@
 version: '3.8'
-
 services:
-  quant_trading:
+  market_server:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     networks:
-      trading-net:
+      - trading-net
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-    command: quant_trading
+    command: market_server
 
   market_client:
     build:
       context: .
       dockerfile: Dockerfile
     networks:
-      trading-net:
+      - trading-net
     environment:
-      - SERVER_HOST=quant_trading
+      - SERVER_HOST=market_server
       - SERVER_PORT=8080
     cap_add:
       - SYS_PTRACE
@@ -33,4 +32,3 @@ services:
 networks:
   trading-net:
     name: trading-net
-
