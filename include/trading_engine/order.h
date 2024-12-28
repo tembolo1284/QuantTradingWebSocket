@@ -32,7 +32,7 @@ void order_destroy(Order* order);
 // Getters
 const char* order_get_id(const Order* order);
 const char* order_get_trader_id(const Order* order);
-const char* order_get_stock_symbol(const Order* order);
+const char* order_get_symbol(const Order* order);
 double order_get_price(const Order* order);
 int order_get_quantity(const Order* order);
 int order_get_remaining_quantity(const Order* order);

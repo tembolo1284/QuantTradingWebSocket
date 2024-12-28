@@ -3,6 +3,7 @@
 #include "trading_engine/trader.h"
 #include "trading_engine/order.h"
 #include "trading_engine/trade.h"
+#include "trading_engine/trade_broadcaster.h"
 #include "utils/logging.h"
 #include <unistd.h>
 
@@ -13,7 +14,8 @@ Trader* test_seller;
 
 void setUp(void) {
     LOG_INFO("Setting up test fixture");
-    book = order_book_create();
+    TradeBroadcaster* test_broadcaster = NULL;
+    book = order_book_create(test_broadcaster);
     test_buyer = trader_create("TRADER1", "John Doe", 10000.0);
     test_seller = trader_create("TRADER2", "Jane Doe", 10000.0);
 }

@@ -21,6 +21,8 @@ struct WSServer {
     pthread_t service_thread;
     bool running;
     pthread_mutex_t lock;
+    unsigned char* broadcast_buf;
+    size_t broadcast_len;
 };
 
 struct WSClient {
@@ -64,6 +66,8 @@ WSServer* ws_server_create(const WSServerConfig* config) {
 
     server->config = config;
     pthread_mutex_init(&server->lock, NULL);
+    server->broadcast_buf = NULL;
+    server->broadcast_len = 0;
 
     memset(&server->info, 0, sizeof(server->info));
     server->info.port = config->port;

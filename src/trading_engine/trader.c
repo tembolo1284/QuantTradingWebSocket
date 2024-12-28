@@ -154,7 +154,7 @@ int trader_place_order(Trader* trader, OrderBook* order_book, const Order* order
     LOG_INFO("Trader %s placing %s order: Symbol=%s, Price=%.2f, Quantity=%d",
              trader->trader_id,
              order_is_buy_order(order) ? "buy" : "sell",
-             order_get_stock_symbol(order),
+             order_get_symbol(order),
              order_get_price(order),
              order_get_quantity(order));
 
